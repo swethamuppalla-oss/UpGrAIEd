@@ -55,7 +55,7 @@ const listReservations = async ({ status, page = 1, limit = 20 } = {}) => {
       .skip(skip)
       .limit(limit)
       .populate('student', 'name grade')
-      .populate('parent', 'name phone'),
+      .populate('parent', 'name email'),
     Enrollment.countDocuments(filter),
   ]);
 

@@ -10,8 +10,8 @@ const parentSchema = new mongoose.Schema(
     },
     // Denormalised for quick display without populating User
     name: { type: String, required: true, trim: true },
-    phone: { type: String, required: true, trim: true },
-    email: { type: String, trim: true, lowercase: true },
+    email: { type: String, required: true, trim: true, lowercase: true },
+    phone: { type: String, trim: true },
   },
   { timestamps: true }
 );
