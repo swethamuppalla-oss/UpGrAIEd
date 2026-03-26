@@ -14,6 +14,15 @@ const reserve = async (req, res, next) => {
   }
 };
 
+const myReservations = async (req, res, next) => {
+  try {
+    const enrollments = await enrollmentService.getMyReservations(req.user.id);
+    res.json({ enrollments });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const approve = async (req, res, next) => {
   try {
     const { enrollmentId } = req.params;
@@ -38,4 +47,4 @@ const listReservations = async (req, res, next) => {
   }
 };
 
-module.exports = { reserve, approve, listReservations };
+module.exports = { reserve, myReservations, approve, listReservations };

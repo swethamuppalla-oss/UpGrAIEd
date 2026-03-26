@@ -20,6 +20,14 @@ const reserveSeat = async (parentId, { studentName, grade }) => {
   return enrollment;
 };
 
+// --- Parent: get own reservations ---
+
+const getMyReservations = async (parentId) => {
+  const enrollments = await Enrollment.find({ parentId })
+    .sort({ createdAt: -1 });
+  return enrollments;
+};
+
 // --- Admin: list reservations ---
 
 const listReservations = async ({ status, page = 1, limit = 20 } = {}) => {
@@ -83,4 +91,4 @@ const activateEnrollment = async (enrollmentId) => {
   return enrollment;
 };
 
-module.exports = { reserveSeat, listReservations, approveReservation, activateEnrollment };
+module.exports = { reserveSeat, getMyReservations, listReservations, approveReservation, activateEnrollment };
