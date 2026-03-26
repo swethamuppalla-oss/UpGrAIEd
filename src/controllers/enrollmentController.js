@@ -2,12 +2,12 @@ const enrollmentService = require('../services/enrollmentService');
 
 const reserve = async (req, res, next) => {
   try {
-    const { studentId, notes } = req.body;
-    if (!studentId) {
-      return res.status(400).json({ error: { message: 'studentId is required' } });
+    const { studentName, grade } = req.body;
+    if (!studentName || !grade) {
+      return res.status(400).json({ error: { message: 'studentName and grade are required' } });
     }
 
-    const enrollment = await enrollmentService.reserveSeat(req.user.id, { studentId, notes });
+    const enrollment = await enrollmentService.reserveSeat(req.user.id, { studentName, grade });
     res.status(201).json({ enrollment });
   } catch (err) {
     next(err);

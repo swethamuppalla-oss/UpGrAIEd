@@ -1,48 +1,26 @@
 const Enrollment = require('../models/Enrollment');
-const Student = require('../models/Student');
-const Parent = require('../models/Parent');
 
 // --- Parent: reserve a seat ---
 
-const reserveSeat = async (parentUserId, { studentId, notes }) => {
-  const parent = await Parent.findOne({ user: parentUserId });
-  if (!parent) {
-    throw Object.assign(new Error('Parent profile not found'), { statusCode: 404 });
-  }
-
-  const student = await Student.findById(studentId);
-  if (!student) {
-    throw Object.assign(new Error('Student not found'), { statusCode: 404 });
-  }
-
-  // Confirm this student belongs to the requesting parent
-  if (!student.parent.equals(parent._id)) {
-    throw Object.assign(new Error('Student does not belong to this parent'), { statusCode: 403 });
-  }
-
-  // Prevent duplicate active reservations (the partial unique index handles DB-level,
-  // but we surface a clean error here)
+const reserveSeat = async (parentId, { studentName, grade }) => {
+  // Prevent duplicate active reservations for the same parent + student
   const existing = await Enrollment.findOne({
-    student: student._id,
-    status: { $in: ['RESERVED', 'APPROVED', 'ACTIVE'] },
+    parentId,
+    studentName,
+    status: { $in: ['reserved', 'approved', 'active'] },
   });
   if (existing) {
     throw Object.assign(
-      new Error(`Student already has an enrollment in status: ${existing.status}`),
+      new Error(`An enrollment for ${studentName} already exists with status: ${existing.status}`),
       { statusCode: 409 }
     );
   }
 
-  const enrollment = await Enrollment.create({
-    student: student._id,
-    parent: parent._id,
-    notes,
-  });
-
+  const enrollment = await Enrollment.create({ parentId, studentName, grade });
   return enrollment;
 };
 
-// --- Admin: list all reservations ---
+// --- Admin: list reservations ---
 
 const listReservations = async ({ status, page = 1, limit = 20 } = {}) => {
   const filter = {};
@@ -54,8 +32,7 @@ const listReservations = async ({ status, page = 1, limit = 20 } = {}) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate('student', 'name grade')
-      .populate('parent', 'name email'),
+      .populate('parentId', 'name email'),
     Enrollment.countDocuments(filter),
   ]);
 
@@ -69,37 +46,37 @@ const approveReservation = async (enrollmentId, adminUserId) => {
   if (!enrollment) {
     throw Object.assign(new Error('Enrollment not found'), { statusCode: 404 });
   }
-  if (enrollment.status !== 'RESERVED') {
+  if (enrollment.status !== 'reserved') {
     throw Object.assign(
       new Error(`Cannot approve enrollment in status: ${enrollment.status}`),
       { statusCode: 409 }
     );
   }
 
-  enrollment.status = 'APPROVED';
+  enrollment.status = 'approved';
   enrollment.approvedBy = adminUserId;
   enrollment.approvedAt = new Date();
-  enrollment.paymentEnabledAt = new Date(); // payment is now unlocked
   await enrollment.save();
 
   return enrollment;
 };
 
-// --- Called by payment service (Step 4) to activate ---
+// --- Called by payment service to activate ---
 
 const activateEnrollment = async (enrollmentId) => {
   const enrollment = await Enrollment.findById(enrollmentId);
   if (!enrollment) {
     throw Object.assign(new Error('Enrollment not found'), { statusCode: 404 });
   }
-  if (enrollment.status !== 'APPROVED') {
+  if (enrollment.status !== 'approved') {
     throw Object.assign(
       new Error(`Cannot activate enrollment in status: ${enrollment.status}`),
       { statusCode: 409 }
     );
   }
 
-  enrollment.status = 'ACTIVE';
+  enrollment.status = 'active';
+  enrollment.paymentStatus = 'paid';
   enrollment.activatedAt = new Date();
   await enrollment.save();
 

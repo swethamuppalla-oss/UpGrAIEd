@@ -1,48 +1,57 @@
 const mongoose = require('mongoose');
 
-const STATUSES = ['RESERVED', 'APPROVED', 'ACTIVE', 'REJECTED'];
+const STATUSES = ['reserved', 'approved', 'active'];
+const PAYMENT_STATUSES = ['pending', 'paid'];
 
 const enrollmentSchema = new mongoose.Schema(
   {
-    student: {
+    parentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Student',
+      ref: 'User',
       required: true,
     },
-    parent: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Parent',
+    studentName: {
+      type: String,
       required: true,
+      trim: true,
+    },
+    grade: {
+      type: String,
+      required: true,
+      trim: true,
     },
     status: {
       type: String,
       enum: STATUSES,
-      default: 'RESERVED',
+      default: 'reserved',
     },
-    // Populated once admin approves
+    paymentStatus: {
+      type: String,
+      enum: PAYMENT_STATUSES,
+      default: 'pending',
+    },
+    // Admin who approved — populated on approval
     approvedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       default: null,
     },
     approvedAt: { type: Date, default: null },
-    // Populated on payment success (Step 4)
-    paymentEnabledAt: { type: Date, default: null },
     activatedAt: { type: Date, default: null },
-    notes: { type: String, trim: true },
   },
   { timestamps: true }
 );
 
-// One active enrollment per student at a time
+// One active enrollment per parent+student at a time
 enrollmentSchema.index(
-  { student: 1 },
+  { parentId: 1, studentName: 1 },
   {
     unique: true,
-    partialFilterExpression: { status: { $in: ['RESERVED', 'APPROVED', 'ACTIVE'] } },
+    partialFilterExpression: { status: { $in: ['reserved', 'approved', 'active'] } },
   }
 );
 
 enrollmentSchema.statics.STATUSES = STATUSES;
+enrollmentSchema.statics.PAYMENT_STATUSES = PAYMENT_STATUSES;
 
 module.exports = mongoose.model('Enrollment', enrollmentSchema);
