@@ -2,12 +2,12 @@ const authService = require('../services/authService');
 
 const sendOtp = async (req, res, next) => {
   try {
-    const { phone } = req.body;
-    if (!phone) {
-      return res.status(400).json({ error: { message: 'phone is required' } });
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: { message: 'email is required' } });
     }
 
-    const result = await authService.sendOtpForPhone(phone);
+    const result = await authService.sendOtp(email);
 
     const response = { message: 'OTP sent' };
     // Expose OTP in development only — never in production
@@ -23,15 +23,12 @@ const sendOtp = async (req, res, next) => {
 
 const verifyOtp = async (req, res, next) => {
   try {
-    const { phone, otp } = req.body;
-    if (!phone || !otp) {
-      return res.status(400).json({ error: { message: 'phone and otp are required' } });
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ error: { message: 'email and otp are required' } });
     }
 
-    // Verify the OTP first, then issue token
-    await authService.verifyOtp(phone, otp);
-    const { token, user } = await authService.verifyOtpAndLogin(phone);
-
+    const { token, user } = await authService.verifyOtp(email, otp);
     res.json({ token, user });
   } catch (err) {
     next(err);

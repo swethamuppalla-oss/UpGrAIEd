@@ -4,22 +4,35 @@ const ROLES = ['parent', 'student', 'admin'];
 
 const userSchema = new mongoose.Schema(
   {
-    phone: {
+    name: {
+      type: String,
+      trim: true,
+    },
+    email: {
       type: String,
       required: true,
       unique: true,
       trim: true,
-    },
-    name: {
-      type: String,
-      trim: true,
+      lowercase: true,
     },
     role: {
       type: String,
       enum: ROLES,
       required: true,
     },
-    // Reference to the single active session token
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    otp: {
+      type: String,
+      default: null,
+    },
+    otpExpiry: {
+      type: Date,
+      default: null,
+    },
+    // Single active session enforcement
     activeSessionToken: {
       type: String,
       default: null,

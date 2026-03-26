@@ -1,52 +1,14 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const User = require('../models/User');
-const Otp = require('../models/Otp');
 
-const SALT_ROUNDS = 10;
+const OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 // --- OTP helpers ---
 
 const generateOtpCode = () =>
   String(Math.floor(100000 + Math.random() * 900000));
 
-const sendOtp = async (phone) => {
-  const code = generateOtpCode();
-  const hashedCode = await bcrypt.hash(code, SALT_ROUNDS);
-
-  // Replace any existing OTP for this phone
-  await Otp.findOneAndDelete({ phone });
-
-  await Otp.create({
-    phone,
-    code: hashedCode,
-    expiresAt: new Date(Date.now() + Otp.OTP_TTL_SECONDS * 1000),
-  });
-
-  // In production: dispatch SMS via provider here
-  // For now: return plaintext code so caller can surface it in dev
-  return { code };
-};
-
-const verifyOtp = async (phone, candidateCode) => {
-  const record = await Otp.findOne({ phone });
-
-  if (!record) {
-    throw Object.assign(new Error('OTP not found or expired'), { statusCode: 400 });
-  }
-
-  const valid = await bcrypt.compare(candidateCode, record.code);
-  if (!valid) {
-    throw Object.assign(new Error('Invalid OTP'), { statusCode: 400 });
-  }
-
-  // Consume OTP immediately — single-use
-  await record.deleteOne();
-
-  return true;
-};
-
-// --- JWT helpers ---
+// --- JWT helper ---
 
 const signToken = (user) =>
   jwt.sign(
@@ -55,31 +17,65 @@ const signToken = (user) =>
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 
-// --- Main auth flows ---
+// --- POST /auth/send-otp ---
 
-const sendOtpForPhone = async (phone) => {
-  // Ensure user exists (must be pre-created by admin or registration flow)
-  const user = await User.findOne({ phone, isActive: true });
+const sendOtp = async (email) => {
+  const user = await User.findOne({ email, isActive: true });
   if (!user) {
     throw Object.assign(new Error('User not found'), { statusCode: 404 });
   }
 
-  return sendOtp(phone);
-};
+  const code = generateOtpCode();
 
-const verifyOtpAndLogin = async (phone) => {
-  const user = await User.findOne({ phone, isActive: true });
-  if (!user) {
-    throw Object.assign(new Error('User not found'), { statusCode: 404 });
-  }
-
-  const token = signToken(user);
-
-  // Enforce single active session — overwrite previous token reference
-  user.activeSessionToken = token;
+  // Store plaintext OTP + expiry directly on the user document
+  user.otp = code;
+  user.otpExpiry = new Date(Date.now() + OTP_TTL_MS);
   await user.save();
 
-  return { token, user: { id: user._id, name: user.name, role: user.role } };
+  // In production: send email/SMS here
+  // In development: return OTP in response
+  return { code };
 };
 
-module.exports = { sendOtpForPhone, verifyOtpAndLogin, verifyOtp };
+// --- POST /auth/verify-otp ---
+
+const verifyOtp = async (email, candidateOtp) => {
+  const user = await User.findOne({ email, isActive: true });
+  if (!user) {
+    throw Object.assign(new Error('User not found'), { statusCode: 404 });
+  }
+
+  if (!user.otp || !user.otpExpiry) {
+    throw Object.assign(new Error('OTP not requested'), { statusCode: 400 });
+  }
+
+  if (new Date() > user.otpExpiry) {
+    // Clear expired OTP
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+    throw Object.assign(new Error('OTP expired'), { statusCode: 400 });
+  }
+
+  if (user.otp !== candidateOtp) {
+    throw Object.assign(new Error('Invalid OTP'), { statusCode: 400 });
+  }
+
+  // Consume OTP — single use
+  user.otp = null;
+  user.otpExpiry = null;
+  user.isVerified = true;
+
+  // Enforce single active session — overwrite any previous token
+  const token = signToken(user);
+  user.activeSessionToken = token;
+
+  await user.save();
+
+  return {
+    token,
+    user: { id: user._id, name: user.name, email: user.email, role: user.role },
+  };
+};
+
+module.exports = { sendOtp, verifyOtp };
