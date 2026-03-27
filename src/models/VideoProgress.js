@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
-const COMPLETION_THRESHOLD = 85; // percent
+const COMPLETION_THRESHOLD = 85;
 
 const videoProgressSchema = new mongoose.Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    video: {
+    videoId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Video',
       required: true,
@@ -21,7 +21,7 @@ const videoProgressSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-videoProgressSchema.index({ user: 1, video: 1 }, { unique: true });
+videoProgressSchema.index({ userId: 1, videoId: 1 }, { unique: true });
 
 videoProgressSchema.statics.COMPLETION_THRESHOLD = COMPLETION_THRESHOLD;
 

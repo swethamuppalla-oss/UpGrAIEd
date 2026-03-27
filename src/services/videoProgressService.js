@@ -2,23 +2,23 @@ const VideoProgress = require('../models/VideoProgress');
 const Video = require('../models/Video');
 
 const updateVideoProgress = async (userId, videoId, percentWatched) => {
-  const video = await Video.findOne({ _id: videoId, isActive: true });
+  const video = await Video.findById(videoId);
   if (!video) {
     throw Object.assign(new Error('Video not found'), { statusCode: 404 });
   }
 
-  const isNowComplete = percentWatched >= VideoProgress.COMPLETION_THRESHOLD;
+  const existing = await VideoProgress.findOne({ userId, videoId });
 
-  // Always advance percentWatched, never regress it
-  const existing = await VideoProgress.findOne({ user: userId, video: videoId });
+  // Never regress — keep the highest percent seen
   const safePercent = existing
     ? Math.max(existing.percentWatched, percentWatched)
     : percentWatched;
 
   const alreadyComplete = existing?.completed ?? false;
+  const isNowComplete = safePercent >= VideoProgress.COMPLETION_THRESHOLD;
 
   const record = await VideoProgress.findOneAndUpdate(
-    { user: userId, video: videoId },
+    { userId, videoId },
     {
       percentWatched: safePercent,
       ...(isNowComplete && !alreadyComplete
