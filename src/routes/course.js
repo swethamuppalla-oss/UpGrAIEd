@@ -2,11 +2,9 @@ const router = require('express').Router();
 const authenticate = require('../middleware/authenticate');
 const courseController = require('../controllers/courseController');
 
-// All content endpoints require an authenticated, active-session user.
-// No further role restriction — any enrolled user (parent/student/admin) may browse.
-
 router.get('/programs', authenticate, courseController.listPrograms);
-router.get('/levels/:id', authenticate, courseController.getLevel);
-router.get('/modules/:id', authenticate, courseController.getModule);
+router.get('/levels/:programId', authenticate, courseController.getLevelsByProgram);
+router.get('/modules/:levelId', authenticate, courseController.getModulesByLevel);
+router.get('/videos/:moduleId', authenticate, courseController.getVideosByModule);
 
 module.exports = router;

@@ -9,22 +9,31 @@ const listPrograms = async (req, res, next) => {
   }
 };
 
-const getLevel = async (req, res, next) => {
+const getLevelsByProgram = async (req, res, next) => {
   try {
-    const result = await courseService.getLevel(req.params.id);
+    const result = await courseService.getLevelsByProgram(req.params.programId);
     res.json(result);
   } catch (err) {
     next(err);
   }
 };
 
-const getModule = async (req, res, next) => {
+const getModulesByLevel = async (req, res, next) => {
   try {
-    const result = await courseService.getModule(req.params.id);
+    const result = await courseService.getModulesByLevel(req.params.levelId);
     res.json(result);
   } catch (err) {
     next(err);
   }
 };
 
-module.exports = { listPrograms, getLevel, getModule };
+const getVideosByModule = async (req, res, next) => {
+  try {
+    const result = await courseService.getVideosByModule(req.params.moduleId);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { listPrograms, getLevelsByProgram, getModulesByLevel, getVideosByModule };

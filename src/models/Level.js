@@ -2,19 +2,17 @@ const mongoose = require('mongoose');
 
 const levelSchema = new mongoose.Schema(
   {
-    program: {
+    programId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Program',
       required: true,
     },
+    levelNumber: { type: Number, required: true },
     title: { type: String, required: true, trim: true },
-    description: { type: String, trim: true },
-    order: { type: Number, default: 0 },
-    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
 
-levelSchema.index({ program: 1, order: 1 });
+levelSchema.index({ programId: 1, levelNumber: 1 });
 
 module.exports = mongoose.model('Level', levelSchema);

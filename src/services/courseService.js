@@ -4,34 +4,40 @@ const Module = require('../models/Module');
 const Video = require('../models/Video');
 
 const listPrograms = () =>
-  Program.find({ isActive: true }).sort({ order: 1 });
+  Program.find().sort({ createdAt: 1 });
 
-const getLevel = async (levelId) => {
-  const level = await Level.findOne({ _id: levelId, isActive: true })
-    .populate('program', 'title');
+const getLevelsByProgram = async (programId) => {
+  const program = await Program.findById(programId);
+  if (!program) {
+    throw Object.assign(new Error('Program not found'), { statusCode: 404 });
+  }
+
+  const levels = await Level.find({ programId }).sort({ levelNumber: 1 });
+  return { program, levels };
+};
+
+const getModulesByLevel = async (levelId) => {
+  const level = await Level.findById(levelId).populate('programId', 'name');
   if (!level) {
     throw Object.assign(new Error('Level not found'), { statusCode: 404 });
   }
 
-  const modules = await Module.find({ level: levelId, isActive: true })
-    .sort({ order: 1 })
-    .select('title description order');
-
+  const modules = await Module.find({ levelId });
   return { level, modules };
 };
 
-const getModule = async (moduleId) => {
-  const mod = await Module.findOne({ _id: moduleId, isActive: true })
-    .populate({ path: 'level', select: 'title', populate: { path: 'program', select: 'title' } });
+const getVideosByModule = async (moduleId) => {
+  const mod = await Module.findById(moduleId).populate({
+    path: 'levelId',
+    select: 'title levelNumber',
+    populate: { path: 'programId', select: 'name' },
+  });
   if (!mod) {
     throw Object.assign(new Error('Module not found'), { statusCode: 404 });
   }
 
-  const videos = await Video.find({ module: moduleId, isActive: true })
-    .sort({ order: 1 })
-    .select('title description url durationSeconds order');
-
+  const videos = await Video.find({ moduleId });
   return { module: mod, videos };
 };
 
-module.exports = { listPrograms, getLevel, getModule };
+module.exports = { listPrograms, getLevelsByProgram, getModulesByLevel, getVideosByModule };
