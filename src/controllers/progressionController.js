@@ -12,8 +12,8 @@ const completeModule = async (req, res, next) => {
     const response = { progress: result.progress };
     if (result.unlockedLevel) {
       response.unlockedLevel = {
-        id: result.unlockedLevel.level._id,
-        title: result.unlockedLevel.level.title,
+        levelId: result.unlockedLevel.levelId,
+        title: result.unlockedLevel.title,
       };
     }
 

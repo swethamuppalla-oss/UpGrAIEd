@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const progressSchema = new mongoose.Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    module: {
+    moduleId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Module',
       required: true,
@@ -19,6 +19,6 @@ const progressSchema = new mongoose.Schema(
 );
 
 // One record per user-module pair
-progressSchema.index({ user: 1, module: 1 }, { unique: true });
+progressSchema.index({ userId: 1, moduleId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Progress', progressSchema);

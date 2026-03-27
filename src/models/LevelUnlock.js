@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const levelUnlockSchema = new mongoose.Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    level: {
+    levelId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Level',
       required: true,
@@ -17,6 +17,6 @@ const levelUnlockSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-levelUnlockSchema.index({ user: 1, level: 1 }, { unique: true });
+levelUnlockSchema.index({ userId: 1, levelId: 1 }, { unique: true });
 
 module.exports = mongoose.model('LevelUnlock', levelUnlockSchema);
