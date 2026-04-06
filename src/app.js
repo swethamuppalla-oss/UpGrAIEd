@@ -29,7 +29,7 @@ app.use(express.json());
 
 app.use('/health', healthRouter);
 app.use('/auth', authRouter);
-app.use('/api/parent', parentRouter);
+app.use('/parent', parentRouter);
 app.use('/', enrollmentRouter);
 app.use('/', courseRouter);
 app.use('/', progressionRouter);
