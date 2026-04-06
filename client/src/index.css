@@ -1,0 +1,81 @@
+/* ── Fonts ───────────────────────────────────────────────────────────────── */
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap');
+
+/* ── Tailwind ────────────────────────────────────────────────────────────── */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens ───────────────────────────────────────────────────────── */
+:root {
+  --orange:  #FF5C28;
+  --purple:  #7B3FE4;
+  --pink:    #E4398A;
+  --dark:    #08060F;
+  --dark2:   #0F0B1C;
+  --surface: rgba(255, 255, 255, 0.04);
+  --border:  rgba(255, 255, 255, 0.08);
+  --text:    #F0EEF8;
+  --text2:   rgba(240, 238, 248, 0.6);
+  --grad:    linear-gradient(135deg, #FF5C28, #7B3FE4, #E4398A);
+  --grad2:   linear-gradient(90deg, #FF5C28, #7B3FE4);
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background-color: var(--dark);
+  color: var(--text);
+  font-family: 'Satoshi', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Clash Display', sans-serif;
+  font-weight: 600;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ── Utility classes ─────────────────────────────────────────────────────── */
+@layer utilities {
+  .grad-text {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .grad-bg {
+    background: var(--grad);
+  }
+
+  .grad2-bg {
+    background: var(--grad2);
+  }
+
+  .glass {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .surface {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--dark2); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
