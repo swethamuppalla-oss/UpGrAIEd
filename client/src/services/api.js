@@ -26,3 +26,8 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+// ── Student endpoints ─────────────────────────────────────────────────────────
+export const getStudentProgress = () => api.get('/api/student/progress');
+export const getStudentStats    = () => api.get('/api/student/stats');
+export const getStudentLevels   = () => api.get('/api/student/levels');

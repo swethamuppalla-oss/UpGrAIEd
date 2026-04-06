@@ -8,7 +8,9 @@ const courseRouter = require('./routes/course');
 const progressionRouter = require('./routes/progression');
 const videoRouter = require('./routes/video');
 const paymentRouter = require('./routes/payment');
-const adminRouter = require('./routes/admin');
+const adminRouter   = require('./routes/admin');
+const studentRouter = require('./routes/student');
+const authenticate  = require('./middleware/authenticate');
 
 const app = express();
 
@@ -29,6 +31,7 @@ app.use('/api',            progressionRouter);
 app.use('/api',            videoRouter);
 app.use('/api',            paymentRouter);
 app.use('/api',            adminRouter);
+app.use('/api/student',   authenticate, studentRouter);
 
 app.use(errorHandler);
 
