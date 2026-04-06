@@ -165,8 +165,11 @@ const LevelCard = ({ item, onClick }) => {
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function StudentDashboard() {
-  const navigate      = useNavigate();
-  const { user }      = useAuth();
+  const navigate                    = useNavigate();
+  const { user, token, isLoading }  = useAuth();
+
+  // Debug — remove before production
+  console.log('AUTH STATE:', { user, token: token ? token.slice(0, 20) + '…' : null, isLoading });
 
   const [progress,  setProgress]  = useState(null);
   const [stats,     setStats]     = useState(null);

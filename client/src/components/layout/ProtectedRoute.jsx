@@ -1,17 +1,35 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 /**
- * Wraps a route so only authenticated users with the correct role can access it.
- * Usage: <Route element={<ProtectedRoute roles={['student']} />}>
+ * Nested-route guard. Use as a layout route in App.jsx:
+ *   <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+ *     <Route path="/dashboard/student" element={<StudentDashboard />} />
+ *   </Route>
  */
-const ProtectedRoute = ({ children, roles }) => {
-  const { isLoggedIn, user } = useAuth();
+const ProtectedRoute = ({ allowedRoles }) => {
+  const { user, token, isLoading } = useAuth();
 
-  if (!isLoggedIn) return <Navigate to="/login" replace />;
-  if (roles && !roles.includes(user?.role)) return <Navigate to="/login" replace />;
+  // Wait for localStorage hydration before deciding
+  if (isLoading) {
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        height: '100vh', background: '#08060F',
+        color: '#F0EEF8', fontFamily: 'Satoshi, sans-serif', fontSize: 14,
+      }}>
+        Loading…
+      </div>
+    );
+  }
 
-  return children;
+  if (!token || !user) return <Navigate to="/login" replace />;
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

@@ -93,9 +93,9 @@ export default function Login() {
 
   const clearError = () => setError('');
 
+  // AuthContext.login expects (userData, jwtToken)
   const handleSuccess = (token, user) => {
-    localStorage.setItem('role', user.role);
-    login(token, user);
+    login(user, token);
     navigate(ROLE_ROUTE[user.role] ?? '/login', { replace: true });
   };
 
@@ -157,8 +157,8 @@ export default function Login() {
       handleSuccess(res.data.token, res.data.user);
     } catch {
       // Fallback: UI-only demo if server unreachable
-      const map = { student: 'Arjun Kumar', parent: 'Priya Sharma', creator: 'Rahul Mehta', admin: 'Admin' };
-      const fakeUser  = { id: `demo-${role}`, name: map[role], role, email: `demo-${role}@upgraied.com` };
+      const names = { student: 'Arjun Kumar', parent: 'Priya Sharma', creator: 'Rahul Mehta', admin: 'Admin' };
+      const fakeUser  = { _id: `demo-${role}`, name: names[role], role, email: `demo-${role}@upgraied.com` };
       const fakeToken = `demo_token_${role}_${Date.now()}`;
       handleSuccess(fakeToken, fakeUser);
     } finally {

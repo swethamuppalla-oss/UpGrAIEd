@@ -36,30 +36,26 @@ export default function App() {
           <Route path="/reserve" element={<ReservePage />} />
 
           {/* Student */}
-          <Route path="/dashboard/student" element={
-            <ProtectedRoute roles={['student']}><StudentDashboard /></ProtectedRoute>
-          } />
-          <Route path="/player/:moduleId" element={
-            <ProtectedRoute roles={['student']}><VideoPlayer /></ProtectedRoute>
-          } />
+          <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+            <Route path="/dashboard/student"  element={<StudentDashboard />} />
+            <Route path="/player/:moduleId?"  element={<VideoPlayer />} />
+          </Route>
 
           {/* Parent */}
-          <Route path="/dashboard/parent" element={
-            <ProtectedRoute roles={['parent']}><ParentDashboard /></ProtectedRoute>
-          } />
-          <Route path="/payment" element={
-            <ProtectedRoute roles={['parent']}><PaymentPage /></ProtectedRoute>
-          } />
+          <Route element={<ProtectedRoute allowedRoles={['parent']} />}>
+            <Route path="/dashboard/parent" element={<ParentDashboard />} />
+            <Route path="/payment"          element={<PaymentPage />} />
+          </Route>
 
           {/* Admin */}
-          <Route path="/dashboard/admin" element={
-            <ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>
-          } />
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/dashboard/admin" element={<AdminDashboard />} />
+          </Route>
 
           {/* Creator */}
-          <Route path="/dashboard/creator" element={
-            <ProtectedRoute roles={['creator']}><CreatorDashboard /></ProtectedRoute>
-          } />
+          <Route element={<ProtectedRoute allowedRoles={['creator']} />}>
+            <Route path="/dashboard/creator" element={<CreatorDashboard />} />
+          </Route>
 
           {/* Fallback */}
           <Route path="/" element={<Navigate to="/login" replace />} />
