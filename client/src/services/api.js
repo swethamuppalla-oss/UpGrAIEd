@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// baseURL is '' — Vite proxy forwards /api/* to http://localhost:5000
-const api = axios.create({ baseURL: '' });
+// Dev: baseURL '' → Vite proxy forwards /api/* to localhost:5000
+// Prod: VITE_API_URL must point to the deployed backend (e.g. https://upgraied-api.railway.app)
+const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '' });
 
 // REQUEST — attach JWT to every call
 api.interceptors.request.use(
