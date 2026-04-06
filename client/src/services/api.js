@@ -1,27 +1,29 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '',
-  headers: { 'Content-Type': 'application/json' },
-});
+// baseURL is '' — Vite proxy forwards /api/* to http://localhost:5000
+const api = axios.create({ baseURL: '' });
 
-// Attach JWT from localStorage to every request
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+// REQUEST — attach JWT to every call
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-// Global 401 handler — clear session and redirect to login
+// RESPONSE — global 401 handler
 api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
       localStorage.removeItem('token');
+      localStorage.removeItem('role');
       localStorage.removeItem('user');
       window.location.href = '/login';
     }
-    return Promise.reject(err);
+    return Promise.reject(error);
   }
 );
 
