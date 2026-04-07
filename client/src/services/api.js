@@ -39,7 +39,13 @@ export const getStudentLevels   = () => api.get('/api/student/levels');
 export const getParentDashboard = () => api.get('/api/parent/dashboard');
 
 // ── Admin endpoints ───────────────────────────────────────────────────────────
+export const getAdminStats        = () => api.get('/api/admin/stats').then((r) => r.data);
+export const getReservations      = () => api.get('/api/admin/reservations').then((r) => r.data);
+export const approveReservation   = (id) => api.post(`/api/admin/approve/${id}`).then((r) => r.data);
+export const getAdminPayments     = () => api.get('/api/admin/payments').then((r) => r.data);
+export const getAdminUsers        = (params) => api.get('/api/admin/users', { params }).then((r) => r.data);
+export const blockUser            = (id) => api.post(`/api/admin/users/${id}/block`).then((r) => r.data);
+export const unblockUser          = (id) => api.post(`/api/admin/users/${id}/unblock`).then((r) => r.data);
+
+// Legacy — kept for backward compat
 export const getAdminAnalytics    = () => api.get('/api/admin/analytics');
-export const getAdminUsers        = (params) => api.get('/api/admin/users', { params });
-export const getAdminReservations = (params) => api.get('/api/admin/reservations', { params });
-export const approveReservation   = (enrollmentId) => api.post(`/api/admin/approve/${enrollmentId}`);
