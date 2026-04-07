@@ -1,115 +1,152 @@
-const Parent     = require('../models/Parent');
-const Enrollment = require('../models/Enrollment');
-const Student    = require('../models/Student');
+const Parent = require('../models/Parent');
+const Student = require('../models/Student');
+const Transaction = require('../models/Transaction');
+const Video = require('../models/Video');
 const VideoProgress = require('../models/VideoProgress');
-const Level      = require('../models/Level');
-const Progress   = require('../models/Progress');
 
-// ── GET /api/parent/dashboard ─────────────────────────────────────────────────
-const getDashboard = async (req, res, next) => {
+const getLinkedStudent = async (userId) => {
+  const parent = await Parent.findOne({ user: userId });
+  if (!parent) {
+    return { parent: null, student: null };
+  }
+
+  const student = await Student.findOne({ parent: parent._id });
+  return { parent, student };
+};
+
+const getProgrammeAndLevel = async (studentUserId) => {
+  const latestProgress = await VideoProgress.findOne({ user: studentUserId })
+    .sort({ updatedAt: -1 })
+    .populate({
+      path: 'video',
+      select: 'module',
+      populate: {
+        path: 'module',
+        select: 'level',
+        populate: {
+          path: 'level',
+          select: 'order program',
+          populate: { path: 'program', select: 'title' },
+        },
+      },
+    });
+
+  const currentLevel = latestProgress?.video?.module?.level?.order || 1;
+  const programme = latestProgress?.video?.module?.level?.program?.title || 'Programme pending';
+
+  return { programme, currentLevel };
+};
+
+const getChildInfo = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const { student } = await getLinkedStudent(req.user.id);
 
-    const parent = await Parent.findOne({ user: userId });
-    if (!parent) return res.json({ hasProfile: false });
-
-    // Find enrollment where this parent is linked
-    const enrollment = await Enrollment.findOne({ parent: parent._id })
-      .sort({ createdAt: -1 })
-      .populate({
-        path:   'student',
-        select: 'name',
-        populate: { path: 'user', select: 'name email' },
-      });
-
-    if (!enrollment) {
-      return res.json({ hasProfile: true, enrollment: null });
+    if (!student) {
+      return res.status(404).json({ error: { message: 'No child linked to this parent account' } });
     }
 
-    // Basic enrollment info
-    const result = {
-      hasProfile: true,
-      enrollment: {
-        id:          enrollment._id,
-        status:      enrollment.status,
-        createdAt:   enrollment.createdAt,
-        approvedAt:  enrollment.approvedAt,
-        activatedAt: enrollment.activatedAt,
-        notes:       enrollment.notes,
-      },
-      child: {
-        name:  enrollment.student?.user?.name || enrollment.student?.name || 'Your Child',
-        email: enrollment.student?.user?.email || '',
-      },
-    };
+    const [programmeInfo, totalVideos, completedVideos] = await Promise.all([
+      getProgrammeAndLevel(student.user),
+      Video.countDocuments({ isActive: true }),
+      VideoProgress.countDocuments({ user: student.user, completed: true }),
+    ]);
 
-    // If active, attach child's learning stats
-    if (enrollment.status === 'ACTIVE') {
-      const studentUserId = enrollment.student?.user?._id || enrollment.student?.user;
+    const overallProgress = totalVideos > 0
+      ? Math.round((completedVideos / totalVideos) * 100)
+      : 0;
 
-      const modulesCompleted = await Progress.countDocuments({
-        user: studentUserId, completed: true,
-      });
-
-      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-      const modulesThisWeek = await Progress.countDocuments({
-        user: studentUserId,
-        completed: true,
-        completedAt: { $gte: oneWeekAgo },
-      });
-
-      // Day streak
-      const completions = await Progress.find({
-        user: studentUserId,
-        completed: true,
-        completedAt: { $ne: null },
-      }).select('completedAt');
-
-      const daySet = new Set(
-        completions.map((c) => {
-          const d = new Date(c.completedAt);
-          d.setHours(0, 0, 0, 0);
-          return d.getTime();
-        })
-      );
-      let dayStreak  = 0;
-      const checkDay = new Date();
-      checkDay.setHours(0, 0, 0, 0);
-      while (daySet.has(checkDay.getTime())) {
-        dayStreak++;
-        checkDay.setDate(checkDay.getDate() - 1);
-      }
-
-      // Current level from latest video progress
-      let currentLevel = 1;
-      const latestVP = await VideoProgress.findOne({ user: studentUserId })
-        .sort({ updatedAt: -1 })
-        .populate({ path: 'video', populate: { path: 'module', select: 'level' } });
-
-      if (latestVP?.video?.module?.level) {
-        const level = await Level.findById(latestVP.video.module.level).select('program order');
-        if (level) {
-          currentLevel = await Level.countDocuments({
-            program: level.program,
-            order: { $lte: level.order },
-            isActive: true,
-          });
-        }
-      }
-
-      result.childStats = {
-        currentLevel,
-        totalLevels: 11,
-        modulesCompleted,
-        modulesThisWeek,
-        dayStreak,
-      };
-    }
-
-    res.json(result);
+    res.json({
+      name: student.name,
+      grade: student.grade || 'Grade not assigned',
+      programme: programmeInfo.programme,
+      currentLevel: programmeInfo.currentLevel,
+      overallProgress,
+      status: completedVideos > 0 ? 'active' : 'pending',
+    });
   } catch (err) {
     next(err);
   }
 };
 
-module.exports = { getDashboard };
+const getChildActivity = async (req, res, next) => {
+  try {
+    const { student } = await getLinkedStudent(req.user.id);
+
+    if (!student) {
+      return res.status(404).json({ error: { message: 'No child linked to this parent account' } });
+    }
+
+    const activity = await VideoProgress.find({ user: student.user })
+      .sort({ updatedAt: -1 })
+      .limit(10)
+      .populate({
+        path: 'video',
+        select: 'title module',
+        populate: {
+          path: 'module',
+          select: 'title level',
+          populate: {
+            path: 'level',
+            select: 'order',
+          },
+        },
+      });
+
+    res.json(
+      activity.map((entry) => ({
+        id: entry._id,
+        module: entry.video?.title || entry.video?.module?.title || 'Untitled module',
+        level: `Level ${entry.video?.module?.level?.order || 1}`,
+        status: entry.completed ? 'completed' : 'in-progress',
+        date: entry.updatedAt,
+      }))
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getParentBilling = async (req, res, next) => {
+  try {
+    const { parent, student } = await getLinkedStudent(req.user.id);
+
+    if (!parent) {
+      return res.status(404).json({ error: { message: 'Parent profile not found' } });
+    }
+
+    const transaction = await Transaction.findOne({ user: req.user.id })
+      .sort({ createdAt: -1 });
+
+    const programmeInfo = student
+      ? await getProgrammeAndLevel(student.user)
+      : { programme: 'Programme pending' };
+
+    if (!transaction) {
+      return res.json({
+        amount: 0,
+        date: null,
+        status: 'pending',
+        invoiceId: null,
+        grade: student?.grade || 'Grade pending',
+        programme: programmeInfo.programme,
+      });
+    }
+
+    res.json({
+      amount: transaction.amount,
+      date: transaction.verifiedAt || transaction.createdAt,
+      status: transaction.status === 'SUCCESS' ? 'paid' : 'pending',
+      invoiceId: transaction.gatewayOrderId || String(transaction._id),
+      grade: student?.grade || 'Grade pending',
+      programme: programmeInfo.programme,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = {
+  getChildInfo,
+  getChildActivity,
+  getParentBilling,
+};

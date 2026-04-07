@@ -1,718 +1,663 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import Sidebar from '../components/layout/Sidebar';
+import LoadingSkeleton from '../components/ui/LoadingSkeleton';
 import {
-  getAdminStats,
-  getReservations,
   approveReservation,
-  getAdminPayments,
-  getAdminUsers,
   blockUser,
+  getAdminPayments,
+  getAdminStats,
+  getAdminUsers,
+  getReservations,
   unblockUser,
 } from '../services/api';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MOCK FALLBACK DATA
-// ─────────────────────────────────────────────────────────────────────────────
+const SIDEBAR_ITEMS = [
+  { id: 'overview', icon: '📊', label: 'Overview' },
+  { id: 'users', icon: '👥', label: 'Users' },
+  { id: 'reservations', icon: '📋', label: 'Reservations' },
+  { id: 'revenue', icon: '💰', label: 'Revenue' },
+  { id: 'content', icon: '🎬', label: 'Content' },
+  { id: 'settings', icon: '⚙️', label: 'Settings' },
+];
+
 const MOCK_STATS = {
-  totalEnrolled:      84,
+  totalUsers: 84,
   pendingReservations: 7,
-  totalRevenue:       520000,
-  activeToday:        61,
-  enrolledThisWeek:   12,
-  revenueThisMonth:   48000,
+  totalRevenue: 520000,
+  activeToday: 61,
 };
 
 const MOCK_RESERVATIONS = [
-  { _id: '1', parentName: 'Meera Nair',   childName: 'Aryan Nair',   grade: 'Grade 9',  phone: '+91 98765 11111', createdAt: '2h ago',  status: 'reserved' },
-  { _id: '2', parentName: 'Karan Mehta',  childName: 'Riya Mehta',   grade: 'Grade 7',  phone: '+91 98765 22222', createdAt: '5h ago',  status: 'reserved' },
-  { _id: '3', parentName: 'Sita Reddy',   childName: 'Vikram Reddy', grade: 'Grade 11', phone: '+91 98765 33333', createdAt: '1d ago',  status: 'reserved' },
-  { _id: '4', parentName: 'Amit Shah',    childName: 'Pooja Shah',   grade: 'Grade 6',  phone: '+91 98765 44444', createdAt: '2d ago',  status: 'approved' },
-  { _id: '5', parentName: 'Neha Joshi',   childName: 'Rohan Joshi',  grade: 'Grade 8',  phone: '+91 98765 55555', createdAt: '3d ago',  status: 'paid'     },
+  { _id: 'r1', parentName: 'Priya Sharma', grade: 'Grade 8', phone: '+91 98765 43210', createdAt: '2025-04-02T10:00:00.000Z', status: 'reserved' },
+  { _id: 'r2', parentName: 'Meera Nair', grade: 'Grade 9', phone: '+91 99887 11223', createdAt: '2025-04-01T10:00:00.000Z', status: 'approved' },
+  { _id: 'r3', parentName: 'Rohan Seth', grade: 'Grade 6', phone: '+91 97654 32109', createdAt: '2025-03-31T10:00:00.000Z', status: 'payment-sent' },
 ];
 
 const MOCK_PAYMENTS = [
-  { _id: 't1', parentName: 'Priya Sharma', studentName: 'Arjun Kumar', grade: 'Grade 8',  amount: 6999, date: '2 Apr 2025' },
-  { _id: 't2', parentName: 'Divya Pillai', studentName: 'Rahul Pillai', grade: 'Grade 10', amount: 4999, date: '1 Apr 2025' },
-  { _id: 't3', parentName: 'Rohan Seth',   studentName: 'Anika Seth',   grade: 'Grade 6',  amount: 7999, date: '31 Mar 2025' },
+  { _id: 'p1', studentName: 'Arjun Kumar', grade: 'Grade 8', amount: 6999, date: '2025-04-02T10:00:00.000Z', status: 'paid' },
+  { _id: 'p2', studentName: 'Anika Seth', grade: 'Grade 6', amount: 7999, date: '2025-04-01T10:00:00.000Z', status: 'paid' },
 ];
 
 const MOCK_USERS = [
-  { _id: 'u1', name: 'Arjun Kumar',  email: 'arjun@example.com',  role: 'student', grade: 'Grade 8', isBlocked: false, createdAt: '1 Apr 2025' },
-  { _id: 'u2', name: 'Priya Sharma', email: 'priya@example.com',  role: 'parent',  grade: '—',       isBlocked: false, createdAt: '1 Apr 2025' },
-  { _id: 'u3', name: 'Rahul Mehta',  email: 'rahul@example.com',  role: 'creator', grade: '—',       isBlocked: false, createdAt: '15 Mar 2025' },
+  { _id: 'u1', name: 'Arjun Kumar', email: 'arjun@example.com', role: 'student', grade: 'Grade 8', isBlocked: false, createdAt: '2 Apr 2025' },
+  { _id: 'u2', name: 'Priya Sharma', email: 'priya@example.com', role: 'parent', grade: 'N/A', isBlocked: false, createdAt: '1 Apr 2025' },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CONSTANTS
-// ─────────────────────────────────────────────────────────────────────────────
-const TABS = [
-  { id: 'overview',      icon: '📊', label: 'Overview'     },
-  { id: 'users',         icon: '👥', label: 'Users'        },
-  { id: 'reservations',  icon: '📋', label: 'Reservations' },
-  { id: 'revenue',       icon: '💰', label: 'Revenue'      },
-  { id: 'content',       icon: '🎬', label: 'Content'      },
-  { id: 'settings',      icon: '⚙️', label: 'Settings'     },
-];
+const badgeStyles = {
+  orange: { background: 'rgba(255, 92, 40, 0.16)', color: 'var(--orange)' },
+  purple: { background: 'rgba(123, 63, 228, 0.16)', color: 'var(--purple)' },
+  green: { background: 'rgba(76, 217, 100, 0.16)', color: 'var(--green)' },
+  pink: { background: 'rgba(228, 57, 138, 0.16)', color: 'var(--pink)' },
+  yellow: { background: 'rgba(255, 149, 0, 0.16)', color: 'var(--yellow)' },
+  red: { background: 'rgba(255, 77, 79, 0.16)', color: 'var(--red)' },
+};
 
-const RES_PAGE_SIZE = 10;
+const formatCurrency = (value = 0) =>
+  new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format(value);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SMALL UTILITIES
-// ─────────────────────────────────────────────────────────────────────────────
-const Skel = ({ w = 'w-full', h = 'h-5', r = 'rounded-lg' }) => (
-  <div className={`${w} ${h} ${r} bg-white/10 animate-pulse`} />
+const formatLakhs = (value = 0) => `₹${(value / 100000).toFixed(1)}L`;
+
+const formatDate = (value) => {
+  if (!value) return 'Pending';
+  if (typeof value === 'string' && !value.includes('T')) return value;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Pending';
+
+  return new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+};
+
+const InlineError = ({ message }) => (
+  <div
+    className="rounded-2xl px-4 py-3"
+    style={{
+      background: 'rgba(255, 77, 79, 0.08)',
+      border: '1px solid rgba(255, 77, 79, 0.24)',
+      color: 'var(--text)',
+    }}
+  >
+    {message}
+  </div>
 );
 
-const fmtRevenue = (n) => {
-  if (n >= 100000) return `₹${(n / 100000).toFixed(1)}L`;
-  return `₹${n.toLocaleString('en-IN')}`;
+const Pill = ({ tone, children }) => (
+  <span
+    className="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em]"
+    style={badgeStyles[tone] || badgeStyles.purple}
+  >
+    {children}
+  </span>
+);
+
+const Card = ({ title, right, children }) => (
+  <section
+    className="rounded-[24px] p-6"
+    style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+  >
+    <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <h2 className="m-0 font-clash text-[22px] font-semibold text-[var(--text)]">{title}</h2>
+      {right}
+    </div>
+    {children}
+  </section>
+);
+
+const StatCard = ({ label, tone, value, helper, valueTone }) => (
+  <div
+    className="rounded-2xl p-5"
+    style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+  >
+    <Pill tone={tone}>{label}</Pill>
+    <p
+      className="mt-4 mb-2 font-clash text-[30px] font-bold"
+      style={{ color: valueTone || 'var(--text)', lineHeight: 1 }}
+    >
+      {value}
+    </p>
+    <p className="m-0 text-[13px]" style={{ color: 'var(--text2)' }}>
+      {helper}
+    </p>
+  </div>
+);
+
+const statusTone = (status) => {
+  if (status === 'approved') return 'green';
+  if (status === 'payment-sent') return 'purple';
+  if (status === 'paid') return 'green';
+  if (status === 'blocked') return 'red';
+  return 'yellow';
 };
 
-const fmtCurrency = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
-
-const gst = (amount) => Math.round(amount * 0.18);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SUB-COMPONENTS
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ── Stat Card ─────────────────────────────────────────────────────────────────
-const BADGE_COLORS = {
-  orange: { bg: 'rgba(255,92,40,0.15)',  text: '#FF5C28' },
-  purple: { bg: 'rgba(123,63,228,0.15)', text: '#7B3FE4' },
-  green:  { bg: 'rgba(52,199,89,0.15)',  text: '#4CD964' },
-  pink:   { bg: 'rgba(228,57,138,0.15)', text: '#E4398A' },
+const statusLabel = (status) => {
+  if (status === 'approved') return 'Approved';
+  if (status === 'payment-sent') return 'Payment Sent';
+  if (status === 'paid') return 'Paid';
+  if (status === 'blocked') return 'Blocked';
+  if (status === 'active') return 'Active';
+  return 'Reserved';
 };
 
-function StatCard({ badge, badgeColor, value, valueColor, label, delta, deltaColor = '#4CD964', loading }) {
-  const bc = BADGE_COLORS[badgeColor] || BADGE_COLORS.purple;
-  return (
-    <div style={{ background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20 }}>
-      {loading ? (
-        <div className="flex flex-col gap-2">
-          <Skel w="w-16" h="h-5" />
-          <Skel w="w-24" h="h-9" />
-          <Skel w="w-32" h="h-4" />
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wider self-start rounded-full px-2.5 py-0.5"
-            style={{ background: bc.bg, color: bc.text }}>{badge}</span>
-          <p className="font-clash font-bold" style={{ fontSize: 34, lineHeight: 1, color: valueColor || 'var(--text)' }}>{value}</p>
-          <p style={{ fontSize: 13, color: 'var(--text2)' }}>{label}</p>
-          {delta && <p style={{ fontSize: 12, color: deltaColor }}>{delta}</p>}
-        </div>
-      )}
-    </div>
+export default function AdminDashboard() {
+  const { user } = useAuth();
+  const [activeSection, setActiveSection] = useState('overview');
+  const [stats, setStats] = useState(null);
+  const [reservations, setReservations] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState({
+    stats: true,
+    reservations: true,
+    payments: true,
+    users: true,
+  });
+  const [errors, setErrors] = useState([]);
+  const [search, setSearch] = useState('');
+  const [approvingId, setApprovingId] = useState(null);
+  const [togglingUserId, setTogglingUserId] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      const [statsResult, reservationsResult, paymentsResult, usersResult] = await Promise.allSettled([
+        getAdminStats(),
+        getReservations(),
+        getAdminPayments(),
+        getAdminUsers(),
+      ]);
+
+      if (!mounted) return;
+
+      const nextErrors = [];
+
+      if (statsResult.status === 'fulfilled') {
+        setStats(statsResult.value);
+      } else {
+        setStats(MOCK_STATS);
+        nextErrors.push('Admin stats are showing fallback data.');
+      }
+
+      if (reservationsResult.status === 'fulfilled') {
+        setReservations(reservationsResult.value);
+      } else {
+        setReservations(MOCK_RESERVATIONS);
+        nextErrors.push('Reservations are showing fallback data.');
+      }
+
+      if (paymentsResult.status === 'fulfilled') {
+        setPayments(paymentsResult.value);
+      } else {
+        setPayments(MOCK_PAYMENTS);
+        nextErrors.push('Payments are showing fallback data.');
+      }
+
+      if (usersResult.status === 'fulfilled') {
+        setUsers(Array.isArray(usersResult.value) ? usersResult.value : usersResult.value?.items || []);
+      } else {
+        setUsers(MOCK_USERS);
+        nextErrors.push('Users are showing fallback data.');
+      }
+
+      setErrors(nextErrors);
+      setLoading({
+        stats: false,
+        reservations: false,
+        payments: false,
+        users: false,
+      });
+    };
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const pendingReservations = useMemo(
+    () => reservations.filter((item) => item.status === 'reserved'),
+    [reservations]
   );
-}
 
-// ── Status Badge ──────────────────────────────────────────────────────────────
-const STATUS_STYLES = {
-  reserved: { bg: 'rgba(255,149,0,0.15)',  text: '#FF9500', label: 'Reserved' },
-  approved: { bg: 'rgba(123,63,228,0.15)', text: '#7B3FE4', label: 'Approved' },
-  paid:     { bg: 'rgba(52,199,89,0.15)',  text: '#4CD964', label: 'Paid'     },
-  rejected: { bg: 'rgba(228,57,138,0.15)', text: '#E4398A', label: 'Rejected' },
-};
+  const filteredUsers = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return users;
 
-function StatusBadge({ status }) {
-  const s = STATUS_STYLES[status] || STATUS_STYLES.reserved;
-  return (
-    <span className="text-[10px] font-semibold uppercase tracking-wider rounded-full px-2 py-0.5"
-      style={{ background: s.bg, color: s.text }}>{s.label}</span>
-  );
-}
+    return users.filter((item) => {
+      const haystack = `${item.name || ''} ${item.email || ''}`.toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [search, users]);
 
-// ── Role Badge ────────────────────────────────────────────────────────────────
-const ROLE_STYLES = {
-  student: { bg: 'rgba(255,92,40,0.15)',  text: '#FF5C28' },
-  parent:  { bg: 'rgba(123,63,228,0.15)', text: '#7B3FE4' },
-  creator: { bg: 'rgba(228,57,138,0.15)', text: '#E4398A' },
-  admin:   { bg: 'rgba(52,199,89,0.15)',  text: '#4CD964' },
-};
+  const statCards = [
+    {
+      label: 'Users',
+      tone: 'orange',
+      value: stats?.totalUsers ?? 0,
+      helper: 'Total enrolled students',
+    },
+    {
+      label: 'Pending',
+      tone: 'purple',
+      value: stats?.pendingReservations ?? 0,
+      helper: 'Reservations needing approval',
+      valueTone: (stats?.pendingReservations ?? 0) > 0 ? 'var(--orange)' : undefined,
+    },
+    {
+      label: 'Revenue',
+      tone: 'green',
+      value: formatLakhs(stats?.totalRevenue ?? 0),
+      helper: 'Total collected revenue',
+    },
+    {
+      label: 'Active',
+      tone: 'pink',
+      value: stats?.activeToday ?? 0,
+      helper: 'Users active today',
+    },
+  ];
 
-function RoleBadge({ role }) {
-  const s = ROLE_STYLES[role] || ROLE_STYLES.parent;
-  return (
-    <span className="text-[10px] font-semibold uppercase tracking-wider rounded-full px-2 py-0.5"
-      style={{ background: s.bg, color: s.text }}>{role}</span>
-  );
-}
-
-// ── Table Shell ───────────────────────────────────────────────────────────────
-function TableCard({ title, badge, children }) {
-  return (
-    <div style={{ background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, overflow: 'hidden' }}>
-      <div className="flex items-center gap-3" style={{ padding: '18px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <p className="font-clash font-semibold" style={{ fontSize: 16, color: 'var(--text)' }}>{title}</p>
-        {badge != null && (
-          <span className="text-[11px] font-semibold rounded-full px-2 py-0.5"
-            style={{ background: 'rgba(255,149,0,0.15)', color: '#FF9500' }}>{badge}</span>
-        )}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-// ── Table Header Row ──────────────────────────────────────────────────────────
-function THead({ cols }) {
-  return (
-    <div className="grid" style={{ gridTemplateColumns: cols.join(' '), padding: '10px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: 11, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-      {cols.map((_, i) => <span key={i} />)}
-    </div>
-  );
-}
-
-// ── Search Input ──────────────────────────────────────────────────────────────
-function SearchInput({ value, onChange, placeholder }) {
-  return (
-    <input
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      style={{
-        background:   'rgba(255,255,255,0.05)',
-        border:       '1px solid rgba(255,255,255,0.10)',
-        borderRadius: 10,
-        padding:      '8px 14px',
-        fontSize:     13,
-        color:        'var(--text)',
-        width:        260,
-        outline:      'none',
-      }}
-    />
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SECTIONS
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ── Overview: Stats Row ───────────────────────────────────────────────────────
-function StatsRow({ stats, loading }) {
-  const pending = stats?.pendingReservations ?? 0;
-  return (
-    <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(4,1fr)', marginBottom: 32 }}>
-      <StatCard
-        badge="Users" badgeColor="orange" loading={loading}
-        value={stats?.totalEnrolled ?? 0}
-        label="Total enrolled"
-        delta={stats?.enrolledThisWeek ? `+${stats.enrolledThisWeek} this week` : null}
-      />
-      <StatCard
-        badge="Pending" badgeColor="purple" loading={loading}
-        value={pending}
-        valueColor={pending > 0 ? '#FF5C28' : undefined}
-        label="Awaiting approval"
-        delta={pending > 0 ? 'Needs your action' : null}
-        deltaColor="#FF5C28"
-      />
-      <StatCard
-        badge="Revenue" badgeColor="green" loading={loading}
-        value={fmtRevenue(stats?.totalRevenue ?? 0)}
-        label="Total collected"
-        delta={stats?.revenueThisMonth ? `+${fmtCurrency(stats.revenueThisMonth)} this month` : null}
-      />
-      <StatCard
-        badge="Active" badgeColor="pink" loading={loading}
-        value={stats?.activeToday ?? 0}
-        label="Active today"
-      />
-    </div>
-  );
-}
-
-// ── Reservations Section ──────────────────────────────────────────────────────
-function ReservationsSection({ reservations, setReservations, loading }) {
-  const [search,       setSearch]       = useState('');
-  const [page,         setPage]         = useState(1);
-  const [approvingId,  setApprovingId]  = useState(null);
-
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    return (reservations || []).filter(
-      (r) => !q || r.parentName?.toLowerCase().includes(q) || r.phone?.includes(q)
-    );
-  }, [reservations, search]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / RES_PAGE_SIZE));
-  const pageItems  = filtered.slice((page - 1) * RES_PAGE_SIZE, page * RES_PAGE_SIZE);
-
-  const handleApprove = useCallback(async (id) => {
+  const handleApprove = async (id) => {
     setApprovingId(id);
     try {
       await approveReservation(id);
-      toast.success('Reservation approved — payment unlocked');
-      setReservations((prev) =>
-        prev.map((r) => r._id === id ? { ...r, status: 'approved' } : r)
+      setReservations((current) =>
+        current.map((item) => (item._id === id ? { ...item, status: 'approved' } : item))
       );
+      setStats((current) =>
+        current
+          ? {
+              ...current,
+              pendingReservations: Math.max((current.pendingReservations || 1) - 1, 0),
+            }
+          : current
+      );
+      toast.success('Reservation approved');
     } catch {
-      toast.error('Failed to approve reservation');
+      toast.error('Could not approve reservation');
     } finally {
       setApprovingId(null);
     }
-  }, [setReservations]);
-
-  const pendingCount = (reservations || []).filter((r) => r.status === 'reserved').length;
-
-  const COLS = '1fr 1fr 100px 150px 120px 110px 130px';
-  const HEADERS = ['Parent', 'Child', 'Grade', 'Phone', 'Reserved', 'Status', 'Action'];
-
-  return (
-    <TableCard title="Pending Reservations" badge={pendingCount}>
-      {/* Search */}
-      <div style={{ padding: '12px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <SearchInput value={search} onChange={(v) => { setSearch(v); setPage(1); }} placeholder="Search by parent name or phone…" />
-      </div>
-
-      {/* Header */}
-      <div className="grid" style={{ gridTemplateColumns: COLS, padding: '10px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: 11, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-        {HEADERS.map((h) => <span key={h}>{h}</span>)}
-      </div>
-
-      {/* Rows */}
-      {loading ? (
-        [...Array(4)].map((_, i) => (
-          <div key={i} className="grid items-center gap-3" style={{ gridTemplateColumns: COLS, padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-            <Skel w="w-28" h="h-4" /><Skel w="w-24" h="h-4" /><Skel w="w-16" h="h-4" />
-            <Skel w="w-28" h="h-4" /><Skel w="w-16" h="h-4" /><Skel w="w-16" h="h-5" r="rounded-full" />
-            <Skel w="w-20" h="h-8" r="rounded-xl" />
-          </div>
-        ))
-      ) : pageItems.length === 0 ? (
-        <div className="flex items-center justify-center" style={{ padding: '48px 20px' }}>
-          <p style={{ color: 'var(--text2)', fontSize: 14 }}>No reservations found ✓</p>
-        </div>
-      ) : (
-        pageItems.map((row, idx) => (
-          <div key={row._id} className="grid items-center gap-3"
-            style={{ gridTemplateColumns: COLS, padding: '14px 20px', borderBottom: idx < pageItems.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-            <p style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>{row.parentName}</p>
-            <p style={{ fontSize: 14, color: 'var(--text)' }}>{row.childName}</p>
-            <p style={{ fontSize: 13, color: 'var(--text2)' }}>{row.grade}</p>
-            <p style={{ fontSize: 13, color: 'var(--text2)' }}>{row.phone}</p>
-            <p style={{ fontSize: 12, color: 'var(--text2)' }}>{row.createdAt}</p>
-            <StatusBadge status={row.status} />
-            <div>
-              {row.status === 'reserved' && (
-                <button
-                  onClick={() => handleApprove(row._id)}
-                  disabled={approvingId === row._id}
-                  className="font-semibold text-white rounded-xl transition-opacity hover:opacity-80 disabled:opacity-50"
-                  style={{ background: 'linear-gradient(135deg,#7B3FE4,#E4398A)', padding: '7px 14px', fontSize: 12, cursor: approvingId === row._id ? 'not-allowed' : 'pointer' }}>
-                  {approvingId === row._id ? 'Approving…' : 'Approve'}
-                </button>
-              )}
-              {row.status === 'approved' && (
-                <button disabled style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--text2)', borderRadius: 12, padding: '7px 14px', fontSize: 12 }}>
-                  Payment Pending
-                </button>
-              )}
-              {row.status === 'paid' && (
-                <button disabled style={{ background: 'rgba(52,199,89,0.12)', color: '#4CD964', borderRadius: 12, padding: '7px 14px', fontSize: 12 }}>
-                  ✓ Enrolled
-                </button>
-              )}
-            </div>
-          </div>
-        ))
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between" style={{ padding: '14px 20px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          <p style={{ fontSize: 12, color: 'var(--text2)' }}>
-            Page {page} of {totalPages} · {filtered.length} results
-          </p>
-          <div className="flex gap-2">
-            <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-              style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, background: 'rgba(255,255,255,0.07)', color: 'var(--text2)', cursor: page === 1 ? 'default' : 'pointer', opacity: page === 1 ? 0.4 : 1 }}>
-              ← Prev
-            </button>
-            <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-              style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, background: 'rgba(255,255,255,0.07)', color: 'var(--text2)', cursor: page === totalPages ? 'default' : 'pointer', opacity: page === totalPages ? 0.4 : 1 }}>
-              Next →
-            </button>
-          </div>
-        </div>
-      )}
-    </TableCard>
-  );
-}
-
-// ── Payments Section ──────────────────────────────────────────────────────────
-function PaymentsSection({ payments, loading }) {
-  const totalBase  = (payments || []).reduce((s, p) => s + (p.amount || 0), 0);
-  const totalGst   = gst(totalBase);
-  const totalRec   = totalBase + totalGst;
-  const razorpayFee = Math.round(totalRec * 0.02);
-
-  const COLS = '1fr 1fr 100px 100px 100px 100px 120px 100px';
-  const HEADERS = ['Parent', 'Student', 'Grade', 'Amount', 'GST', 'Total', 'Date', 'Invoice'];
-
-  return (
-    <TableCard title="Recent Payments">
-      {/* Header */}
-      <div className="grid" style={{ gridTemplateColumns: COLS, padding: '10px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: 11, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-        {HEADERS.map((h) => <span key={h}>{h}</span>)}
-      </div>
-
-      {/* Rows */}
-      {loading ? (
-        [...Array(3)].map((_, i) => (
-          <div key={i} className="grid items-center gap-3" style={{ gridTemplateColumns: COLS, padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-            {Array(8).fill(null).map((__, j) => <Skel key={j} w="w-full" h="h-4" />)}
-          </div>
-        ))
-      ) : !payments?.length ? (
-        <div className="flex items-center justify-center" style={{ padding: '40px 20px' }}>
-          <p style={{ color: 'var(--text2)', fontSize: 14 }}>No payments yet</p>
-        </div>
-      ) : (
-        (payments || []).map((p, idx) => {
-          const g = gst(p.amount);
-          return (
-            <div key={p._id} className="grid items-center gap-3"
-              style={{ gridTemplateColumns: COLS, padding: '14px 20px', borderBottom: idx < payments.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-              <p style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>{p.parentName}</p>
-              <p style={{ fontSize: 14, color: 'var(--text)' }}>{p.studentName}</p>
-              <p style={{ fontSize: 13, color: 'var(--text2)' }}>{p.grade}</p>
-              <p style={{ fontSize: 13, color: 'var(--text)' }}>{fmtCurrency(p.amount)}</p>
-              <p style={{ fontSize: 13, color: 'var(--text2)' }}>{fmtCurrency(g)}</p>
-              <p style={{ fontSize: 13, color: '#4CD964', fontWeight: 600 }}>{fmtCurrency(p.amount + g)}</p>
-              <p style={{ fontSize: 12, color: 'var(--text2)' }}>{p.date}</p>
-              <a
-                href={`/api/payments/invoice/${p._id}`}
-                style={{ fontSize: 12, color: '#7B3FE4', textDecoration: 'underline', textUnderlineOffset: 2 }}>
-                Download
-              </a>
-            </div>
-          );
-        })
-      )}
-
-      {/* Revenue Summary */}
-      {!loading && payments?.length > 0 && (
-        <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.025)' }}>
-          <div className="flex flex-wrap gap-x-8 gap-y-1" style={{ fontSize: 13 }}>
-            <span style={{ color: 'var(--text2)' }}>Base total: <b style={{ color: 'var(--text)' }}>{fmtCurrency(totalBase)}</b></span>
-            <span style={{ color: 'var(--text2)' }}>GST (18%): <b style={{ color: 'var(--text)' }}>{fmtCurrency(totalGst)}</b></span>
-            <span style={{ color: 'var(--text2)' }}>Total received: <b style={{ color: '#4CD964' }}>{fmtCurrency(totalRec)}</b></span>
-            <span style={{ color: 'var(--text2)' }}>Razorpay fees (~2%): <b style={{ color: '#FF5C28' }}>−{fmtCurrency(razorpayFee)}</b></span>
-            <span style={{ color: 'var(--text2)' }}>Net: <b style={{ color: '#7B3FE4', fontSize: 15 }}>{fmtCurrency(totalRec - razorpayFee)}</b></span>
-          </div>
-        </div>
-      )}
-    </TableCard>
-  );
-}
-
-// ── Users Section ─────────────────────────────────────────────────────────────
-function UsersSection({ users, setUsers, loading }) {
-  const [search,     setSearch]     = useState('');
-  const [roleFilter, setRoleFilter] = useState('all');
-  const [blockingId, setBlockingId] = useState(null);
-
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    return (users || []).filter((u) => {
-      const matchRole = roleFilter === 'all' || u.role === roleFilter;
-      const matchQ    = !q || u.name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q);
-      return matchRole && matchQ;
-    });
-  }, [users, search, roleFilter]);
-
-  const handleBlock = useCallback(async (id, shouldBlock) => {
-    setBlockingId(id);
-    try {
-      if (shouldBlock) {
-        await blockUser(id);
-        toast.success('User blocked');
-      } else {
-        await unblockUser(id);
-        toast.success('User unblocked');
-      }
-      setUsers((prev) => prev.map((u) => u._id === id ? { ...u, isBlocked: shouldBlock } : u));
-    } catch {
-      toast.error(`Failed to ${shouldBlock ? 'block' : 'unblock'} user`);
-    } finally {
-      setBlockingId(null);
-    }
-  }, [setUsers]);
-
-  const ROLE_TABS = ['all', 'student', 'parent', 'creator'];
-  const COLS = '1fr 1fr 100px 110px 90px 130px 120px';
-  const HEADERS = ['Name', 'Email', 'Role', 'Grade', 'Status', 'Joined', 'Actions'];
-
-  return (
-    <TableCard title="All Users">
-      {/* Toolbar */}
-      <div className="flex items-center gap-4 flex-wrap" style={{ padding: '12px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <SearchInput value={search} onChange={setSearch} placeholder="Search by name or email…" />
-        <div className="flex gap-2">
-          {ROLE_TABS.map((tab) => {
-            const active = roleFilter === tab;
-            return (
-              <button key={tab} onClick={() => setRoleFilter(tab)}
-                className="capitalize text-[12px] font-semibold rounded-full px-3 py-1 transition-all"
-                style={{ background: active ? 'rgba(123,63,228,0.2)' : 'rgba(255,255,255,0.05)', color: active ? '#7B3FE4' : 'var(--text2)', border: `1px solid ${active ? 'rgba(123,63,228,0.4)' : 'rgba(255,255,255,0.08)'}` }}>
-                {tab === 'all' ? 'All' : tab.charAt(0).toUpperCase() + tab.slice(1) + 's'}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Header */}
-      <div className="grid" style={{ gridTemplateColumns: COLS, padding: '10px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: 11, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-        {HEADERS.map((h) => <span key={h}>{h}</span>)}
-      </div>
-
-      {/* Rows */}
-      {loading ? (
-        [...Array(5)].map((_, i) => (
-          <div key={i} className="grid items-center gap-3" style={{ gridTemplateColumns: COLS, padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-            <div className="flex items-center gap-2"><Skel w="w-8" h="h-8" r="rounded-lg" /><Skel w="w-28" h="h-4" /></div>
-            <Skel w="w-36" h="h-4" /><Skel w="w-16" h="h-5" r="rounded-full" /><Skel w="w-16" h="h-4" />
-            <Skel w="w-14" h="h-5" r="rounded-full" /><Skel w="w-20" h="h-4" /><Skel w="w-16" h="h-8" r="rounded-xl" />
-          </div>
-        ))
-      ) : filtered.length === 0 ? (
-        <div className="flex items-center justify-center" style={{ padding: '48px 20px' }}>
-          <p style={{ color: 'var(--text2)', fontSize: 14 }}>No users found</p>
-        </div>
-      ) : (
-        filtered.map((u, idx) => {
-          const initials = (u.name || 'U').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
-          return (
-            <div key={u._id} className="grid items-center gap-3"
-              style={{ gridTemplateColumns: COLS, padding: '14px 20px', borderBottom: idx < filtered.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-              {/* Name + avatar */}
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="grad-bg flex items-center justify-center shrink-0 font-clash font-bold text-white"
-                  style={{ width: 32, height: 32, borderRadius: 9, fontSize: 12 }}>{initials}</div>
-                <p className="truncate" style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>{u.name}</p>
-              </div>
-              <p className="truncate" style={{ fontSize: 13, color: 'var(--text2)' }}>{u.email}</p>
-              <RoleBadge role={u.role} />
-              <p style={{ fontSize: 13, color: 'var(--text2)' }}>{u.grade || '—'}</p>
-              {/* Status */}
-              <span className="text-[11px] font-semibold rounded-full px-2 py-0.5"
-                style={{
-                  background: u.isBlocked ? 'rgba(228,57,138,0.12)' : 'rgba(52,199,89,0.12)',
-                  color:      u.isBlocked ? '#E4398A' : '#4CD964',
-                }}>
-                {u.isBlocked ? 'Blocked' : 'Active'}
-              </span>
-              <p style={{ fontSize: 12, color: 'var(--text2)' }}>{u.createdAt}</p>
-              {/* Block / Unblock */}
-              <button
-                onClick={() => handleBlock(u._id, !u.isBlocked)}
-                disabled={blockingId === u._id}
-                className="text-[12px] font-semibold rounded-xl transition-opacity hover:opacity-80 disabled:opacity-40"
-                style={{
-                  padding:    '6px 14px',
-                  background: 'transparent',
-                  border:     `1px solid ${u.isBlocked ? 'rgba(52,199,89,0.4)' : 'rgba(228,57,138,0.4)'}`,
-                  color:      u.isBlocked ? '#4CD964' : '#E4398A',
-                  cursor:     blockingId === u._id ? 'not-allowed' : 'pointer',
-                }}>
-                {blockingId === u._id ? '…' : u.isBlocked ? 'Unblock' : 'Block'}
-              </button>
-            </div>
-          );
-        })
-      )}
-    </TableCard>
-  );
-}
-
-// ── Placeholder Section ───────────────────────────────────────────────────────
-function PlaceholderSection({ icon, title, desc }) {
-  return (
-    <div className="flex flex-col items-center justify-center" style={{ minHeight: 320 }}>
-      <div style={{ fontSize: 48, marginBottom: 16 }}>{icon}</div>
-      <p className="font-clash font-semibold" style={{ fontSize: 20, color: 'var(--text)', marginBottom: 8 }}>{title}</p>
-      <p style={{ fontSize: 14, color: 'var(--text2)' }}>{desc}</p>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ADMIN SIDEBAR (custom — uses state for section switching, not routing)
-// ─────────────────────────────────────────────────────────────────────────────
-function AdminSidebar({ activeTab, setActiveTab }) {
-  const navigate    = useNavigate();
-  const { user, logout } = useAuth();
-
-  const handleSignOut = async () => {
-    try {
-      const { logoutApi } = await import('../services/auth');
-      await logoutApi();
-    } catch { /* server may be unreachable */ }
-    logout();
-    navigate('/login', { replace: true });
   };
 
-  const initials = (user?.name || 'AD')
-    .split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+  const handleUserToggle = async (targetUser) => {
+    setTogglingUserId(targetUser._id);
+    try {
+      if (targetUser.isBlocked) {
+        await unblockUser(targetUser._id);
+        toast.success('User unblocked');
+      } else {
+        await blockUser(targetUser._id);
+        toast.success('User blocked');
+      }
+
+      setUsers((current) =>
+        current.map((item) =>
+          item._id === targetUser._id
+            ? {
+                ...item,
+                isBlocked: !targetUser.isBlocked,
+                status: targetUser.isBlocked ? 'active' : 'blocked',
+              }
+            : item
+        )
+      );
+    } catch {
+      toast.error('Could not update user status');
+    } finally {
+      setTogglingUserId(null);
+    }
+  };
+
+  const content = {
+    overview: (
+      <>
+        <section className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {loading.stats
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="rounded-2xl p-5"
+                  style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+                >
+                  <LoadingSkeleton width={90} height={26} borderRadius={999} />
+                  <LoadingSkeleton width={130} height={34} borderRadius={12} style={{ marginTop: 18 }} />
+                  <LoadingSkeleton width={160} height={16} borderRadius={10} style={{ marginTop: 12 }} />
+                </div>
+              ))
+            : statCards.map((item) => <StatCard key={item.label} {...item} />)}
+        </section>
+
+        <div className="mb-8">
+          <ReservationsCard
+            items={pendingReservations}
+            loading={loading.reservations}
+            approvingId={approvingId}
+            onApprove={handleApprove}
+          />
+        </div>
+
+        <div className="mb-8">
+          <PaymentsCard items={payments} loading={loading.payments} />
+        </div>
+
+        <UsersCard
+          items={filteredUsers}
+          loading={loading.users}
+          search={search}
+          onSearch={setSearch}
+          togglingUserId={togglingUserId}
+          onToggle={handleUserToggle}
+        />
+      </>
+    ),
+    reservations: (
+      <ReservationsCard
+        items={pendingReservations}
+        loading={loading.reservations}
+        approvingId={approvingId}
+        onApprove={handleApprove}
+      />
+    ),
+    revenue: <PaymentsCard items={payments} loading={loading.payments} />,
+    users: (
+      <UsersCard
+        items={filteredUsers}
+        loading={loading.users}
+        search={search}
+        onSearch={setSearch}
+        togglingUserId={togglingUserId}
+        onToggle={handleUserToggle}
+      />
+    ),
+    content: <PlaceholderCard title="Content" description="Content management is the next admin workflow to wire up." />,
+    settings: <PlaceholderCard title="Settings" description="Platform settings will live here once the admin controls are connected." />,
+  };
 
   return (
-    <aside style={{ position: 'fixed', top: 0, left: 0, height: '100vh', width: 240, background: '#0F0B1C', borderRight: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', zIndex: 40 }}>
-      {/* Logo */}
-      <div style={{ padding: '28px 24px 20px' }}>
-        <span className="font-clash font-bold text-xl grad-text" style={{ letterSpacing: '-0.02em' }}>UpgrAIed</span>
-      </div>
+    <div style={{ background: 'var(--dark)', minHeight: '100vh' }}>
+      <Sidebar
+        items={SIDEBAR_ITEMS.map((item) => ({ ...item, onClick: () => setActiveSection(item.id) }))}
+        activeItem={activeSection}
+        userName={user?.name || 'Admin'}
+        userRole="Admin"
+        userInitials="AD"
+      />
 
-      {/* Nav items */}
-      <nav style={{ flex: 1, padding: '8px 12px', overflowY: 'auto' }}>
-        {TABS.map(({ id, icon, label }) => {
-          const active = activeTab === id;
-          return (
-            <button key={id} onClick={() => setActiveTab(id)}
-              style={{ width: '100%', textAlign: 'left' }}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 mb-1 text-sm font-medium transition-all duration-150 cursor-pointer ${active ? 'bg-white/10 text-[var(--text)]' : 'text-[var(--text2)] hover:bg-white/5 hover:text-[var(--text)]'}`}>
-              <span style={{ width: 3, height: 18, borderRadius: 2, background: active ? 'linear-gradient(180deg,#FF5C28,#7B3FE4)' : 'transparent', flexShrink: 0, marginLeft: -4 }} />
-              <span style={{ fontSize: 18, lineHeight: 1 }}>{icon}</span>
-              <span>{label}</span>
-            </button>
-          );
-        })}
-      </nav>
+      <main className="md:ml-[240px]" style={{ minHeight: '100vh', padding: '84px 20px 56px' }}>
+        <div className="mx-auto max-w-7xl">
+          <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div>
+              <h1 className="m-0 font-clash text-[32px] font-semibold text-[var(--text)]">
+                Platform Overview
+              </h1>
+              <p className="mt-2 text-[15px]" style={{ color: 'var(--text2)' }}>
+                Admin command center for users, reservations, revenue, and content.
+              </p>
+            </div>
 
-      {/* User footer */}
-      <div style={{ padding: '16px 12px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-        <div className="flex items-center gap-3 px-3 mb-3">
-          <div className="grad-bg flex items-center justify-center shrink-0 font-clash font-bold text-white text-sm"
-            style={{ width: 36, height: 36, borderRadius: 10 }}>
-            {initials}
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-[var(--text)] truncate">{user?.name || 'Admin'}</p>
-            <p className="text-xs" style={{ color: 'var(--text2)' }}>Platform Admin</p>
-          </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => toast('Report export will be connected next.', { icon: '📤' })}
+                className="rounded-xl px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90"
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text)',
+                }}
+              >
+                Export Report
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveSection('content');
+                  toast('Opening content section.', { icon: '🎬' });
+                }}
+                className="rounded-xl px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                style={{ background: 'var(--grad2)' }}
+              >
+                + Add Content
+              </button>
+            </div>
+          </header>
+
+          {errors.length > 0 && (
+            <div className="mb-6 flex flex-col gap-3">
+              {errors.map((message) => (
+                <InlineError key={message} message={message} />
+              ))}
+            </div>
+          )}
+
+          {content[activeSection]}
         </div>
-        <button onClick={handleSignOut}
-          className="w-full flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-[var(--text2)] hover:bg-white/5 hover:text-[var(--text)] transition-all duration-150 cursor-pointer">
-          <span style={{ fontSize: 16 }}>🚪</span>Sign Out
-        </button>
-      </div>
-    </aside>
+      </main>
+    </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
-export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
-
-  const [stats,        setStats]        = useState(null);
-  const [reservations, setReservations] = useState(null);
-  const [payments,     setPayments]     = useState(null);
-  const [users,        setUsers]        = useState(null);
-
-  const [loadingStats, setLoadingStats] = useState(true);
-  const [loadingRes,   setLoadingRes]   = useState(true);
-  const [loadingPay,   setLoadingPay]   = useState(true);
-  const [loadingUsers, setLoadingUsers] = useState(true);
-
-  // Fetch all on mount
-  useEffect(() => {
-    getAdminStats()
-      .then(setStats)
-      .catch(() => setStats(MOCK_STATS))
-      .finally(() => setLoadingStats(false));
-
-    getReservations()
-      .then(setReservations)
-      .catch(() => setReservations(MOCK_RESERVATIONS))
-      .finally(() => setLoadingRes(false));
-
-    getAdminPayments()
-      .then(setPayments)
-      .catch(() => setPayments(MOCK_PAYMENTS))
-      .finally(() => setLoadingPay(false));
-
-    getAdminUsers()
-      .then((data) => setUsers(data?.items || data))
-      .catch(() => setUsers(MOCK_USERS))
-      .finally(() => setLoadingUsers(false));
-  }, []);
-
-  const showStats    = activeTab === 'overview' || activeTab === 'users' || activeTab === 'reservations' || activeTab === 'revenue';
-  const showRes      = activeTab === 'overview' || activeTab === 'reservations';
-  const showPayments = activeTab === 'overview' || activeTab === 'revenue';
-  const showUsers    = activeTab === 'users';
-
+function ReservationsCard({ items, loading, approvingId, onApprove }) {
   return (
-    <div style={{ background: '#08060F', minHeight: '100vh' }}>
-      <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      <main style={{ marginLeft: 240, padding: '32px 40px 60px', minHeight: '100vh' }}>
-
-        {/* ── Header ──────────────────────────────────────────────────── */}
-        <div className="flex items-start justify-between" style={{ marginBottom: 36, paddingBottom: 32, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div>
-            <h1 className="font-clash font-bold" style={{ fontSize: 32, color: 'var(--text)', margin: 0, lineHeight: 1.1 }}>
-              Platform Overview
-            </h1>
-            <p style={{ marginTop: 8, fontSize: 14, color: 'var(--text2)' }}>
-              UpgrAIed Admin · Live dashboard
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              className="font-semibold rounded-xl transition-all hover:bg-white/10"
-              style={{ padding: '10px 20px', fontSize: 13, color: 'var(--text)', background: 'transparent', border: '1px solid rgba(255,255,255,0.15)' }}>
-              Export Report
-            </button>
-            <button
-              className="font-semibold text-white rounded-xl transition-opacity hover:opacity-90"
-              style={{ padding: '10px 20px', fontSize: 13, background: 'linear-gradient(135deg,#FF5C28,#7B3FE4)' }}>
-              + Add Content
-            </button>
-          </div>
+    <Card
+      title="Pending Reservations"
+      right={<Pill tone="yellow">{items.length}</Pill>}
+    >
+      {loading ? (
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <LoadingSkeleton key={index} width="100%" height={54} borderRadius={14} />
+          ))}
         </div>
+      ) : items.length === 0 ? (
+        <InlineError message="There are no reserved requests waiting for approval right now." />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-separate border-spacing-y-3">
+            <thead>
+              <tr style={{ color: 'var(--text2)', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                <th className="pb-2 text-left font-medium">Parent</th>
+                <th className="pb-2 text-left font-medium">Grade</th>
+                <th className="pb-2 text-left font-medium">Phone</th>
+                <th className="pb-2 text-left font-medium">Reserved</th>
+                <th className="pb-2 text-left font-medium">Status</th>
+                <th className="pb-2 text-left font-medium">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item._id}>
+                  <td className="rounded-l-2xl px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    {item.parentName}
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    {item.grade}
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    {item.phone}
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    {formatDate(item.createdAt)}
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    <Pill tone={statusTone(item.status)}>{statusLabel(item.status)}</Pill>
+                  </td>
+                  <td className="rounded-r-2xl px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    <button
+                      type="button"
+                      onClick={() => onApprove(item._id)}
+                      disabled={approvingId === item._id || item.status !== 'reserved'}
+                      className="rounded-xl px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                      style={{ background: item.status === 'approved' ? 'var(--green)' : 'var(--grad2)' }}
+                    >
+                      {item.status === 'approved' ? '✓ Done' : approvingId === item._id ? 'Approving...' : 'Approve'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
+  );
+}
 
-        {/* ── Stats row (always shown in data tabs) ───────────────────── */}
-        {showStats && <StatsRow stats={stats} loading={loadingStats} />}
+function PaymentsCard({ items, loading }) {
+  return (
+    <Card title="Recent Payments">
+      {loading ? (
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <LoadingSkeleton key={index} width="100%" height={54} borderRadius={14} />
+          ))}
+        </div>
+      ) : items.length === 0 ? (
+        <InlineError message="No successful payments have been recorded yet." />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-separate border-spacing-y-3">
+            <thead>
+              <tr style={{ color: 'var(--text2)', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                <th className="pb-2 text-left font-medium">Student</th>
+                <th className="pb-2 text-left font-medium">Grade</th>
+                <th className="pb-2 text-left font-medium">Amount</th>
+                <th className="pb-2 text-left font-medium">Date</th>
+                <th className="pb-2 text-left font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item._id}>
+                  <td className="rounded-l-2xl px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    {item.studentName}
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    {item.grade}
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    {formatCurrency(item.amount)}
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    {formatDate(item.date)}
+                  </td>
+                  <td className="rounded-r-2xl px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    <Pill tone="green">Paid</Pill>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
+  );
+}
 
-        {/* ── Reservations ─────────────────────────────────────────────── */}
-        {showRes && (
-          <div style={{ marginBottom: 32 }}>
-            <ReservationsSection
-              reservations={reservations}
-              setReservations={setReservations}
-              loading={loadingRes}
-            />
-          </div>
-        )}
+function UsersCard({ items, loading, search, onSearch, togglingUserId, onToggle }) {
+  return (
+    <Card
+      title="User Management"
+      right={
+        <input
+          value={search}
+          onChange={(event) => onSearch(event.target.value)}
+          placeholder="Search by name or email"
+          className="w-full rounded-xl px-4 py-2 text-sm md:w-[280px]"
+          style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid var(--border)',
+            color: 'var(--text)',
+            outline: 'none',
+          }}
+        />
+      }
+    >
+      {loading ? (
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <LoadingSkeleton key={index} width="100%" height={54} borderRadius={14} />
+          ))}
+        </div>
+      ) : items.length === 0 ? (
+        <InlineError message="No users match the current search." />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-separate border-spacing-y-3">
+            <thead>
+              <tr style={{ color: 'var(--text2)', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                <th className="pb-2 text-left font-medium">Name</th>
+                <th className="pb-2 text-left font-medium">Role</th>
+                <th className="pb-2 text-left font-medium">Grade</th>
+                <th className="pb-2 text-left font-medium">Status</th>
+                <th className="pb-2 text-left font-medium">Enrolled</th>
+                <th className="pb-2 text-left font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item._id}>
+                  <td className="rounded-l-2xl px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    <div className="flex flex-col">
+                      <span>{item.name}</span>
+                      <span className="text-[13px]" style={{ color: 'var(--text2)' }}>{item.email}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    <Pill tone={item.role === 'parent' ? 'purple' : 'orange'}>{item.role}</Pill>
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    {item.grade}
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    <Pill tone={item.isBlocked ? 'red' : 'green'}>{item.isBlocked ? 'Blocked' : 'Active'}</Pill>
+                  </td>
+                  <td className="px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    {item.createdAt}
+                  </td>
+                  <td className="rounded-r-2xl px-4 py-4" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+                    <button
+                      type="button"
+                      onClick={() => onToggle(item)}
+                      disabled={togglingUserId === item._id}
+                      className="rounded-xl px-4 py-2 text-sm font-semibold transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                      style={{
+                        border: `1px solid ${item.isBlocked ? 'rgba(76, 217, 100, 0.35)' : 'rgba(255, 77, 79, 0.35)'}`,
+                        color: item.isBlocked ? 'var(--green)' : 'var(--red)',
+                        background: 'transparent',
+                      }}
+                    >
+                      {togglingUserId === item._id ? 'Updating...' : item.isBlocked ? 'Unblock' : 'Block'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
+  );
+}
 
-        {/* ── Payments ─────────────────────────────────────────────────── */}
-        {showPayments && (
-          <div style={{ marginBottom: 32 }}>
-            <PaymentsSection payments={payments} loading={loadingPay} />
-          </div>
-        )}
-
-        {/* ── Users ────────────────────────────────────────────────────── */}
-        {showUsers && (
-          <UsersSection users={users} setUsers={setUsers} loading={loadingUsers} />
-        )}
-
-        {/* ── Placeholders ─────────────────────────────────────────────── */}
-        {activeTab === 'content' && (
-          <PlaceholderSection icon="🎬" title="Content Management" desc="Video and curriculum management — coming soon." />
-        )}
-        {activeTab === 'settings' && (
-          <PlaceholderSection icon="⚙️" title="Platform Settings" desc="Configuration and admin settings — coming soon." />
-        )}
-
-      </main>
-    </div>
+function PlaceholderCard({ title, description }) {
+  return (
+    <Card title={title}>
+      <div className="rounded-2xl p-6" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+        <p className="m-0 text-[15px]" style={{ color: 'var(--text2)' }}>
+          {description}
+        </p>
+      </div>
+    </Card>
   );
 }

@@ -12,6 +12,7 @@ const adminRouter   = require('./routes/admin');
 const parentRouter  = require('./routes/parent');
 const studentRouter = require('./routes/student');
 const authenticate  = require('./middleware/authenticate');
+const authorize     = require('./middleware/authorize');
 
 const app = express();
 
@@ -31,8 +32,8 @@ app.use('/api',            courseRouter);
 app.use('/api',            progressionRouter);
 app.use('/api',            videoRouter);
 app.use('/api',            paymentRouter);
-app.use('/api',            adminRouter);
-app.use('/api',            parentRouter);
+app.use('/api/admin',      authenticate, authorize('admin'), adminRouter);
+app.use('/api/parent',     authenticate, authorize('parent'), parentRouter);
 app.use('/api/student',   authenticate, studentRouter);
 
 app.use(errorHandler);

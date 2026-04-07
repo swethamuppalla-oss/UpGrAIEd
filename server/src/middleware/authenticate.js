@@ -38,6 +38,10 @@ const authenticate = async (req, res, next) => {
       return res.status(401).json({ error: { message: 'User not found or inactive' } });
     }
 
+    if (user.isBlocked) {
+      return res.status(403).json({ error: { message: 'Account suspended' } });
+    }
+
     // Single-session enforcement
     if (user.activeSessionToken !== token) {
       return res.status(401).json({ error: { message: 'Session superseded. Please log in again.' } });

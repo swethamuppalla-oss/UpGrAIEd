@@ -14,6 +14,11 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true,
       },
+      '/api/creator/upload': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        // larger body limit for video uploads
+      },
     },
   },
 });

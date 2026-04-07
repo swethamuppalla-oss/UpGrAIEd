@@ -11,9 +11,13 @@
   --orange:  #FF5C28;
   --purple:  #7B3FE4;
   --pink:    #E4398A;
+  --green:   #4CD964;
+  --yellow:  #FF9500;
+  --red:     #FF4D4F;
   --dark:    #08060F;
   --dark2:   #0F0B1C;
   --surface: rgba(255, 255, 255, 0.04);
+  --surface-strong: rgba(255, 255, 255, 0.06);
   --border:  rgba(255, 255, 255, 0.08);
   --text:    #F0EEF8;
   --text2:   rgba(240, 238, 248, 0.6);
