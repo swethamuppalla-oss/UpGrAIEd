@@ -39,6 +39,7 @@ export const getStudentLevels   = () => api.get('/api/student/levels');
 export const getChildInfo       = () => api.get('/api/parent/child').then((r) => r.data);
 export const getChildActivity   = () => api.get('/api/parent/activity').then((r) => r.data);
 export const getParentBilling   = () => api.get('/api/parent/billing').then((r) => r.data);
+export const getPaymentStatus   = () => api.get('/api/parent/payment-status').then((r) => r.data);
 
 // ── Admin endpoints ───────────────────────────────────────────────────────────
 export const getAdminStats      = () => api.get('/api/admin/stats').then((r) => r.data);
@@ -64,6 +65,23 @@ export const uploadVideo        = (formData, onProgress) =>
       return percent;
     },
   }).then((r) => r.data);
+
+// —— Video player endpoints ————————————————————————————————————————————————————
+export const getCurriculum      = () => api.get('/api/student/curriculum').then((r) => r.data);
+export const getStreamUrl       = (moduleId) => api.get(`/api/videos/${moduleId}/stream-url`).then((r) => r.data);
+export const getModuleProgress  = (moduleId) => api.get(`/api/videos/${moduleId}/my-progress`).then((r) => r.data);
+export const postProgress       = (moduleId, percent) =>
+  api.post(`/api/videos/${moduleId}/progress`, { percent }).then((r) => r.data);
+
+// —— Reservation endpoints ————————————————————————————————————————————————————
+export const createReservation  = (data) =>
+  api.post('/api/reserve', data).then((r) => r.data);
+export const checkPhone         = (phone) =>
+  api.get(`/api/reserve/check/${phone}`).then((r) => r.data);
+export const createPaymentOrder = () =>
+  api.post('/api/payments/create-order').then((r) => r.data);
+export const verifyPayment      = (data) =>
+  api.post('/api/payments/verify', data).then((r) => r.data);
 
 // Legacy — kept for backward compat
 export const getAdminAnalytics  = () => api.get('/api/admin/analytics');

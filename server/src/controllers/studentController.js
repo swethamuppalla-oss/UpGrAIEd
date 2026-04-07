@@ -7,6 +7,23 @@ const VideoProgress = require('../models/VideoProgress');
 const Progress     = require('../models/Progress');
 const LevelUnlock  = require('../models/LevelUnlock');
 
+const getLevelTitle = (n) => {
+  const titles = {
+    1: 'AI Basics',
+    2: 'Prompt Engineering',
+    3: 'Build AI Apps',
+    4: 'AI Automation',
+    5: 'APIs and Tools',
+    6: 'Data with AI',
+    7: 'AI Products',
+    8: 'Advanced AI',
+    9: 'AI Systems',
+    10: 'Real Projects',
+    11: 'Capstone',
+  };
+  return titles[n] || `Level ${n}`;
+};
+
 // ── GET /api/student/progress ─────────────────────────────────────────────────
 const getProgress = async (req, res, next) => {
   try {
@@ -198,4 +215,77 @@ const getLevels = async (req, res, next) => {
   }
 };
 
-module.exports = { getProgress, getStats, getLevels };
+const getCurriculum = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const student = await Student.findOne({ user: userId });
+
+    const enrollment = student
+      ? await Enrollment.findOne({ student: student._id, status: 'ACTIVE' }).lean()
+      : null;
+
+    const videos = await Video.find({
+      status: 'live',
+      isActive: true,
+    })
+      .sort({ level: 1, createdAt: 1 })
+      .lean();
+
+    const progressRecords = await VideoProgress.find({ user: userId }).lean();
+    const progressMap = {};
+    progressRecords.forEach((item) => {
+      progressMap[item.video?.toString()] = item.percentWatched || 0;
+    });
+
+    const unlockedLevels = enrollment?.unlockedLevels?.length ? enrollment.unlockedLevels : [1];
+    const levelMap = {};
+
+    videos.forEach((video) => {
+      if (!levelMap[video.level]) {
+        levelMap[video.level] = {
+          level: video.level,
+          title: getLevelTitle(video.level),
+          status: 'locked',
+          modules: [],
+        };
+      }
+
+      const pct = progressMap[video._id.toString()] || 0;
+      const moduleStatus = !unlockedLevels.includes(video.level)
+        ? 'locked'
+        : pct >= 85
+          ? 'completed'
+          : pct > 0
+            ? 'active'
+            : 'available';
+
+      levelMap[video.level].modules.push({
+        _id: video._id,
+        title: video.title,
+        duration: video.duration || Math.round((video.durationSeconds || 0) / 60) || 0,
+        isMustDo: Boolean(video.isMustDo),
+        taskDescription: video.taskDescription || '',
+        status: moduleStatus,
+        percentWatched: pct,
+      });
+    });
+
+    Object.values(levelMap).forEach((level) => {
+      const mustDo = level.modules.find((module) => module.isMustDo);
+      if (!unlockedLevels.includes(level.level)) {
+        level.status = 'locked';
+      } else if (mustDo && mustDo.status === 'completed') {
+        level.status = 'completed';
+      } else {
+        level.status = 'active';
+      }
+    });
+
+    const curriculum = Object.values(levelMap).sort((a, b) => a.level - b.level);
+    res.json(curriculum);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { getProgress, getStats, getLevels, getCurriculum };

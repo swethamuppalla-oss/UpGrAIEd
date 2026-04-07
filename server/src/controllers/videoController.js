@@ -1,11 +1,16 @@
 const fs = require('fs');
+const Enrollment = require('../models/Enrollment');
+const Student = require('../models/Student');
 const Video = require('../models/Video');
+const VideoProgress = require('../models/VideoProgress');
 const bunny = require('../services/bunnyService');
 
-/**
- * POST /admin/videos
- * Admin uploads a video file. Multer puts the file at req.file.
- */
+const getStudentEnrollment = async (userId) => {
+  const student = await Student.findOne({ user: userId });
+  if (!student) return null;
+  return Enrollment.findOne({ student: student._id, status: 'ACTIVE' });
+};
+
 const uploadVideo = async (req, res, next) => {
   try {
     const { moduleId, title, description, order } = req.body;
@@ -17,16 +22,13 @@ const uploadVideo = async (req, res, next) => {
       return res.status(400).json({ error: { message: 'Video file is required' } });
     }
 
-    // Upload to Bunny.net
     const bunnyData = await bunny.uploadVideo(title, req.file.path);
     const bunnyVideoId = bunnyData.guid;
 
-    // Build URLs
     const streamUrl = bunny.getStreamUrl(bunnyVideoId);
     const embedUrl = bunny.getEmbedUrl(bunnyVideoId);
     const thumbnailUrl = bunny.getThumbnailUrl(bunnyVideoId);
 
-    // Save to DB
     const video = await Video.create({
       module: moduleId,
       title,
@@ -42,17 +44,12 @@ const uploadVideo = async (req, res, next) => {
   } catch (err) {
     next(err);
   } finally {
-    // Clean up temp file
     if (req.file?.path) {
       fs.unlink(req.file.path, () => {});
     }
   }
 };
 
-/**
- * GET /admin/videos
- * List all videos (admin).
- */
 const listVideos = async (req, res, next) => {
   try {
     const { moduleId } = req.query;
@@ -64,10 +61,6 @@ const listVideos = async (req, res, next) => {
   }
 };
 
-/**
- * DELETE /admin/videos/:id
- * Delete a video from DB and Bunny.net.
- */
 const deleteVideo = async (req, res, next) => {
   try {
     const video = await Video.findById(req.params.id);
@@ -86,28 +79,110 @@ const deleteVideo = async (req, res, next) => {
   }
 };
 
-/**
- * GET /videos/:id/stream
- * Return stream + embed URLs for an enrolled student.
- */
-const getVideoUrls = async (req, res, next) => {
+const getStreamUrl = async (req, res, next) => {
   try {
-    const video = await Video.findOne({ _id: req.params.id, isActive: true });
+    const video = await Video.findById(req.params.id);
     if (!video) {
       return res.status(404).json({ error: { message: 'Video not found' } });
     }
 
+    const embedUrl = video.embedUrl || (
+      video.bunnyVideoId
+        ? `https://iframe.mediadelivery.net/embed/${process.env.BUNNY_LIBRARY_ID}/${video.bunnyVideoId}`
+        : null
+    );
+
     res.json({
+      embedUrl,
+      streamUrl: embedUrl,
       videoId: video._id,
       title: video.title,
-      streamUrl: video.url,
-      embedUrl: video.embedUrl,
-      thumbnailUrl: video.thumbnailUrl,
-      durationSeconds: video.durationSeconds,
     });
   } catch (err) {
     next(err);
   }
 };
 
-module.exports = { uploadVideo, listVideos, deleteVideo, getVideoUrls };
+const getVideoUrls = getStreamUrl;
+
+const getMyProgress = async (req, res, next) => {
+  try {
+    const progress = await VideoProgress.findOne({
+      user: req.user.id,
+      video: req.params.id,
+    });
+
+    res.json({ percentWatched: progress?.percentWatched || 0 });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const postProgress = async (req, res, next) => {
+  try {
+    const percent = Number(req.body.percent || 0);
+    const userId = req.user.id;
+    const videoId = req.params.id;
+    const safePercent = Math.max(0, Math.min(100, percent));
+
+    let existing = await VideoProgress.findOne({ user: userId, video: videoId });
+    let nextLevelUnlocked = false;
+
+    if (!existing) {
+      existing = await VideoProgress.create({
+        user: userId,
+        video: videoId,
+        percentWatched: safePercent,
+        completed: safePercent >= 85,
+        completedAt: safePercent >= 85 ? new Date() : null,
+      });
+    } else if (safePercent > existing.percentWatched) {
+      existing.percentWatched = safePercent;
+
+      if (safePercent >= 85 && !existing.completed) {
+        existing.completed = true;
+        existing.completedAt = new Date();
+
+        const video = await Video.findById(videoId).lean();
+        if (video?.isMustDo) {
+          const nextLevel = Number(video.level || 0) + 1;
+          if (nextLevel > 1) {
+            const enrollment = await getStudentEnrollment(userId);
+            if (enrollment) {
+              if (!enrollment.unlockedLevels?.includes(nextLevel)) {
+                enrollment.unlockedLevels = [...new Set([...(enrollment.unlockedLevels || [1]), nextLevel])];
+                await enrollment.save();
+                nextLevelUnlocked = true;
+              }
+            }
+          }
+        }
+      }
+
+      await existing.save();
+    } else if (safePercent >= 85 && !existing.completed) {
+      existing.completed = true;
+      existing.completedAt = new Date();
+      await existing.save();
+    }
+
+    res.json({
+      success: true,
+      percentWatched: Math.max(safePercent, existing.percentWatched || 0),
+      isComplete: safePercent >= 85 || existing.completed,
+      nextLevelUnlocked,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = {
+  uploadVideo,
+  listVideos,
+  deleteVideo,
+  getVideoUrls,
+  getStreamUrl,
+  getMyProgress,
+  postProgress,
+};

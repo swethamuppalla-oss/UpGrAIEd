@@ -1,8 +1,10 @@
 const Parent = require('../models/Parent');
+const Reservation = require('../models/Reservation');
 const Student = require('../models/Student');
 const Transaction = require('../models/Transaction');
 const Video = require('../models/Video');
 const VideoProgress = require('../models/VideoProgress');
+const { calculatePricing } = require('../config/razorpay');
 
 const getLinkedStudent = async (userId) => {
   const parent = await Parent.findOne({ user: userId });
@@ -145,8 +147,48 @@ const getParentBilling = async (req, res, next) => {
   }
 };
 
+const getPaymentStatus = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const parent = await Parent.findOne({ user: userId });
+    if (!parent) {
+      return res.json({ status: 'none' });
+    }
+
+    const reservation = await Reservation.findOne({ email: parent.email }).sort({ createdAt: -1 });
+    if (!reservation) {
+      return res.json({ status: 'none' });
+    }
+
+    const transaction = await Transaction.findOne({
+      parentId: userId,
+      status: { $in: ['SUCCESS', 'paid'] },
+    });
+
+    if (transaction) {
+      return res.json({ status: 'paid' });
+    }
+
+    const { base, gst, total } = calculatePricing(reservation.grade);
+    res.json({
+      status: reservation.status,
+      reservationId: reservation._id,
+      parentName: reservation.parentName,
+      childName: reservation.childName,
+      grade: reservation.grade,
+      email: reservation.email,
+      phone: reservation.phone,
+      programme: ['Grade 11', 'Grade 12'].includes(reservation.grade) ? 'Senior' : 'Junior',
+      pricing: { base, gst, total },
+    });
+  } catch (err) {
+    res.status(500).json({ error: { message: err.message } });
+  }
+};
+
 module.exports = {
   getChildInfo,
   getChildActivity,
   getParentBilling,
+  getPaymentStatus,
 };

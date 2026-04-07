@@ -29,6 +29,10 @@ const enrollmentSchema = new mongoose.Schema(
     // Populated on payment success (Step 4)
     paymentEnabledAt: { type: Date, default: null },
     activatedAt: { type: Date, default: null },
+    unlockedLevels: {
+      type: [Number],
+      default: [1],
+    },
     notes: { type: String, trim: true },
   },
   { timestamps: true }
