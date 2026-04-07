@@ -34,3 +34,12 @@ export default api;
 export const getStudentProgress = () => api.get('/api/student/progress');
 export const getStudentStats    = () => api.get('/api/student/stats');
 export const getStudentLevels   = () => api.get('/api/student/levels');
+
+// ── Parent endpoints ──────────────────────────────────────────────────────────
+export const getParentDashboard = () => api.get('/api/parent/dashboard');
+
+// ── Admin endpoints ───────────────────────────────────────────────────────────
+export const getAdminAnalytics    = () => api.get('/api/admin/analytics');
+export const getAdminUsers        = (params) => api.get('/api/admin/users', { params });
+export const getAdminReservations = (params) => api.get('/api/admin/reservations', { params });
+export const approveReservation   = (enrollmentId) => api.post(`/api/admin/approve/${enrollmentId}`);

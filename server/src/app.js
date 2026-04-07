@@ -9,6 +9,7 @@ const progressionRouter = require('./routes/progression');
 const videoRouter = require('./routes/video');
 const paymentRouter = require('./routes/payment');
 const adminRouter   = require('./routes/admin');
+const parentRouter  = require('./routes/parent');
 const studentRouter = require('./routes/student');
 const authenticate  = require('./middleware/authenticate');
 
@@ -31,6 +32,7 @@ app.use('/api',            progressionRouter);
 app.use('/api',            videoRouter);
 app.use('/api',            paymentRouter);
 app.use('/api',            adminRouter);
+app.use('/api',            parentRouter);
 app.use('/api/student',   authenticate, studentRouter);
 
 app.use(errorHandler);
