@@ -1,41 +1,24 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
-const ROLE_ROUTES = {
-  student: '/dashboard/student',
-  parent:  '/dashboard/parent',
-  admin:   '/dashboard/admin',
-  creator: '/dashboard/creator',
-}
+export default function ProtectedRoute({ allowedRoles }) {
+  const { user, token, isLoading } = useAuth()
 
-export default function ProtectedRoute({ children, allowedRoles }) {
-  const { isAuthenticated, user, loading } = useAuth()
+  if (isLoading) return (
+    <div style={{
+      display:'flex', alignItems:'center',
+      justifyContent:'center', height:'100vh',
+      background:'#08060F', color:'#F0EEF8',
+      fontFamily:'Satoshi,sans-serif', fontSize:'14px'
+    }}>
+      Loading...
+    </div>
+  )
 
-  if (loading) {
-    return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        background: 'var(--bg-primary)',
-        flexDirection: 'column',
-        gap: 16,
-      }}>
-        <div className="spinner" style={{ width: 32, height: 32, borderWidth: 3 }} />
-        <div style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Loading…</div>
-      </div>
-    )
-  }
+  if (!token || !user) return <Navigate to="/login" replace />
 
-  if (!isAuthenticated) {
+  if (allowedRoles && !allowedRoles.includes(user.role))
     return <Navigate to="/login" replace />
-  }
 
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    // Redirect to the user's own dashboard
-    return <Navigate to={ROLE_ROUTES[user?.role] || '/login'} replace />
-  }
-
-  return children
+  return <Outlet />
 }

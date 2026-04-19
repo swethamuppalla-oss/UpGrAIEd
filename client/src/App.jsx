@@ -3,71 +3,67 @@ import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './components/ui/Toast'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import Login from './pages/Login'
+import ReservePage from './pages/ReservePage'
 import StudentDashboard from './pages/StudentDashboard'
+import VideoPlayer from './pages/VideoPlayer'
 import ParentDashboard from './pages/ParentDashboard'
+import PaymentPage from './pages/PaymentPage'
 import AdminDashboard from './pages/AdminDashboard'
 import CreatorDashboard from './pages/CreatorDashboard'
-import VideoPlayer from './pages/VideoPlayer'
-import ReservePage from './pages/ReservePage'
-import PaymentPage from './pages/PaymentPage'
 
 export default function App() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login"   element={<Login />} />
-            <Route path="/reserve" element={<ReservePage />} />
+      <BrowserRouter>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/reserve" element={<ReservePage />} />
 
-            {/* Student */}
-            <Route path="/dashboard/student" element={
-              <ProtectedRoute allowedRoles={['student']}>
-                <StudentDashboard />
-              </ProtectedRoute>
-            } />
+          {/* Student routes */}
+          <Route element={
+            <ProtectedRoute allowedRoles={['student']} />
+          }>
+            <Route path="/dashboard/student"
+              element={<StudentDashboard />} />
+            <Route path="/player/:moduleId?"
+              element={<VideoPlayer />} />
+          </Route>
 
-            {/* Parent */}
-            <Route path="/dashboard/parent" element={
-              <ProtectedRoute allowedRoles={['parent']}>
-                <ParentDashboard />
-              </ProtectedRoute>
-            } />
+          {/* Parent routes */}
+          <Route element={
+            <ProtectedRoute allowedRoles={['parent']} />
+          }>
+            <Route path="/dashboard/parent"
+              element={<ParentDashboard />} />
+            <Route path="/payment"
+              element={<PaymentPage />} />
+          </Route>
 
-            {/* Admin */}
-            <Route path="/dashboard/admin" element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } />
+          {/* Admin routes */}
+          <Route element={
+            <ProtectedRoute allowedRoles={['admin']} />
+          }>
+            <Route path="/dashboard/admin"
+              element={<AdminDashboard />} />
+          </Route>
 
-            {/* Creator */}
-            <Route path="/dashboard/creator" element={
-              <ProtectedRoute allowedRoles={['creator']}>
-                <CreatorDashboard />
-              </ProtectedRoute>
-            } />
+          {/* Creator routes */}
+          <Route element={
+            <ProtectedRoute allowedRoles={['creator']} />
+          }>
+            <Route path="/dashboard/creator"
+              element={<CreatorDashboard />} />
+          </Route>
 
-            {/* Video player (student only) */}
-            <Route path="/player/:moduleId?" element={
-              <ProtectedRoute allowedRoles={['student']}>
-                <VideoPlayer />
-              </ProtectedRoute>
-            } />
-
-            {/* Payment (parent only) */}
-            <Route path="/payment" element={
-              <ProtectedRoute allowedRoles={['parent']}>
-                <PaymentPage />
-              </ProtectedRoute>
-            } />
-
-            {/* Catch-all → login */}
-            <Route path="/"  element={<Navigate to="/login" replace />} />
-            <Route path="*"  element={<Navigate to="/login" replace />} />
-          </Routes>
-        </BrowserRouter>
+          {/* Fallbacks */}
+          <Route path="/"
+            element={<Navigate to="/login" replace />} />
+          <Route path="*"
+            element={<Navigate to="/login" replace />} />
+        </Routes>
+      </BrowserRouter>
       </ToastProvider>
     </AuthProvider>
   )

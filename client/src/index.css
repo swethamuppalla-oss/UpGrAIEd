@@ -579,6 +579,11 @@ tbody tr:hover {
   }
 }
 
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -728,3 +733,20 @@ tbody tr:hover {
   font-size: 15px;
   color: var(--text-secondary);
 }
+
+/* ============================================================
+   LOGIN PAGE — RESPONSIVE OVERRIDES
+   ============================================================ */
+@media (max-width: 900px) {
+  .login-branding-panel {
+    display: none !important;
+  }
+}
+
+/* Focus ring for login inputs */
+input:focus {
+  outline: none;
+  border-color: var(--accent-purple) !important;
+  box-shadow: 0 0 0 3px rgba(123, 63, 228, 0.18) !important;
+}
+

@@ -10,21 +10,19 @@ export function ToastProvider({ children }) {
     setToasts(prev => [...prev, { id, message, type }])
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id))
-    }, 3000)
+    }, 3500)
   }, [])
 
   const removeToast = useCallback((id) => {
     setToasts(prev => prev.filter(t => t.id !== id))
   }, [])
 
-  const typeColors = {
-    success: { bg: 'rgba(34,197,94,0.15)',   border: 'rgba(34,197,94,0.4)',   text: '#22C55E' },
-    error:   { bg: 'rgba(239,68,68,0.15)',   border: 'rgba(239,68,68,0.4)',   text: '#EF4444' },
-    info:    { bg: 'rgba(123,63,228,0.15)',   border: 'rgba(123,63,228,0.4)',  text: '#9B6FF4' },
-    warning: { bg: 'rgba(255,122,47,0.15)',  border: 'rgba(255,122,47,0.4)',  text: '#FF7A2F' },
+  const typeStyles = {
+    success: { border: '1px solid rgba(34,197,94,0.4)',   color: '#22C55E',  icon: '✓' },
+    error:   { border: '1px solid rgba(239,68,68,0.4)',   color: '#EF4444',  icon: '✗' },
+    info:    { border: '1px solid rgba(123,63,228,0.4)',  color: '#9B6FF4',  icon: 'ℹ' },
+    warning: { border: '1px solid rgba(255,122,47,0.4)', color: '#FF7A2F',  icon: '⚠' },
   }
-
-  const typeIcons = { success: '✓', error: '✗', info: 'ℹ', warning: '⚠' }
 
   return (
     <ToastContext.Provider value={{ showToast, removeToast }}>
@@ -44,36 +42,31 @@ export function ToastProvider({ children }) {
         maxWidth: 'calc(100vw - 32px)',
       }}>
         {toasts.map(toast => {
-          const colors = typeColors[toast.type] || typeColors.info
+          const s = typeStyles[toast.type] || typeStyles.info
           return (
             <div
               key={toast.id}
+              onClick={() => removeToast(toast.id)}
               style={{
-                background: colors.bg,
-                border: `1px solid ${colors.border}`,
+                background: '#171228',
                 borderRadius: 12,
                 padding: '12px 20px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 10,
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
-                animation: 'slideUp 0.3s ease',
                 pointerEvents: 'auto',
                 cursor: 'pointer',
                 minWidth: 240,
                 maxWidth: 400,
-                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                animation: 'slideUp 0.3s ease',
+                border: s.border,
+                color: s.color,
               }}
-              onClick={() => removeToast(toast.id)}
             >
-              <span style={{ color: colors.text, fontWeight: 700, fontSize: 16, lineHeight: 1 }}>
-                {typeIcons[toast.type]}
-              </span>
-              <span style={{ color: 'var(--text-primary)', fontSize: 14, flex: 1 }}>
-                {toast.message}
-              </span>
-              <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>✕</span>
+              <span style={{ fontWeight: 700, fontSize: 15, lineHeight: 1 }}>{s.icon}</span>
+              <span style={{ color: '#F0F0FF', fontSize: 14, flex: 1 }}>{toast.message}</span>
+              <span style={{ color: '#555577', fontSize: 12 }}>✕</span>
             </div>
           )
         })}
