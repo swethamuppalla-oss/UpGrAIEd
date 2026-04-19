@@ -55,6 +55,27 @@ const signToken = (user) =>
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
 
+// --- Companion: track login time + streak ---
+
+const updateLoginMeta = (user) => {
+  const now = new Date();
+  const last = user.lastLoginAt ? new Date(user.lastLoginAt) : null;
+  if (last) {
+    const msSince = now - last;
+    const daysSince = msSince / (1000 * 60 * 60 * 24);
+    if (daysSince < 1) {
+      // Same day — keep streak as-is
+    } else if (daysSince < 2) {
+      user.loginStreak = (user.loginStreak || 0) + 1;
+    } else {
+      user.loginStreak = 1; // Reset after gap
+    }
+  } else {
+    user.loginStreak = 1;
+  }
+  user.lastLoginAt = now;
+};
+
 // --- Main auth flows ---
 
 export const sendOtpForPhone = async (identifier) => {
@@ -91,6 +112,7 @@ export const verifyOtpAndLogin = async (identifier, candidateCode) => {
 
   // Enforce single active session — overwrite previous token reference
   user.activeSessionToken = token;
+  updateLoginMeta(user);
   await user.save();
 
   return { token, user: { id: user._id, name: user.name, role: user.role } };
@@ -109,6 +131,7 @@ export const adminLogin = async (email, password) => {
 
   const token = signToken(user);
   user.activeSessionToken = token;
+  updateLoginMeta(user);
   await user.save();
 
   return { token, user: { id: user._id, name: user.name, role: user.role } };
@@ -136,6 +159,7 @@ export const demoLogin = async (role) => {
 
   const token = signToken(user);
   user.activeSessionToken = token;
+  updateLoginMeta(user);
   await user.save();
 
   return { token, user: { id: user._id, name: user.name, role: user.role } };

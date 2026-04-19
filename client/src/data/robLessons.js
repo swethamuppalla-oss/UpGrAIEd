@@ -89,3 +89,5 @@ export const robLessons = [
     concept: 'A model is the learned structure inside an AI system that uses past training to make predictions on new inputs.',
   },
 ]
+
+export const ROB_LESSONS = robLessons

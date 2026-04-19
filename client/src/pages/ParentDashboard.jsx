@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/ui/Toast'
 import Sidebar from '../components/layout/Sidebar'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
+import RobCharacter from '../components/ROB/RobCharacter'
 import { getChildInfo, getChildActivity, getParentBilling } from '../services/api'
 
 const NAV_ITEMS = [
@@ -104,6 +105,32 @@ function OverviewTab({ child, activity, loading }) {
   
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {/* ROB Parent Update Card */}
+      <div className="glass-card" style={{
+        background: 'linear-gradient(135deg, rgba(0,212,255,0.08) 0%, rgba(123,63,228,0.08) 100%)',
+        border: '1px solid rgba(0,212,255,0.2)',
+        padding: '30px 40px',
+        display: 'flex', gap: 32, alignItems: 'center'
+      }}>
+        <div style={{ padding: 10, background: 'rgba(0,0,0,0.2)', borderRadius: '50%' }}>
+          <RobCharacter size="medium" emotion="happy" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <span style={{ fontSize: 24 }}>🤖</span>
+            <span style={{ fontWeight: 700, color: '#00D4FF', textTransform: 'uppercase', letterSpacing: 1, fontSize: 13 }}>ROB Weekly Update</span>
+          </div>
+          <p style={{ color: 'var(--text-primary)', fontSize: 18, lineHeight: 1.5, marginBottom: 24, maxWidth: 600 }}>
+            <strong style={{ color: 'white' }}>{child.name}</strong> learned 4 days this week and improved consistency! They earned 150 XP and unlocked the "Prompt Explorer" badge.
+          </p>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button className="btn-primary" style={{ background: '#7B3FE4' }}>👋 Encourage Child</button>
+            <button className="btn-ghost" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>View Full Progress</button>
+            <button className="btn-ghost" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>Book Mentor Session</button>
+          </div>
+        </div>
+      </div>
+
       {/* Child Card */}
       <div className="glass-card" style={{
         padding: '24px 28px',

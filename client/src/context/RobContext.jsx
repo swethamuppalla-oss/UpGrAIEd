@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { getROBProgress, saveROBXP } from '../services/api'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { getROBProgress, saveROBXP, getRobCompanion, saveRobCompanionState } from '../services/api'
 import { ROB_LEVEL_TITLES } from '../data/robLessons'
 
 const RobContext = createContext(null)
@@ -40,6 +40,11 @@ export function RobProvider({ children }) {
   const [correctAnswers, setCorrectAnswers] = useState(saved.correctAnswers || 0)
   const [xpToday, setXpToday] = useState(saved.xpToday || 0)
 
+  // Companion / naming state
+  const [robName, setRobNameState] = useState(saved.robName || '')
+  const [robColor, setRobColorState] = useState(saved.robColor || 'cyan')
+  const [companionData, setCompanionData] = useState(null)
+
   const persistState = (nextState) => {
     if (typeof window === 'undefined') return
     localStorage.setItem('rob_state', JSON.stringify(nextState))
@@ -61,6 +66,8 @@ export function RobProvider({ children }) {
         setQuestionsAnswered(remote.questionsAnswered || 0)
         setCorrectAnswers(remote.correctAnswers || 0)
         setXpToday(remote.xpToday || 0)
+        if (remote.robName) setRobNameState(remote.robName)
+        if (remote.robColor) setRobColorState(remote.robColor)
         persistState({
           xp: remote.xp || 0,
           level: remote.level || getLevelFromXp(remote.xp || 0),
@@ -69,13 +76,18 @@ export function RobProvider({ children }) {
           questionsAnswered: remote.questionsAnswered || 0,
           correctAnswers: remote.correctAnswers || 0,
           xpToday: remote.xpToday || 0,
+          robName: remote.robName || '',
+          robColor: remote.robColor || 'cyan',
         })
       })
       .catch(() => {})
 
-    return () => {
-      cancelled = true
-    }
+    // Fetch companion context
+    getRobCompanion()
+      .then((data) => { if (!cancelled) setCompanionData(data) })
+      .catch(() => {})
+
+    return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
@@ -87,6 +99,8 @@ export function RobProvider({ children }) {
       questionsAnswered,
       correctAnswers,
       xpToday,
+      robName,
+      robColor,
     }
 
     persistState(nextState)
@@ -105,7 +119,7 @@ export function RobProvider({ children }) {
     }, 500)
 
     return () => window.clearTimeout(syncTimerRef.current)
-  }, [badges, correctAnswers, lessonsCompleted, questionsAnswered, robLevel, robXP, xpToday])
+  }, [badges, correctAnswers, lessonsCompleted, questionsAnswered, robColor, robLevel, robName, robXP, xpToday])
 
   const addXP = (amount) => {
     setRobXP(prev => {
@@ -136,6 +150,13 @@ export function RobProvider({ children }) {
     }
   }
 
+  const setRobName = useCallback((name, color) => {
+    const trimmed = String(name).trim().slice(0, 20)
+    setRobNameState(trimmed)
+    if (color) setRobColorState(color)
+    saveRobCompanionState({ robName: trimmed, robColor: color || 'cyan' }).catch(() => {})
+  }, [])
+
   const currentLevelXP = XP_LEVELS[robLevel - 1] || 0
   const nextLevelXP = XP_LEVELS[robLevel] || XP_LEVELS[XP_LEVELS.length - 1]
   const levelProgress = nextLevelXP === currentLevelXP
@@ -149,6 +170,9 @@ export function RobProvider({ children }) {
   const value = useMemo(() => ({
     robXP,
     robLevel,
+    robName,
+    robColor,
+    companionData,
     badges,
     lessonsCompleted,
     questionsAnswered,
@@ -162,17 +186,22 @@ export function RobProvider({ children }) {
     addBadge,
     completeLesson,
     recordAnswer,
+    setRobName,
   }), [
     accuracy,
     badges,
+    companionData,
     correctAnswers,
     lessonsCompleted,
     levelProgress,
     levelTitle,
     nextLevelXP,
     questionsAnswered,
+    robColor,
     robLevel,
+    robName,
     robXP,
+    setRobName,
     xpToday,
   ])
 

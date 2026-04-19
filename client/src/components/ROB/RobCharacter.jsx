@@ -7,6 +7,14 @@ const sizeMap = {
   hero: 260,
 }
 
+const ROB_COLORS = {
+  cyan: { primary: '#00D4FF', secondary: '#0099BB', dark: '#006688', glow: 'rgba(0,212,255,0.45)' },
+  purple: { primary: '#A855F7', secondary: '#7E22CE', dark: '#4C1D95', glow: 'rgba(168,85,247,0.45)' },
+  orange: { primary: '#FF7A2F', secondary: '#C2410C', dark: '#7C2D12', glow: 'rgba(255,122,47,0.45)' },
+  green: { primary: '#22C55E', secondary: '#15803D', dark: '#14532D', glow: 'rgba(34,197,94,0.45)' },
+  pink: { primary: '#EC4899', secondary: '#BE185D', dark: '#831843', glow: 'rgba(236,73,153,0.45)' },
+}
+
 const emotionMap = {
   idle: {
     mouth: 'happy',
@@ -82,11 +90,55 @@ const emotionMap = {
     mouth: 'happy',
     wrapperAnimation: '',
     headTransform: '',
-    antenna: '#00D4FF',
     leftArmAnimation: '',
     rightArmAnimation: '',
     leftArmTransform: '',
     rightArmTransform: 'rotate(-40 154 142)',
+  },
+  sleepy: {
+    mouth: 'sad',
+    wrapperAnimation: 'robGentleBounce 4s ease-in-out infinite',
+    headTransform: 'rotate(5 100 70)',
+    leftArmAnimation: 'robLeftDroop 0.4s ease forwards',
+    rightArmAnimation: 'robRightDroop 0.4s ease forwards',
+    leftArmTransform: '',
+    rightArmTransform: '',
+  },
+  celebrating: {
+    mouth: 'excited',
+    wrapperAnimation: 'robFastBounce 0.6s ease-in-out infinite',
+    headTransform: '',
+    leftArmAnimation: 'robLeftCelebrate 0.8s ease-in-out infinite',
+    rightArmAnimation: 'robRightCelebrate 0.8s ease-in-out infinite',
+    leftArmTransform: '',
+    rightArmTransform: '',
+  },
+  encouraging: {
+    mouth: 'happy',
+    wrapperAnimation: 'robGentleBounce 2s ease-in-out infinite',
+    headTransform: '',
+    leftArmAnimation: 'robLeftWave 1.5s ease-in-out infinite',
+    rightArmAnimation: '',
+    leftArmTransform: '',
+    rightArmTransform: '',
+  },
+  confused: {
+    mouth: 'surprised',
+    wrapperAnimation: '',
+    headTransform: 'rotate(-10 100 70)',
+    leftArmAnimation: '',
+    rightArmAnimation: 'robRightScratch 1.5s ease-in-out infinite',
+    leftArmTransform: '',
+    rightArmTransform: '',
+  },
+  curious: {
+    mouth: 'thinking',
+    wrapperAnimation: '',
+    headTransform: 'rotate(10 100 70)',
+    leftArmAnimation: '',
+    rightArmAnimation: '',
+    leftArmTransform: '',
+    rightArmTransform: '',
   },
 }
 
@@ -165,6 +217,9 @@ export default function RobCharacter({
   size = 'medium',
   style = {},
   chestProgress = 48,
+  robColor = 'cyan',
+  chestName = '',
+  level = 1,
 }) {
   const svgRef = useRef(null)
   const timerRef = useRef(null)
@@ -174,7 +229,16 @@ export default function RobCharacter({
   const config = emotionMap[emotion] || emotionMap.idle
   const width = sizeMap[size] || sizeMap.medium
   const progressWidth = Math.max(0, Math.min(100, chestProgress))
-  const eyeRadius = emotion === 'learning' ? 16 : 14
+  const eyeRadius = emotion === 'learning' || emotion === 'curious' ? 16 : emotion === 'sleepy' ? 14 : 14
+  const isSleepy = emotion === 'sleepy'
+  const colors = ROB_COLORS[robColor] || ROB_COLORS.cyan
+
+  // Evolution upgrades
+  const hasAntennaUpgrade = level >= 3
+  const hasGlowUpgrade = level >= 5
+  const hasBootsUpgrade = level >= 7
+  const hasGoldChest = level >= 10
+  const isLegend = level >= 15
 
   useEffect(() => {
     const blink = () => {
@@ -266,6 +330,18 @@ export default function RobCharacter({
           25% { transform: rotate(25deg); }
           75% { transform: rotate(-15deg); }
         }
+        @keyframes robLeftCelebrate {
+          0%, 100% { transform: rotate(160deg); }
+          50% { transform: rotate(180deg); }
+        }
+        @keyframes robRightCelebrate {
+          0%, 100% { transform: rotate(-160deg); }
+          50% { transform: rotate(-180deg); }
+        }
+        @keyframes robRightScratch {
+          0%, 100% { transform: rotate(-130deg); }
+          50% { transform: rotate(-150deg); }
+        }
         @keyframes robLeftDroop {
           to { transform: rotate(20deg) translateY(8px); }
         }
@@ -279,7 +355,7 @@ export default function RobCharacter({
           }
           50% {
             transform: scale(1.35);
-            filter: drop-shadow(0 0 8px rgba(255,255,255,0.55));
+            filter: drop-shadow(0 0 8px ${colors.primary});
           }
         }
         @keyframes robSpeechIn {
@@ -293,16 +369,20 @@ export default function RobCharacter({
           }
         }
         @keyframes robChestGlow {
-          0%, 100% { box-shadow: 0 0 0 rgba(0, 212, 255, 0.15); }
-          50% { box-shadow: 0 0 18px rgba(0, 212, 255, 0.45); }
+          0%, 100% { box-shadow: 0 0 0 rgba(255, 255, 255, 0.15); }
+          50% { box-shadow: 0 0 18px ${colors.glow}; }
+        }
+        @keyframes thrusterFlicker {
+          0%, 100% { opacity: 0.8; transform: scaleY(1); }
+          50% { opacity: 1; transform: scaleY(1.2); }
         }
       `}</style>
 
       <svg
         ref={svgRef}
-        viewBox="0 0 200 260"
+        viewBox="0 0 200 280"
         width={width}
-        height={width * 1.3}
+        height={width * 1.4}
         style={{
           overflow: 'visible',
           animation: config.wrapperAnimation,
@@ -310,18 +390,30 @@ export default function RobCharacter({
       >
         <defs>
           <linearGradient id="headGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#00E5FF" />
-            <stop offset="100%" stopColor="#00A8C8" />
+            <stop offset="0%" stopColor={isLegend ? '#FFD700' : colors.primary} stopOpacity={isLegend ? "1" : "0.95"} />
+            <stop offset="100%" stopColor={isLegend ? '#B8860B' : colors.primary} stopOpacity={isLegend ? "1" : "0.5"} />
           </linearGradient>
           <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#0099BB" />
-            <stop offset="100%" stopColor="#006688" />
+            <stop offset="0%" stopColor={colors.secondary} />
+            <stop offset="100%" stopColor={colors.dark} />
           </linearGradient>
           <linearGradient id="chestGrad" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="#FF5C28" />
             <stop offset="100%" stopColor="#7B3FE4" />
           </linearGradient>
+          {hasGoldChest && (
+            <linearGradient id="goldChest" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#FFD700" />
+              <stop offset="50%" stopColor="#FFF8DC" />
+              <stop offset="100%" stopColor="#DAA520" />
+            </linearGradient>
+          )}
         </defs>
+
+        {/* Level 5 Glow Upgrade behind ROB */}
+        {hasGlowUpgrade && (
+          <circle cx="100" cy="120" r="110" fill={colors.primary} opacity="0.15" filter="blur(20px)" />
+        )}
 
         {speech && (
           <foreignObject x="-10" y="-90" width="220" height="82" style={{ overflow: 'visible' }}>
@@ -373,125 +465,111 @@ export default function RobCharacter({
           </text>
         ))}
 
-        <line
-          x1="100"
-          y1="20"
-          x2="100"
-          y2="4"
-          stroke="#00AABB"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <circle
-          cx="100"
-          cy="0"
-          r="5"
-          fill={config.antenna}
-          style={{ animation: 'robAntennaPulse 1.6s ease-in-out infinite' }}
-        />
+        {/* Antenna System */}
+        {hasAntennaUpgrade ? (
+          <>
+            <line x1="100" y1="20" x2="100" y2="-5" stroke={colors.secondary} strokeWidth="4" strokeLinecap="round" />
+            <line x1="100" y1="-5" x2="85" y2="-15" stroke={colors.secondary} strokeWidth="3" strokeLinecap="round" />
+            <line x1="100" y1="-5" x2="115" y2="-15" stroke={colors.secondary} strokeWidth="3" strokeLinecap="round" />
+            <circle cx="85" cy="-15" r="5" fill={colors.primary} style={{ animation: 'robAntennaPulse 1.6s ease-in-out infinite' }} />
+            <circle cx="115" cy="-15" r="5" fill={colors.primary} style={{ animation: 'robAntennaPulse 1.6s ease-in-out infinite 0.8s' }} />
+          </>
+        ) : (
+          <>
+            <line x1="100" y1="20" x2="100" y2="4" stroke={colors.secondary} strokeWidth="3" strokeLinecap="round" />
+            <circle cx="100" cy="0" r="5" fill={colors.primary} style={{ animation: 'robAntennaPulse 1.6s ease-in-out infinite' }} />
+          </>
+        )}
 
         <g transform={config.headTransform}>
-          <rect
-            x="40"
-            y="20"
-            width="120"
-            height="100"
-            rx="24"
-            fill="url(#headGrad)"
-          />
+          <rect x="40" y="20" width="120" height="100" rx="24" fill="url(#headGrad)" />
 
-          <circle cx="75" cy="65" r={eyeRadius} fill="white" />
-          <circle cx="125" cy="65" r={eyeRadius} fill="white" />
+          {/* Eyes */}
+          {isSleepy ? (
+            <>
+              <path d="M 61 65 Q 75 75 89 65" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" />
+              <path d="M 111 65 Q 125 75 139 65" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" />
+              <text x="65" y="45" fill="white" fontSize="14" opacity="0.6">z</text>
+              <text x="120" y="35" fill="white" fontSize="18" opacity="0.8">Z</text>
+            </>
+          ) : (
+            <>
+              <circle cx="75" cy="65" r={eyeRadius} fill="white" />
+              <circle cx="125" cy="65" r={eyeRadius} fill="white" />
 
-          <circle cx={75 + eyeOffset.x} cy={65 + eyeOffset.y} r="8" fill="#1a1a2e" />
-          <circle cx={125 + eyeOffset.x} cy={65 + eyeOffset.y} r="8" fill="#1a1a2e" />
+              <circle cx={75 + eyeOffset.x} cy={65 + eyeOffset.y} r="8" fill="#1a1a2e" />
+              <circle cx={125 + eyeOffset.x} cy={65 + eyeOffset.y} r="8" fill="#1a1a2e" />
 
-          <circle cx={79 + eyeOffset.x * 0.5} cy={61 + eyeOffset.y * 0.5} r="3" fill="white" />
-          <circle cx={129 + eyeOffset.x * 0.5} cy={61 + eyeOffset.y * 0.5} r="3" fill="white" />
+              <circle cx={79 + eyeOffset.x * 0.5} cy={61 + eyeOffset.y * 0.5} r="3" fill="white" />
+              <circle cx={129 + eyeOffset.x * 0.5} cy={61 + eyeOffset.y * 0.5} r="3" fill="white" />
 
-          <g
-            style={{
-              transformOrigin: '75px 65px',
-              transform: `scaleY(${blinking ? 1 : 0})`,
-              transition: 'transform 120ms ease',
-            }}
-          >
-            <circle cx="75" cy="65" r="14" fill="#00D4FF" />
-          </g>
-          <g
-            style={{
-              transformOrigin: '125px 65px',
-              transform: `scaleY(${blinking ? 1 : 0})`,
-              transition: 'transform 120ms ease',
-            }}
-          >
-            <circle cx="125" cy="65" r="14" fill="#00D4FF" />
-          </g>
+              <g style={{ transformOrigin: '75px 65px', transform: `scaleY(${blinking ? 1 : 0})`, transition: 'transform 120ms ease' }}>
+                <circle cx="75" cy="65" r="14" fill={colors.secondary} />
+              </g>
+              <g style={{ transformOrigin: '125px 65px', transform: `scaleY(${blinking ? 1 : 0})`, transition: 'transform 120ms ease' }}>
+                <circle cx="125" cy="65" r="14" fill={colors.secondary} />
+              </g>
+            </>
+          )}
 
           <circle cx="100" cy="82" r="2.5" fill="rgba(255,255,255,0.3)" />
           {renderMouth(config.mouth)}
         </g>
 
-        <rect x="85" y="118" width="30" height="16" rx="6" fill="#0099BB" />
+        <rect x="85" y="118" width="30" height="16" rx="6" fill={colors.secondary} />
+        <rect x="50" y="130" width="100" height="80" rx="16" fill="url(#bodyGrad)" />
 
+        {/* Chest Panel */}
         <rect
-          x="50"
-          y="130"
-          width="100"
-          height="80"
-          rx="16"
-          fill="url(#bodyGrad)"
+          x="65" y="144" width="70" height="44" rx="10"
+          fill="rgba(0,15,25,0.7)"
+          stroke={hasGoldChest ? 'url(#goldChest)' : colors.primary}
+          strokeWidth={hasGoldChest ? "3" : "1.5"}
+          strokeOpacity="0.6"
+          style={hasGlowUpgrade ? { animation: 'robChestGlow 1.8s ease-in-out infinite' } : undefined}
         />
+        
+        {chestName ? (
+          <text x="100" y="171" textAnchor="middle" fill={hasGoldChest ? "#FFD700" : colors.primary}
+            fontSize="10" fontFamily="'Inter', monospace" fontWeight="700" letterSpacing="1">
+            {chestName.length > 8 ? chestName.slice(0, 8) : chestName}
+          </text>
+        ) : (
+          <>
+            <line x1="75" y1="156" x2="125" y2="156" stroke={colors.primary} strokeOpacity="0.3" strokeWidth="1" />
+            <line x1="75" y1="163" x2="115" y2="163" stroke={colors.primary} strokeOpacity="0.2" strokeWidth="1" />
+            <rect x="74" y="170" width="52" height="6" rx="3" fill="rgba(255,255,255,0.1)" />
+            <rect x="74" y="170" width={52 * (progressWidth / 100)} height="6" rx="3" fill="url(#chestGrad)" style={{ transition: 'width 0.35s ease' }} />
+          </>
+        )}
 
-        <rect
-          x="70"
-          y="148"
-          width="60"
-          height="36"
-          rx="8"
-          fill="rgba(0,20,30,0.6)"
-          stroke="rgba(0,212,255,0.4)"
-          strokeWidth="1"
-          style={emotion === 'learning' ? { animation: 'robChestGlow 1.8s ease-in-out infinite' } : undefined}
-        />
-        <line x1="75" y1="156" x2="125" y2="156" stroke="rgba(0,212,255,0.3)" strokeWidth="1" />
-        <line x1="75" y1="163" x2="115" y2="163" stroke="rgba(0,212,255,0.2)" strokeWidth="1" />
-        <rect x="74" y="170" width="52" height="6" rx="3" fill="rgba(255,255,255,0.1)" />
-        <rect
-          x="74"
-          y="170"
-          width={52 * (progressWidth / 100)}
-          height="6"
-          rx="3"
-          fill="url(#chestGrad)"
-          style={{ transition: 'width 0.35s ease' }}
-        />
-
-        <g
-          style={{
-            transformOrigin: '42px 142px',
-            transformBox: 'fill-box',
-            transform: config.leftArmTransform,
-            animation: config.leftArmAnimation,
-          }}
-        >
-          <rect x="18" y="136" width="28" height="12" rx="6" fill="#0099BB" />
+        <g style={{ transformOrigin: '42px 142px', transformBox: 'fill-box', transform: config.leftArmTransform, animation: config.leftArmAnimation }}>
+          <rect x="18" y="136" width="28" height="12" rx="6" fill={colors.secondary} />
         </g>
-        <g
-          style={{
-            transformOrigin: '154px 142px',
-            transformBox: 'fill-box',
-            transform: config.rightArmTransform,
-            animation: config.rightArmAnimation,
-          }}
-        >
-          <rect x="154" y="136" width="28" height="12" rx="6" fill="#0099BB" />
+        <g style={{ transformOrigin: '154px 142px', transformBox: 'fill-box', transform: config.rightArmTransform, animation: config.rightArmAnimation }}>
+          <rect x="154" y="136" width="28" height="12" rx="6" fill={colors.secondary} />
         </g>
 
-        <rect x="68" y="210" width="22" height="36" rx="8" fill="#0088AA" />
-        <rect x="110" y="210" width="22" height="36" rx="8" fill="#0088AA" />
-        <ellipse cx="79" cy="246" rx="16" ry="8" fill="#006688" />
-        <ellipse cx="121" cy="246" rx="16" ry="8" fill="#006688" />
+        {/* Legs / Boots System */}
+        {hasBootsUpgrade ? (
+          <>
+            <rect x="68" y="210" width="22" height="30" rx="8" fill={colors.secondary} />
+            <rect x="110" y="210" width="22" height="30" rx="8" fill={colors.secondary} />
+            {/* Jet Boots */}
+            <path d="M 64 235 L 94 235 L 90 250 L 68 250 Z" fill={colors.primary} />
+            <path d="M 106 235 L 136 235 L 132 250 L 110 250 Z" fill={colors.primary} />
+            {/* Thruster Flames */}
+            <path d="M 72 250 Q 79 265 86 250" fill="#FF5C28" style={{ transformOrigin: 'top center', animation: 'thrusterFlicker 0.1s infinite' }} />
+            <path d="M 114 250 Q 121 265 128 250" fill="#FF5C28" style={{ transformOrigin: 'top center', animation: 'thrusterFlicker 0.1s infinite 0.05s' }} />
+          </>
+        ) : (
+          <>
+            <rect x="68" y="210" width="22" height="36" rx="8" fill={colors.secondary} />
+            <rect x="110" y="210" width="22" height="36" rx="8" fill={colors.secondary} />
+            <ellipse cx="79" cy="246" rx="16" ry="8" fill={colors.dark} />
+            <ellipse cx="121" cy="246" rx="16" ry="8" fill={colors.dark} />
+          </>
+        )}
       </svg>
     </div>
   )

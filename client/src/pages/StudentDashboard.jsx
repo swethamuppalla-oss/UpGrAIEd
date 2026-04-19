@@ -6,6 +6,10 @@ import RobFloating from '../components/ROB/RobFloating'
 import RobLesson from '../components/ROB/RobLesson'
 import RobLessonModal from '../components/ROB/RobLessonModal'
 import RobBuddyPanel from '../components/ROB/RobBuddyPanel'
+import RobGreetingCard from '../components/ROB/RobGreetingCard'
+import RobOnboardingModal from '../components/ROB/RobOnboardingModal'
+import RobQuickRecap from '../components/ROB/RobQuickRecap'
+import RobMiniGame from '../components/ROB/RobMiniGame'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import { useAuth } from '../context/AuthContext'
 import { useROB } from '../context/RobContext'
@@ -36,10 +40,10 @@ function getSubtitle(hour) {
 }
 
 export default function StudentDashboard() {
-  const navigate = useNavigate()
   const { user, logout } = useAuth()
-  const { showToast } = useToast()
   const {
+    robName,
+    companionData,
     robXP,
     robLevel,
     levelProgress,
@@ -50,6 +54,8 @@ export default function StudentDashboard() {
     addBadge,
     completeLesson,
   } = useROB()
+  const navigate = useNavigate()
+  const { showToast } = useToast()
 
   const [activeTab, setActiveTab] = useState('home')
   const [loading, setLoading] = useState(true)
@@ -58,6 +64,11 @@ export default function StudentDashboard() {
   const [levelsData, setLevelsData] = useState([])
   const [curriculum, setCurriculum] = useState([])
   const [showBuddyPanel, setShowBuddyPanel] = useState(false)
+  
+  // ROB Modal States
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showRecap, setShowRecap] = useState(false)
+  const [showMiniGame, setShowMiniGame] = useState(false)
   const [activeLesson, setActiveLesson] = useState(null)
 
   useEffect(() => {
@@ -73,15 +84,17 @@ export default function StudentDashboard() {
         setLevelsData(levels)
         setCurriculum(nextCurriculum)
       })
+      .catch((err) => console.error('Failed to fetch data', err))
       .finally(() => setLoading(false))
-  }, [])
+  }, [user?._id])
+
+  useEffect(() => {
+    if (!loading && !robName) {
+      setShowOnboarding(true)
+    }
+  }, [loading, robName])
 
   const firstName = user?.name?.split(' ')[0] || 'Student'
-  const currentHour = new Date().getHours()
-  const heroEmotion = robXP > 300 ? 'excited' : currentHour < 18 ? 'happy' : 'teaching'
-  const heroSpeech = robXP > 300
-    ? `We are on a roll, ${firstName}!`
-    : 'Ready for your next mission?'
 
   const activeCurriculumModule = useMemo(() => {
     const currentModule = progressData?.currentModule
@@ -95,9 +108,34 @@ export default function StudentDashboard() {
     return curriculum[0]?.modules?.[0] || null
   }, [curriculum, progressData])
 
-  const todayLesson = useMemo(() => (
-    robLessons.find(lesson => !lessonsCompleted.includes(lesson.id)) || null
-  ), [lessonsCompleted])
+  const handleStartMission = () => {
+    navigate(`/player/${activeCurriculumModule?._id || ''}`)
+  }
+
+  const handleLessonComplete = (lesson, answeredCorrectly) => {
+    completeLesson(lesson.id, lesson.xpReward)
+    if (lesson.badgeId) addBadge(lesson.badgeId)
+    setActiveLesson(null)
+    showToast(
+      answeredCorrectly
+        ? `+${lesson.xpReward} XP — ROB learned ${lesson.title}!`
+        : `ROB's concept saved — you still earned +${lesson.xpReward} XP.`,
+      'success'
+    )
+  }
+
+  const todayLesson = useMemo(
+    () => robLessons.find(l => !lessonsCompleted.includes(l.id)) || null,
+    [lessonsCompleted]
+  )
+
+  const earnedBadgeCards = useMemo(
+    () => ROB_BADGES.map(badge => ({ ...badge, earned: badges.includes(badge.id) })),
+    [badges]
+  )
+
+  const ringCircumference = 2 * Math.PI * 54
+  const ringOffset = ringCircumference * (1 - levelProgress / 100)
 
   const levelRows = useMemo(() => {
     const routeLevels = Array.isArray(levelsData) && levelsData.length
@@ -119,23 +157,12 @@ export default function StudentDashboard() {
     })
   }, [levelProgress, levelsData, robLevel])
 
-  const earnedBadgeCards = ROB_BADGES.map((badge) => ({
-    ...badge,
-    earned: badges.includes(badge.id),
-  }))
-
-  const ringCircumference = 2 * Math.PI * 54
-  const ringOffset = ringCircumference * (1 - levelProgress / 100)
-
-  const handleLessonComplete = (lesson, answeredCorrectly) => {
-    completeLesson(lesson.id, lesson.xpReward)
-    addBadge(lesson.badgeId)
-    setActiveLesson(null)
-    showToast(answeredCorrectly ? `+${lesson.xpReward} XP. ROB learned ${lesson.title}!` : `ROBs concept was saved and you still earned +${lesson.xpReward} XP.`, 'success')
-  }
-
   const modulesDone = statsData?.modulesCompleted || statsData?.modules || lessonsCompleted.length
   const streak = statsData?.streak || 0
+
+  if (loading) {
+    return <LoadingSkeleton rows={5} />
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
@@ -178,56 +205,43 @@ export default function StudentDashboard() {
       />
 
       <main className="main-content" style={{ animation: 'dashboardRise 0.28s ease' }}>
-        <section
-          className="student-hero"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1.2fr 0.8fr',
-            gap: 32,
-            alignItems: 'center',
-            background: 'linear-gradient(135deg, rgba(0,212,255,0.06), rgba(123,63,228,0.10), rgba(255,92,40,0.06))',
-            border: '1px solid rgba(0,212,255,0.15)',
-            borderRadius: 24,
-            padding: '32px 40px',
-            marginBottom: 32,
-          }}
-        >
+        <RobOnboardingModal 
+          visible={showOnboarding} 
+          onComplete={() => setShowOnboarding(false)} 
+        />
+        <RobQuickRecap 
+          visible={showRecap} 
+          onClose={() => setShowRecap(false)} 
+          moduleId={companionData?.lastModule || 'm1'} 
+        />
+        <RobMiniGame 
+          visible={showMiniGame} 
+          onClose={() => setShowMiniGame(false)} 
+        />
+
+        <header className="dashboard-header" style={{ marginBottom: 30, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div className="clash-display" style={{ fontSize: 36, marginBottom: 8 }}>
-              Hey {firstName}! 👋
-            </div>
-            <p style={{ fontSize: 16, color: 'var(--text-secondary)', marginBottom: 20 }}>
-              {getSubtitle(currentHour)}
-            </p>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
-              <span className="badge-purple">Level {robLevel}</span>
-              <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>AI {levelTitle}</span>
-            </div>
-            <div style={{ height: 14, background: 'rgba(255,255,255,0.06)', borderRadius: 999, overflow: 'hidden', marginBottom: 8 }}>
-              <div className="rob-shimmer-bar" style={{ width: `${levelProgress}%`, height: '100%', borderRadius: 999 }} />
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 18 }}>
-              {robXP} XP and climbing
-            </div>
-
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <span className="badge-orange">🔥 {streak} day streak</span>
-              <span className="badge-blue">⚡ {xpToday} XP today</span>
-              <span className="badge-green">✅ {modulesDone} modules done</span>
-            </div>
+            <h1 className="clash-display">Student Mission Control</h1>
+            <p className="subtitle">Welcome back, {firstName}</p>
           </div>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => setShowBuddyPanel(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 20px', borderRadius: 999 }}
+          >
+            <span style={{ fontSize: 20 }}>🤖</span>
+            <span>Open ROB Buddy</span>
+          </button>
+        </header>
 
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <button
-              type="button"
-              onClick={() => setShowBuddyPanel(true)}
-              style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
-            >
-              <RobCharacter size="hero" emotion={heroEmotion} speech={heroSpeech} chestProgress={levelProgress} />
-            </button>
-          </div>
-        </section>
+        {/* Dynamic ROB Hero Area */}
+        <RobGreetingCard 
+          onQuickRecap={() => setShowRecap(true)}
+          onContinueMission={handleStartMission}
+          onMiniGame={() => setShowMiniGame(true)}
+        />
+
 
         <section className="student-progress-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 24, marginBottom: 32 }}>
           <div className="glass-card" style={{ padding: 24 }}>

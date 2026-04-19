@@ -106,6 +106,10 @@ export const getROBProgress = () =>
   api.get('/api/rob/progress').then(r => r.data)
 export const getROBKnowledge = (moduleId) =>
   api.get(`/api/rob/knowledge/${moduleId}`).then(r => r.data)
+export const getRobCompanion = () =>
+  api.get('/api/rob/companion').then(r => r.data)
+export const saveRobCompanionState = (data) =>
+  api.post('/api/rob/companion', data).then(r => r.data)
 
 // ROB Creator
 export const trainROBConcept = (data) =>
@@ -116,6 +120,8 @@ export const deleteROBKnowledge = (id) =>
   api.delete(`/api/rob/knowledge/${id}`).then(r => r.data)
 export const publishROBModule = (moduleId) =>
   api.post(`/api/rob/publish/${moduleId}`).then(r => r.data)
+export const getRobIntelligence = () =>
+  api.get('/api/rob/intelligence').then(r => r.data)
 
 // Reservation
 export const createReservation = (data) =>

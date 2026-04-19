@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Sidebar from '../components/layout/Sidebar'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
-import RobTrainer from '../components/ROB/RobTrainer'
+import RobIntelligenceLab from '../components/ROB/RobIntelligenceLab'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/ui/Toast'
 import { getCreatorStats, getCreatorVideos, uploadVideo } from '../services/api'
@@ -9,7 +9,7 @@ import { getCreatorStats, getCreatorVideos, uploadVideo } from '../services/api'
 const NAV_ITEMS = [
   { id: 'overview', icon: '📊', label: 'Overview' },
   { id: 'videos', icon: '🎬', label: 'Videos' },
-  { id: 'rob', icon: '🤖', label: 'Train ROB' },
+  { id: 'rob', icon: '🧪', label: 'ROB Lab' },
   { id: 'revenue', icon: '💰', label: 'Revenue' },
   { id: 'students', icon: '👥', label: 'Students' },
 ]
@@ -255,18 +255,18 @@ export default function CreatorDashboard() {
       <main className="main-content">
         <div className="page-header">
           <h1 className="page-title">
-            {activeTab === 'rob' ? 'Train ROB' : 'Creator Dashboard'}
+            {activeTab === 'rob' ? 'ROB Intelligence Lab' : 'Creator Dashboard'}
           </h1>
           <p className="page-subtitle">
             {activeTab === 'rob'
-              ? 'Train ROB to answer questions, generate quizzes, and guide your students.'
+              ? 'Analyze student interactions, add recap questions, and train ROB.'
               : 'Manage your content and track student progress.'}
           </p>
         </div>
 
         {activeTab === 'overview' && renderOverview()}
         {activeTab === 'videos' && renderVideos()}
-        {activeTab === 'rob' && <RobTrainer />}
+        {activeTab === 'rob' && <RobIntelligenceLab />}
         {activeTab === 'revenue' && (
           <div className="glass-card" style={{ padding: 32 }}>
             <div className="clash-display" style={{ fontSize: 26, marginBottom: 8 }}>Monthly Retainer</div>

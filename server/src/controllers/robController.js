@@ -1,6 +1,16 @@
 import RobKnowledge from '../models/RobKnowledge.js'
 import User from '../models/User.js'
 
+// ── Companion / Greeting ────────────────────────────────────────────────────
+
+function getTimeOfDay() {
+  const h = new Date().getHours()
+  if (h >= 5 && h < 12) return 'morning'
+  if (h >= 12 && h < 16) return 'afternoon'
+  if (h >= 16 && h < 22) return 'evening'
+  return 'night'
+}
+
 function normalizeText(value = '') {
   return String(value).toLowerCase().replace(/[^a-z0-9\s]/g, ' ')
 }
@@ -278,6 +288,125 @@ export async function getProgress(req, res, next) {
       questionsAnswered: 0,
       correctAnswers: 0,
       xpToday: 0,
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+// ── Companion greeting data ─────────────────────────────────────────────────
+
+export async function getCompanion(req, res, next) {
+  try {
+    const timeOfDay = getTimeOfDay()
+
+    if (String(req.user._id) === 'demo') {
+      return res.json({
+        timeOfDay,
+        daysSinceLogin: 0,
+        streak: 0,
+        lastModule: null,
+        weakTopics: [],
+        comebackRecap: false,
+        robName: '',
+        robColor: 'cyan',
+      })
+    }
+
+    const user = await User.findById(req.user._id).select('lastLoginAt loginStreak robProgress name')
+    const lastLogin = user?.lastLoginAt ? new Date(user.lastLoginAt) : null
+    const daysSinceLogin = lastLogin
+      ? Math.floor((Date.now() - lastLogin.getTime()) / (1000 * 60 * 60 * 24))
+      : 999
+
+    res.json({
+      timeOfDay,
+      daysSinceLogin,
+      streak: user?.loginStreak || 0,
+      lastModule: user?.robProgress?.lastModule || null,
+      weakTopics: user?.robProgress?.weakTopics || [],
+      comebackRecap: daysSinceLogin >= 2,
+      robName: user?.robProgress?.robName || '',
+      robColor: user?.robProgress?.robColor || 'cyan',
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+// ── Save companion state (robName, weakTopics, lastModule) ──────────────────
+
+export async function saveCompanionState(req, res, next) {
+  try {
+    if (String(req.user._id) === 'demo') return res.json({ success: true })
+
+    const { robName, robColor, weakTopics, lastModule } = req.body
+    const update = {}
+    if (robName !== undefined) update['robProgress.robName'] = String(robName).trim().slice(0, 20)
+    if (robColor !== undefined) update['robProgress.robColor'] = String(robColor)
+    if (Array.isArray(weakTopics)) update['robProgress.weakTopics'] = weakTopics.slice(0, 10)
+    if (lastModule !== undefined) update['robProgress.lastModule'] = String(lastModule)
+
+    await User.findByIdAndUpdate(req.user._id, update)
+    res.json({ success: true })
+  } catch (err) {
+    next(err)
+  }
+}
+
+// ── Creator: ROB Intelligence ───────────────────────────────────────────────
+
+export async function getRobIntelligence(req, res, next) {
+  try {
+    // Aggregate knowledge items to find popular content
+    const knowledgeStats = await RobKnowledge.aggregate([
+      { $match: { creatorId: String(req.user._id) } },
+      { $group: {
+        _id: '$type',
+        count: { $sum: 1 },
+        published: { $sum: { $cond: ['$isPublished', 1, 0] } },
+      }},
+    ])
+
+    const quizCount = await RobKnowledge.countDocuments({ creatorId: String(req.user._id), type: 'quiz' })
+    const conceptCount = await RobKnowledge.countDocuments({ creatorId: String(req.user._id), type: 'concept' })
+    const hintCount = await RobKnowledge.countDocuments({ creatorId: String(req.user._id), type: 'hint' })
+
+    // Get recent students who have engaged with ROB (those with xp > 0)
+    const activeStudents = await User.find({
+      role: 'student',
+      'robProgress.xp': { $gt: 0 },
+    }).select('name robProgress.xp robProgress.level robProgress.streak robProgress.weakTopics lastLoginAt').limit(20)
+
+    const avgXP = activeStudents.length
+      ? Math.round(activeStudents.reduce((s, u) => s + (u.robProgress?.xp || 0), 0) / activeStudents.length)
+      : 0
+
+    // Aggregate weak topics across all students
+    const weakTopicMap = {}
+    for (const student of activeStudents) {
+      for (const topic of (student.robProgress?.weakTopics || [])) {
+        weakTopicMap[topic] = (weakTopicMap[topic] || 0) + 1
+      }
+    }
+    const topWeakTopics = Object.entries(weakTopicMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([topic, count]) => ({ topic, count }))
+
+    res.json({
+      knowledge: { quizCount, conceptCount, hintCount, stats: knowledgeStats },
+      students: {
+        active: activeStudents.length,
+        avgXP,
+        topWeakTopics,
+        recent: activeStudents.slice(0, 8).map(u => ({
+          name: u.name,
+          xp: u.robProgress?.xp || 0,
+          level: u.robProgress?.level || 1,
+          lastSeen: u.lastLoginAt,
+        })),
+      },
     })
   } catch (err) {
     next(err)
