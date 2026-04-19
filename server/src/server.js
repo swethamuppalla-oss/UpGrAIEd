@@ -16,6 +16,7 @@ import adminRouter from './routes/admin.js'
 import creatorRouter from './routes/creator.js'
 import videoRouter from './routes/videos.js'
 import paymentRouter from './routes/payments.js'
+import robRouter from './routes/rob.js'
 
 const app = express()
 await connectDB()
@@ -42,6 +43,7 @@ app.use('/api/admin', requireAuth, adminRouter)
 app.use('/api/creator', requireAuth, creatorRouter)
 app.use('/api/videos', requireAuth, videoRouter)
 app.use('/api/payments', requireAuth, paymentRouter)
+app.use('/api/rob', robRouter)
 
 // Error handler (must be last)
 app.use(errorHandler)

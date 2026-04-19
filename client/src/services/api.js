@@ -95,6 +95,28 @@ export const uploadVideo = (formData, onProgress) =>
     }
   }).then(r => r.data)
 
+// ROB Student
+export const getROBQuiz = (moduleId) =>
+  api.get(`/api/rob/quiz${moduleId ? `?moduleId=${moduleId}` : ''}`).then(r => r.data)
+export const chatWithROB = (question, moduleId) =>
+  api.post('/api/rob/chat', { question, moduleId }).then(r => r.data)
+export const saveROBXP = (xp, level, badges, extra = {}) =>
+  api.post('/api/rob/xp', { xp, level, badges, ...extra }).then(r => r.data)
+export const getROBProgress = () =>
+  api.get('/api/rob/progress').then(r => r.data)
+export const getROBKnowledge = (moduleId) =>
+  api.get(`/api/rob/knowledge/${moduleId}`).then(r => r.data)
+
+// ROB Creator
+export const trainROBConcept = (data) =>
+  api.post('/api/rob/train', data).then(r => r.data)
+export const getCreatorROBKnowledge = () =>
+  api.get('/api/rob/creator/knowledge').then(r => r.data)
+export const deleteROBKnowledge = (id) =>
+  api.delete(`/api/rob/knowledge/${id}`).then(r => r.data)
+export const publishROBModule = (moduleId) =>
+  api.post(`/api/rob/publish/${moduleId}`).then(r => r.data)
+
 // Reservation
 export const createReservation = (data) =>
   api.post('/api/reserve', data).then(r => r.data)

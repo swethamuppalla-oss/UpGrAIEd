@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { RobProvider } from './context/RobContext'
 import { ToastProvider } from './components/ui/Toast'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import Login from './pages/Login'
@@ -13,10 +14,11 @@ import CreatorDashboard from './pages/CreatorDashboard'
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-      <BrowserRouter>
-        <Routes>
+    <RobProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <BrowserRouter>
+            <Routes>
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/reserve" element={<ReservePage />} />
@@ -62,9 +64,10 @@ export default function App() {
             element={<Navigate to="/login" replace />} />
           <Route path="*"
             element={<Navigate to="/login" replace />} />
-        </Routes>
-      </BrowserRouter>
-      </ToastProvider>
-    </AuthProvider>
+            </Routes>
+          </BrowserRouter>
+        </ToastProvider>
+      </AuthProvider>
+    </RobProvider>
   )
 }

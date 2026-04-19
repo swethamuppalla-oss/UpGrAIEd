@@ -36,6 +36,37 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    robProgress: {
+      xp: {
+        type: Number,
+        default: 0,
+      },
+      level: {
+        type: Number,
+        default: 1,
+      },
+      badges: {
+        type: [String],
+        default: [],
+      },
+      lessonsCompleted: {
+        type: [String],
+        default: [],
+      },
+      questionsAnswered: {
+        type: Number,
+        default: 0,
+      },
+      correctAnswers: {
+        type: Number,
+        default: 0,
+      },
+      xpToday: {
+        type: Number,
+        default: 0,
+      },
+      updatedAt: Date,
+    },
   },
   { timestamps: true }
 );
