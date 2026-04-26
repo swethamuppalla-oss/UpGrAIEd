@@ -28,6 +28,7 @@ const levelTitles = {
 export default function RobBuddyPanel({ open, onClose, currentModuleId }) {
   const { user } = useAuth()
   const {
+    robName,
     robXP,
     robLevel,
     badges,
@@ -39,6 +40,7 @@ export default function RobBuddyPanel({ open, onClose, currentModuleId }) {
     accuracy,
     recordAnswer,
   } = useROB()
+  const displayName = robName || 'ROB'
 
   const [activeTab, setActiveTab] = useState('quiz')
   const [quiz, setQuiz] = useState(null)
@@ -178,7 +180,7 @@ export default function RobBuddyPanel({ open, onClose, currentModuleId }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <RobCharacter size="small" emotion="happy" />
           <div style={{ flex: 1 }}>
-            <div className="clash-display" style={{ fontSize: 16 }}>ROB</div>
+            <div className="clash-display" style={{ fontSize: 16 }}>{displayName}</div>
             <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Your AI Buddy</div>
           </div>
           <button type="button" className="btn-ghost" onClick={onClose} style={{ padding: '6px 10px' }}>
@@ -354,7 +356,7 @@ export default function RobBuddyPanel({ open, onClose, currentModuleId }) {
                   onKeyDown={(event) => {
                     if (event.key === 'Enter') sendMessage(draft)
                   }}
-                  placeholder="Ask ROB anything about AI..."
+                  placeholder={`Ask ${displayName} anything about AI...`}
                 />
                 <button type="button" className="btn-primary" onClick={() => sendMessage(draft)} disabled={chatLoading}>
                   →

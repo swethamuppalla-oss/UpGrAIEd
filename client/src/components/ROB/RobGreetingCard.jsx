@@ -4,27 +4,32 @@ import RobCharacter from './RobCharacter'
 import RobBubble from './RobBubble'
 import { getRobMood, ROB_COLORS } from '../../utils/RobMoodEngine'
 
-export default function RobGreetingCard({ onQuickRecap, onContinueMission, onMiniGame }) {
+export default function RobGreetingCard({ onQuickRecap, onContinueMission, onMiniGame, onScrollToQuiz, onScrollToGame, streak, badges }) {
   const { robName, robColor, robLevel, companionData, xpToday, levelProgress, nextLevelXP } = useROB()
+  const displayName = robName || 'ROB'
   const [mood, setMood] = useState(getRobMood(companionData, xpToday))
   const [bubbleVisible, setBubbleVisible] = useState(true)
 
   const colors = ROB_COLORS[robColor] || ROB_COLORS.cyan
-  
+
   useEffect(() => {
     setMood(getRobMood(companionData, xpToday))
   }, [companionData, xpToday])
 
-  // Rotate thought bubble messages occasionally
   useEffect(() => {
     const interval = setInterval(() => {
       setBubbleVisible(false)
-      setTimeout(() => {
-        setBubbleVisible(true)
-      }, 500)
+      setTimeout(() => setBubbleVisible(true), 500)
     }, 12000)
     return () => clearInterval(interval)
   }, [])
+
+  const greetWord = mood.emotion === 'sleepy' ? 'Good night,' :
+    mood.emotion === 'celebrating' ? 'Incredible work,' :
+    mood.emotion === 'encouraging' ? 'Welcome back,' :
+    'Hello,'
+
+  const xpNeeded = Math.max(0, (nextLevelXP || 0) - (xpToday || 0))
 
   return (
     <>
@@ -36,41 +41,45 @@ export default function RobGreetingCard({ onQuickRecap, onContinueMission, onMin
           border: 1px solid rgba(255,255,255,0.06);
           overflow: hidden;
           display: grid;
-          grid-template-columns: 1fr 340px;
+          grid-template-columns: 1fr 320px;
           gap: 20px;
           box-shadow: 0 20px 60px rgba(0,0,0,0.4);
           animation: dashboardRise 0.8s cubic-bezier(0.34,1.56,0.64,1);
+          margin-bottom: 28px;
         }
         @media (max-width: 900px) {
           .greeting-card {
             grid-template-columns: 1fr;
-            text-align: center;
+          }
+          .greeting-card .rob-showcase {
+            display: none;
           }
         }
         .greeting-action {
           background: rgba(255,255,255,0.03);
           border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 16px;
-          padding: 16px 20px;
+          border-radius: 14px;
+          padding: 13px 16px;
           text-align: left;
           cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+          transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1);
           color: white;
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 12px;
+          font-family: inherit;
         }
         .greeting-action:hover {
-          background: rgba(255,255,255,0.08);
-          transform: translateY(-4px);
-          box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+          background: rgba(255,255,255,0.07);
+          transform: translateY(-3px);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.2);
         }
         .greeting-action.primary {
-          background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+          background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
           border: 1px solid ${colors.glow};
         }
         .greeting-action.primary:hover {
-          background: ${colors.glow};
+          background: linear-gradient(135deg, ${colors.glow}, rgba(255,255,255,0.04));
           box-shadow: 0 10px 40px ${colors.glow};
         }
         .rob-showcase {
@@ -78,88 +87,109 @@ export default function RobGreetingCard({ onQuickRecap, onContinueMission, onMin
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 30px;
+          padding: 28px 24px;
           background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%);
+        }
+        .stat-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 14px;
+          border-radius: 999px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.1);
+          font-size: 13px;
+          font-weight: 600;
+          transition: background 0.2s;
         }
         .comeback-banner {
           background: linear-gradient(90deg, #FF5C28, #EC4899);
           color: white;
-          padding: 8px 16px;
+          padding: 7px 16px;
           border-radius: 999px;
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 700;
           letter-spacing: 1px;
           text-transform: uppercase;
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          margin-bottom: 20px;
-          animation: robShake 0.5s ease 2s;
+          margin-bottom: 16px;
         }
       `}</style>
 
       <section className="greeting-card">
-        {/* Glow blob behind left side */}
+        {/* Background glow */}
         <div style={{
           position: 'absolute', top: '-20%', left: '-10%',
           width: '50%', height: '140%',
           background: `radial-gradient(ellipse at center, ${colors.glow} 0%, transparent 60%)`,
-          opacity: 0.15, filter: 'blur(40px)', pointerEvents: 'none'
+          opacity: 0.12, filter: 'blur(40px)', pointerEvents: 'none',
         }} />
 
-        <div style={{ padding: '48px 40px', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          
+        <div style={{ padding: '40px 36px', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           {companionData?.comebackRecap && (
-            <div className="comeback-banner">
-              ⚠️ Inactivity detected: Time for a Recap!
-            </div>
+            <div className="comeback-banner">⚠️ Time for a Recap!</div>
           )}
 
-          <div className="clash-display" style={{ fontSize: 42, marginBottom: 8, lineHeight: 1.1 }}>
-            {mood.emotion === 'sleepy' ? 'Good night,' : 
-             mood.emotion === 'celebrating' ? 'Incredible work,' :
-             mood.emotion === 'encouraging' ? 'Welcome back,' :
-             'Hello,'} <span style={{ color: colors.primary }}>{companionData?.userName || 'Explorer'}!</span>
+          <div className="clash-display" style={{ fontSize: 38, marginBottom: 6, lineHeight: 1.1 }}>
+            {greetWord} <span style={{ color: colors.primary }}>{companionData?.userName || 'Explorer'}!</span>
           </div>
-          
-          <p style={{ color: 'var(--text-secondary)', fontSize: 18, marginBottom: 32, maxWidth: 500, lineHeight: 1.5 }}>
-            <strong style={{ color: 'white' }}>{robName || 'ROB'}</strong> says you have a <strong style={{ color: '#FFD700' }}>{companionData?.streak || 0}-day streak</strong>! 
-            You need {nextLevelXP - (xpToday || 0)} more XP to reach Level {robLevel + 1}.
+
+          <p style={{ color: 'var(--text-secondary)', fontSize: 16, marginBottom: 20, maxWidth: 480, lineHeight: 1.6 }}>
+            <strong style={{ color: 'white' }}>{displayName}</strong> is ready!{' '}
+            {xpNeeded > 0
+              ? <>You need <strong style={{ color: '#FFD700' }}>{xpNeeded} more XP</strong> to reach Level {robLevel + 1}.</>
+              : <>You hit your XP goal today! 🎉</>
+            }
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 16 }}>
+          {/* Stats pills */}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
+            <span className="stat-pill">🔥 {companionData?.streak || streak || 0} day streak</span>
+            <span className="stat-pill">⚡ {xpToday || 0} XP today</span>
+            <span className="stat-pill">🏆 {badges?.length || 0} badges</span>
+            <span className="stat-pill">⭐ Level {robLevel}</span>
+          </div>
+
+          {/* Action buttons */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
             <button type="button" className="greeting-action primary" onClick={onContinueMission}>
-              <div style={{ fontSize: 24, background: 'rgba(0,0,0,0.2)', padding: 12, borderRadius: 12 }}>🚀</div>
+              <span style={{ fontSize: 20 }}>🚀</span>
               <div>
-                <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 2 }}>Continue Mission</div>
-                <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Jump back in</div>
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 1 }}>Continue</div>
+                <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Learning</div>
               </div>
             </button>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <button type="button" className="greeting-action" onClick={onQuickRecap} style={{ padding: '10px 16px' }}>
-                <span style={{ fontSize: 18 }}>🧠</span>
-                <span style={{ fontWeight: 600, fontSize: 14 }}>Quick Recap</span>
-              </button>
-              
-              <button type="button" className="greeting-action" onClick={onMiniGame} style={{ padding: '10px 16px' }}>
-                <span style={{ fontSize: 18 }}>🕹️</span>
-                <span style={{ fontWeight: 600, fontSize: 14 }}>Play Mini Game</span>
-              </button>
-            </div>
+            <button type="button" className="greeting-action" onClick={onScrollToQuiz || onQuickRecap}>
+              <span style={{ fontSize: 20 }}>🧠</span>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 1 }}>Quick</div>
+                <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Quiz</div>
+              </div>
+            </button>
+
+            <button type="button" className="greeting-action" onClick={onScrollToGame || onMiniGame}>
+              <span style={{ fontSize: 20 }}>🕹️</span>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 1 }}>Play</div>
+                <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Game</div>
+              </div>
+            </button>
           </div>
         </div>
 
         <div className="rob-showcase">
           <div style={{ position: 'relative' }}>
             <RobBubble message={mood.message} visible={bubbleVisible} />
-            <RobCharacter 
-              size="hero" 
-              emotion={mood.emotion} 
-              robColor={robColor} 
-              chestName={robName}
+            <RobCharacter
+              size="hero"
+              emotion={mood.emotion}
+              robColor={robColor}
+              chestName={displayName}
               level={robLevel}
-              chestProgress={levelProgress} 
+              chestProgress={levelProgress}
             />
           </div>
         </div>
