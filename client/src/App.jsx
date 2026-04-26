@@ -17,6 +17,7 @@ import { StudentProgressProvider } from './context/StudentProgressContext'
 
 export default function App() {
   return (
+    <StudentProgressProvider>
     <RobProvider>
       <AuthProvider>
         <ToastProvider>
@@ -76,5 +77,6 @@ export default function App() {
         </ToastProvider>
       </AuthProvider>
     </RobProvider>
+    </StudentProgressProvider>
   )
 }
