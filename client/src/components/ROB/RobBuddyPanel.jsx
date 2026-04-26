@@ -2,19 +2,13 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useROB } from '../../context/RobContext'
 import { chatWithROB, getROBQuiz } from '../../services/api'
+import { query as brainQuery, getQuickPrompts, getFallback } from '../../utils/RobBrain'
 import RobCharacter from './RobCharacter'
 
 const tabs = [
   { id: 'quiz', label: '🎯 Quiz Me' },
   { id: 'chat', label: '💬 Chat' },
   { id: 'stats', label: '📊 My Stats' },
-]
-
-const starterPrompts = [
-  'What is AI?',
-  'How does ROB learn?',
-  'What is training data?',
-  'Am I doing well?',
 ]
 
 const levelTitles = {
@@ -98,6 +92,21 @@ export default function RobBuddyPanel({ open, onClose, currentModuleId }) {
       })
   }
 
+  const typewriterReply = (answer, confidence) => {
+    let index = 0
+    window.clearInterval(typeTimerRef.current)
+    typeTimerRef.current = window.setInterval(() => {
+      index += 1
+      setStreaming(answer.slice(0, index))
+      if (index >= answer.length) {
+        window.clearInterval(typeTimerRef.current)
+        setMessages(prev => [...prev, { id: Date.now() + 1, role: 'rob', text: answer, confidence: confidence || 0 }])
+        setStreaming('')
+        setChatLoading(false)
+      }
+    }, 18)
+  }
+
   const sendMessage = (text) => {
     const question = text.trim()
     if (!question || chatLoading) return
@@ -107,29 +116,24 @@ export default function RobBuddyPanel({ open, onClose, currentModuleId }) {
     setChatLoading(true)
     setStreaming('')
 
+    const brainResult = brainQuery(question)
+    if (brainResult && brainResult.confidence >= 45) {
+      typewriterReply(brainResult.answer, brainResult.confidence)
+      return
+    }
+
     chatWithROB(question, currentModuleId)
       .then((response) => {
-        const answer = response.answer || "Hmm, I don't know that yet! Maybe ask your teacher to train me on this topic! 🤔"
-        let index = 0
-        window.clearInterval(typeTimerRef.current)
-        typeTimerRef.current = window.setInterval(() => {
-          index += 1
-          setStreaming(answer.slice(0, index))
-          if (index >= answer.length) {
-            window.clearInterval(typeTimerRef.current)
-            setMessages(prev => [...prev, { id: Date.now() + 1, role: 'rob', text: answer, confidence: response.confidence || 0 }])
-            setStreaming('')
-            setChatLoading(false)
-          }
-        }, 18)
+        if (response.confidence > 0) {
+          typewriterReply(response.answer, response.confidence)
+        } else {
+          const fallback = getFallback()
+          typewriterReply(fallback.answer, 0)
+        }
       })
       .catch(() => {
-        setMessages(prev => [...prev, {
-          id: Date.now() + 2,
-          role: 'rob',
-          text: "Hmm, I don't know that yet! Maybe ask your teacher to train me on this topic! 🤔",
-          confidence: 0,
-        }])
+        const fallback = getFallback()
+        setMessages(prev => [...prev, { id: Date.now() + 2, role: 'rob', text: fallback.answer, confidence: 0 }])
         setChatLoading(false)
       })
   }
@@ -293,7 +297,7 @@ export default function RobBuddyPanel({ open, onClose, currentModuleId }) {
               >
                 {messages.length === 0 && !streaming && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {starterPrompts.map(prompt => (
+                    {getQuickPrompts(currentModuleId).map(prompt => (
                       <button
                         key={prompt}
                         type="button"

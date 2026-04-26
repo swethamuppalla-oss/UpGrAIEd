@@ -11,6 +11,9 @@ import ParentDashboard from './pages/ParentDashboard'
 import PaymentPage from './pages/PaymentPage'
 import AdminDashboard from './pages/AdminDashboard'
 import CreatorDashboard from './pages/CreatorDashboard'
+import LessonPage from './pages/LessonPage'
+import ModuleOnePage from './pages/ModuleOnePage'
+import { StudentProgressProvider } from './context/StudentProgressContext'
 
 export default function App() {
   return (
@@ -31,6 +34,10 @@ export default function App() {
               element={<StudentDashboard />} />
             <Route path="/player/:moduleId?"
               element={<VideoPlayer />} />
+            <Route path="/lesson/:lessonId?"
+              element={<LessonPage />} />
+            <Route path="/student/module/1"
+              element={<ModuleOnePage />} />
           </Route>
 
           {/* Parent routes */}

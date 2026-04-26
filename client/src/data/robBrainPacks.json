@@ -1,0 +1,179 @@
+{
+  "version": "1.0",
+  "greetings": {
+    "morning": [
+      "Good morning{name}! Your AI brain is fresh and ready — let's fill it!",
+      "Rise and learn{name}! Morning is peak absorption time for new concepts.",
+      "Morning{name}! Coffee + AI knowledge = unstoppable combo. Let's go!"
+    ],
+    "afternoon": [
+      "Hey{name}! Mid-day learning boost activated. What are we cracking today?",
+      "Afternoon{name}! The AI world is evolving every second — let's keep up.",
+      "Good afternoon{name}! Perfect time to build on what you learned this morning."
+    ],
+    "evening": [
+      "Evening{name}! Fun fact: your brain consolidates memory while you sleep — great time to learn!",
+      "Good evening{name}! Let's wrap up the day with some AI wisdom.",
+      "Evening vibes{name}! The best builders review concepts before bed. Ready?"
+    ],
+    "night": [
+      "Night owl detected{name}! I run 24/7, so let's go!",
+      "Late night learning{name}? That dedication will pay off — I promise.",
+      "Burning the midnight oil{name}? The AI world never sleeps, and neither do I! 🦉"
+    ]
+  },
+  "inactivity": {
+    "days_1": [
+      "Welcome back{name}! Miss me? I definitely missed you.",
+      "You're back{name}! I was starting to compile sad subroutines. Let's learn!"
+    ],
+    "days_2": [
+      "2 days away{name}? Your streak is waiting — let's restart it right now!",
+      "Hey{name}! It's been 2 days. Your AI neurons need some exercise!"
+    ],
+    "days_3plus": [
+      "It's been {days} days{name}! I was running lonely diagnostics. Let's fix that NOW!",
+      "{days} days?! {name}Your AI knowledge is getting rusty — time to polish it up!",
+      "SYSTEM ALERT: {name}Offline for {days} days. Initiating re-engagement sequence! 🚨"
+    ]
+  },
+  "modules": {
+    "ai_basics": {
+      "keywords": ["what is ai", "artificial intelligence", "what is artificial", "define ai", "ai mean", "ai stands"],
+      "emotion": "teaching",
+      "responses": [
+        "AI — Artificial Intelligence — is when computers learn to do tasks that normally need human thinking, like recognising faces, understanding speech, or making decisions! It's not magic, just clever maths. ✨",
+        "Artificial Intelligence is software that learns from experience. Instead of following a fixed script, it spots patterns in data and improves over time — kind of like how you get better at maths the more you practise!",
+        "Great question! AI is a branch of computer science focused on building systems that can learn, reason, and solve problems. Think recommendation engines, voice assistants, self-driving cars — all AI!"
+      ]
+    },
+    "machine_learning": {
+      "keywords": ["machine learning", "how does ai learn", "how ai learns", "learn from data", "algorithm", "supervised", "unsupervised"],
+      "emotion": "teaching",
+      "responses": [
+        "Machine Learning is how AI actually learns! Instead of being programmed with rules, the system is fed loads of examples and figures out the patterns itself. More data = smarter AI!",
+        "Think of Machine Learning like teaching a dog tricks — you show it examples, reward correct behaviour, and it gets better over time. The 'tricks' here are predictions or decisions the AI makes!",
+        "ML algorithms are like recipes. You feed in data (ingredients), the algorithm mixes it (cooking), and out comes a model (dish) that can make predictions on new data. Supervised, unsupervised, reinforcement — those are just different cooking styles!"
+      ]
+    },
+    "neural_networks": {
+      "keywords": ["neural network", "neuron", "deep learning", "layers", "hidden layer", "backprop", "activation"],
+      "emotion": "excited",
+      "responses": [
+        "Neural networks are AI models inspired by the human brain! They're made of layers of 'neurons' that pass signals to each other. Deep Learning just means the network has MANY layers — hence 'deep'!",
+        "A neural network learns by adjusting the strength of connections between neurons (called weights). During training, it makes predictions, checks how wrong it was, then tweaks weights to do better — that process is called backpropagation!",
+        "Imagine a neural network as a chain of filters. Each layer extracts a higher-level feature: layer 1 spots edges, layer 2 spots shapes, layer 3 spots faces. Stack enough layers and you get incredible AI vision!"
+      ]
+    },
+    "training_data": {
+      "keywords": ["training data", "dataset", "data quality", "label", "labelled", "overfitting", "bias in data", "data bias"],
+      "emotion": "teaching",
+      "responses": [
+        "Training data is the fuel for AI! It's a collection of examples the model learns from. The bigger and more diverse your dataset, the better your AI will generalise to the real world.",
+        "Garbage in, garbage out! If your training data is biased or incomplete, your AI will be too. That's why data quality and diversity are CRUCIAL steps before any model training.",
+        "Labelled data has the 'answer' attached — e.g., a photo tagged 'cat'. Unlabelled data doesn't. Supervised learning needs labels; unsupervised learning finds its own patterns. Both matter!"
+      ]
+    },
+    "models_predictions": {
+      "keywords": ["model", "prediction", "inference", "accuracy", "precision", "recall", "evaluate", "test set"],
+      "emotion": "teaching",
+      "responses": [
+        "An AI model is the output of training — a mathematical function that maps input data to predictions. Once trained, you 'run inference' (ask it questions) to get predictions on new data!",
+        "Model accuracy tells you the % of predictions that were correct on test data. But accuracy alone can mislead — precision and recall give you a fuller picture, especially with imbalanced datasets.",
+        "Testing a model on data it's never seen before (the test set) is crucial. If it only works on training data, it has 'overfit' — memorised instead of learned. Real AI generalises!"
+      ]
+    },
+    "nlp": {
+      "keywords": ["nlp", "natural language", "text", "language model", "chatbot", "sentiment", "tokenize", "transformer", "gpt", "llm"],
+      "emotion": "excited",
+      "responses": [
+        "NLP — Natural Language Processing — is AI for understanding and generating text! It powers chatbots, translation, spell-check, and language models like the ones behind ChatGPT.",
+        "Large Language Models (LLMs) like GPT are trained on massive amounts of text. They predict the next word so well that they can write code, answer questions, and hold conversations. I'm built on similar ideas!",
+        "Transformers changed NLP forever in 2017. The self-attention mechanism lets the model weigh how relevant every word in a sentence is to every other word — enabling deep language understanding!"
+      ]
+    },
+    "computer_vision": {
+      "keywords": ["computer vision", "image recognition", "object detection", "cnn", "convolutional", "image", "visual"],
+      "emotion": "excited",
+      "responses": [
+        "Computer Vision teaches AI to 'see'! CNNs (Convolutional Neural Networks) are the go-to architecture — they slide filters over images to detect edges, textures, shapes, and eventually objects.",
+        "Object detection models like YOLO can find and label multiple objects in an image in real-time. That's the tech behind self-driving cars spotting pedestrians, or your phone unlocking with your face!",
+        "Image recognition works by converting pixels into feature maps through convolutional layers. Each layer detects increasingly complex patterns — from lines to shapes to full objects. Pretty wild!"
+      ]
+    },
+    "ethics_ai": {
+      "keywords": ["ethics", "bias", "fairness", "responsible ai", "explainability", "privacy", "deepfake", "ai safety"],
+      "emotion": "thinking",
+      "responses": [
+        "AI Ethics is all about making sure AI systems are fair, transparent, and safe. Bias can sneak in through biased training data, and the results can be seriously harmful if left unchecked.",
+        "Explainability matters — if an AI decides to reject your loan application, you deserve to know WHY. 'Black-box' models are powerful but risky when deployed in high-stakes decisions.",
+        "Responsible AI asks: who benefits, who could be harmed, and can we audit it? Privacy, fairness, and human oversight are non-negotiable when building real-world AI systems."
+      ]
+    },
+    "rob_meta": {
+      "keywords": ["how do you work", "how does rob work", "what can you do", "who made you", "are you ai", "rob learn", "how rob"],
+      "emotion": "happy",
+      "responses": [
+        "I'm ROB — your AI learning buddy! I use a knowledge pack to answer questions about AI topics. My creator (your teacher) can train me with new content. The more they add, the smarter I get! 🤖",
+        "I work by matching your questions to a library of AI knowledge packs. No LLM needed — just fast, reliable pattern matching. Think of me as a super-smart index card system!",
+        "I was built on this platform to help you learn AI by DOING AI. Ask me questions, take quizzes, and watch your XP grow. Eventually I'll level up to use real language models too! 🚀"
+      ]
+    },
+    "xp_progress": {
+      "keywords": ["xp", "level up", "how do i level", "earn more xp", "progress", "badge", "streak"],
+      "emotion": "excited",
+      "responses": [
+        "XP (Experience Points) are earned by answering quiz questions (+15 XP each!), completing modules, and chatting with me daily. Stack those streaks for bonus badges!",
+        "To level up faster: hit the Quiz tab every session, complete full modules, and keep your daily streak going. Consistency beats cramming every time!",
+        "Badges unlock for hitting milestones — first correct answer, 7-day streak, completing a module, and more. Check your Stats tab to see what's coming next!"
+      ]
+    }
+  },
+  "quickPrompts": {
+    "default": [
+      "What is AI?",
+      "How does machine learning work?",
+      "What is training data?",
+      "Tell me about neural networks",
+      "Am I doing well?"
+    ],
+    "ai_basics": [
+      "Give me an example of AI",
+      "What's the difference between AI and ML?",
+      "How did AI start?",
+      "What can AI not do?"
+    ],
+    "machine_learning": [
+      "What is supervised learning?",
+      "How does a model train?",
+      "What is overfitting?",
+      "How much data do I need?"
+    ],
+    "neural_networks": [
+      "How many layers does a neural network need?",
+      "What is backpropagation?",
+      "What is an activation function?",
+      "What is deep learning?"
+    ],
+    "nlp": [
+      "How do chatbots work?",
+      "What is a language model?",
+      "How does translation AI work?",
+      "What is a transformer?"
+    ]
+  },
+  "fallbacks": [
+    "That's a fascinating question! I'm still building my knowledge on that topic — ask your teacher to train me with more content! 📚",
+    "Hmm, my knowledge packs don't cover that exactly yet. Try rephrasing, or check the module lessons for a deeper dive!",
+    "Great curiosity! That might be covered in your course modules. Have you tried the Quiz tab? It might unlock some hints! 🎯",
+    "I don't have a confident answer on that one yet. But here's a tip: the best AI engineers are the ones who keep asking exactly that kind of question. Keep it up!",
+    "My circuits are spinning on that one! Ask your teacher to add it to my training data — that's literally how AI improves. Meta, right? 🤖"
+  ],
+  "encouragements": [
+    "Every question you ask makes both of us smarter. Keep going!",
+    "Mistakes are just data. Wrong answers teach you more than right ones!",
+    "You're building AI intuition one concept at a time. It adds up faster than you think!",
+    "The best AI researchers were once confused beginners. You're exactly on track.",
+    "Curiosity is the most important skill in AI. You've got it!"
+  ]
+}

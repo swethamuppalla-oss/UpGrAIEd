@@ -1,3 +1,5 @@
+import { getGreeting, getInactivityMessage } from './RobBrain'
+
 export const ROB_COLORS = {
   cyan: { primary: '#00D4FF', secondary: '#0099BB', glow: 'rgba(0,212,255,0.45)' },
   purple: { primary: '#A855F7', secondary: '#7E22CE', glow: 'rgba(168,85,247,0.45)' },
@@ -11,14 +13,13 @@ export function getRobMood(companionData, xpToday, accuracy = 100) {
     return { emotion: 'happy', message: "Ready to learn something new about AI today?" }
   }
 
-  const { timeOfDay, daysSinceLogin, streak } = companionData
+  const { timeOfDay, daysSinceLogin, streak, robName } = companionData
+  const firstName = robName ? robName.split(' ')[0] : ''
 
-  // Inactive comeback
-  if (daysSinceLogin >= 3) {
-    return { emotion: 'encouraging', message: `I missed you SO much! ${daysSinceLogin} days is way too long. Let's fix that right now!` }
-  }
+  // Inactive comeback — pull from brain packs for variety
   if (daysSinceLogin >= 2) {
-    return { emotion: 'encouraging', message: `Hey! It's been ${daysSinceLogin} days. Your streak is waiting... shall we restart?` }
+    const msg = getInactivityMessage(daysSinceLogin, firstName)
+    return { emotion: 'encouraging', message: msg }
   }
 
   // Winning / fire
@@ -51,21 +52,11 @@ export function getRobMood(companionData, xpToday, accuracy = 100) {
     return { emotion: 'happy', message: `${streak} days straight! I'm so proud of you. Let's make it ${streak + 1}!` }
   }
 
-  // Time-based
-  if (timeOfDay === 'morning') {
-    return {
-      emotion: 'happy',
-      message: streak > 0
-        ? `Rise and grind! Day ${streak + 1} of our streak starts NOW.`
-        : "Fresh morning, fresh mind. Let's build something amazing today!",
-    }
-  }
-  if (timeOfDay === 'afternoon') {
-    return { emotion: 'curious', message: "Mid-day learning hits different. What AI concept are we cracking today?" }
-  }
-  if (timeOfDay === 'evening') {
-    return { emotion: 'thinking', message: "Evening is my favorite time to learn. Brains consolidate knowledge while you sleep!" }
-  }
+  // Time-based greeting from brain packs
+  const greetingMsg = streak > 0 && timeOfDay === 'morning'
+    ? `Rise and grind! Day ${streak + 1} of our streak starts NOW.`
+    : getGreeting(timeOfDay || 'afternoon', firstName)
 
-  return { emotion: 'sleepy', message: "Night owl energy detected... I run 24/7, so let's go! 🦉" }
+  const emotionMap = { morning: 'happy', afternoon: 'curious', evening: 'thinking', night: 'sleepy' }
+  return { emotion: emotionMap[timeOfDay] || 'happy', message: greetingMsg }
 }

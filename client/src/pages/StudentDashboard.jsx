@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/layout/Sidebar'
+import StreakCard from '../components/progress/StreakCard'
+import UnlockCard from '../components/progress/UnlockCard'
+import RobComebackCard from '../components/progress/RobComebackCard'
+import { useStudentProgress } from '../context/StudentProgressContext'
 import RobCharacter from '../components/ROB/RobCharacter'
 import RobFloating from '../components/ROB/RobFloating'
 import RobLesson from '../components/ROB/RobLesson'
@@ -49,6 +53,7 @@ export default function StudentDashboard() {
   } = useROB()
   const navigate = useNavigate()
   const { showToast } = useToast()
+  const { progress, isCompleted, isUnlocked, isInactive } = useStudentProgress()
   const quizPanelRef = useRef(null)
   const gamePanelRef = useRef(null)
 
@@ -223,6 +228,151 @@ export default function StudentDashboard() {
           streak={streak}
           badges={badges}
         />
+
+        {/* ── Progress-aware learning section ───────────────────── */}
+
+        {/* Comeback card — shown only when inactive 2+ days */}
+        {isInactive() && progress.completedModules.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <RobComebackCard
+              robName={displayName}
+              robColor={companionData?.color || 'cyan'}
+              daysMissed={3}
+              onQuickQuiz={scrollToQuiz}
+              onResume={() => navigate(isCompleted('L1M1') ? '/student/module/2' : '/student/module/1')}
+            />
+          </div>
+        )}
+
+        {/* Module roadmap */}
+        <div style={{ marginBottom: 20 }}>
+          {/* Section header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ fontWeight: 800, fontSize: 17, color: 'var(--text-primary)' }}>
+              🗺 Level 1 Roadmap
+            </div>
+            <div style={{
+              fontSize: 11, fontWeight: 700, color: '#9B6FF4',
+              background: 'rgba(123,63,228,0.12)',
+              border: '1px solid rgba(123,63,228,0.25)',
+              borderRadius: 20, padding: '3px 12px',
+            }}>
+              {progress.completedModules.length} / 4 Complete
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
+            {[
+              { key: 'L1M1', icon: '🤖', title: 'ROB Saves Your Day', xp: 50,  route: '/student/module/1' },
+              { key: 'L1M2', icon: '💬', title: 'Better Questions',    xp: 60,  route: '/student/module/2' },
+              { key: 'L1M3', icon: '📚', title: 'ROB Becomes Tutor',   xp: 75,  route: '/student/module/3' },
+              { key: 'L1M4', icon: '🔍', title: 'Catch ROB Wrong',     xp: 80,  route: '/student/module/4' },
+            ].map((mod, idx) => {
+              const done    = isCompleted(mod.key)
+              const active  = isUnlocked(mod.key) && !done
+              const locked  = !isUnlocked(mod.key) && !done
+
+              return (
+                <button
+                  key={mod.key}
+                  disabled={locked}
+                  onClick={() => !locked && navigate(mod.route)}
+                  style={{
+                    textAlign: 'left', cursor: locked ? 'not-allowed' : 'pointer',
+                    background: done
+                      ? 'rgba(34,197,94,0.08)'
+                      : active
+                        ? 'linear-gradient(135deg, rgba(123,63,228,0.15), rgba(155,111,244,0.08))'
+                        : 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${done ? 'rgba(34,197,94,0.3)' : active ? 'rgba(123,63,228,0.4)' : 'rgba(255,255,255,0.06)'}`,
+                    borderRadius: 16, padding: '14px 14px',
+                    opacity: locked ? 0.4 : 1,
+                    transition: 'all 0.25s',
+                    boxShadow: active ? '0 0 20px rgba(123,63,228,0.12)' : 'none',
+                  }}
+                  onMouseEnter={e => { if (!locked) { e.currentTarget.style.transform = 'translateY(-2px)' } }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = '' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                    <span style={{ fontSize: 22 }}>{done ? '✅' : locked ? '🔒' : mod.icon}</span>
+                    <span style={{
+                      fontSize: 10, fontWeight: 800, letterSpacing: 1,
+                      color: done ? '#4ADE80' : active ? '#9B6FF4' : 'var(--text-muted)',
+                      textTransform: 'uppercase',
+                    }}>
+                      {done ? 'Done' : active ? 'Available' : 'Locked'}
+                    </span>
+                  </div>
+                  <div style={{
+                    fontSize: 13, fontWeight: 700, lineHeight: 1.35,
+                    color: done ? '#4ADE80' : 'var(--text-primary)',
+                    marginBottom: 6,
+                    textDecoration: done ? 'line-through' : 'none',
+                  }}>
+                    M{idx + 1}. {mod.title}
+                  </div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#FFD700' }}>+{mod.xp} XP</div>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Unlock card — only show when M1 done and M2 unlocked */}
+        {isCompleted('L1M1') && isUnlocked('L1M2') && (
+          <div style={{ marginBottom: 20 }}>
+            <UnlockCard
+              moduleKey="L1M2"
+              title="Better Questions, Better Answers"
+              subtitle="Learn why better prompts give smarter AI answers. The secret skill every AI champion needs."
+              xp={60}
+              duration="12 min"
+              icon="💬"
+              onStart={() => navigate('/student/module/2')}
+            />
+          </div>
+        )}
+
+        {/* Module 1 CTA — only show when not yet completed */}
+        {!isCompleted('L1M1') && (
+          <div style={{
+            marginBottom: 20,
+            background: 'linear-gradient(135deg, rgba(123,63,228,0.12), rgba(0,212,255,0.07))',
+            border: '1px solid rgba(123,63,228,0.3)',
+            borderRadius: 16, padding: '18px 24px',
+            display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
+          }}>
+            <div style={{ fontSize: 28 }}>🤖</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--text-primary)' }}>
+                Module 1 · ROB Saves Your Day with AI
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>
+                10 min · Beginner · +50 XP · Your first lesson!
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/student/module/1')}
+              style={{
+                background: 'linear-gradient(135deg, #7B3FE4, #5B2DB4)',
+                border: 'none', borderRadius: 12, padding: '11px 24px',
+                color: '#fff', fontWeight: 800, fontSize: 13, cursor: 'pointer',
+                boxShadow: '0 4px 16px rgba(123,63,228,0.4)',
+                transition: 'all 0.2s',
+              }}
+            >
+              Start Lesson →
+            </button>
+          </div>
+        )}
+
+        {/* Streak card */}
+        <div style={{ marginBottom: 24 }}>
+          <StreakCard
+            streakDays={progress.streakDays}
+            lastStreakDate={progress.lastStreakDate}
+          />
+        </div>
 
         {/* Inline Quiz + Game */}
         <section className="student-quiz-game-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
