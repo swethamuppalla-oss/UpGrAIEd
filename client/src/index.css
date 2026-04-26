@@ -750,3 +750,66 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(123, 63, 228, 0.18) !important;
 }
 
+/* ============================================================
+   GROWTH / MARKETING PAGE ANIMATIONS
+   ============================================================ */
+@keyframes heroRise {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes robFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
+}
+
+@keyframes faqReveal {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   GROWTH RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .hero-grid,
+  .rob-grid,
+  .demo-grid,
+  .compare-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+
+  .why-grid,
+  .benefits-grid,
+  .trust-grid,
+  .curriculum-grid,
+  .includes-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .pricing-grid,
+  .stats-grid,
+  .guarantee-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .why-grid,
+  .benefits-grid,
+  .trust-grid,
+  .curriculum-grid,
+  .includes-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .growth-nav-desktop {
+    display: none !important;
+  }
+
+  .growth-nav-mobile {
+    display: block !important;
+  }
+}
+

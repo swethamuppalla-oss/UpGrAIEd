@@ -14,6 +14,11 @@ import CreatorDashboard from './pages/CreatorDashboard'
 import LessonPage from './pages/LessonPage'
 import ModuleOnePage from './pages/ModuleOnePage'
 import { StudentProgressProvider } from './context/StudentProgressContext'
+import BloomDashboard from './pages/BloomDashboard'
+import LandingPage from './pages/LandingPage'
+import WhyUpgraied from './pages/WhyUpgraied'
+import PricingPage from './pages/PricingPage'
+import BookDemoPage from './pages/BookDemoPage'
 
 export default function App() {
   return (
@@ -23,7 +28,13 @@ export default function App() {
         <ToastProvider>
           <BrowserRouter>
             <Routes>
-          {/* Public routes */}
+          {/* Public growth / marketing routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/why" element={<WhyUpgraied />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/book-demo" element={<BookDemoPage />} />
+
+          {/* Auth routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/reserve" element={<ReservePage />} />
 
@@ -33,6 +44,8 @@ export default function App() {
           }>
             <Route path="/dashboard/student"
               element={<StudentDashboard />} />
+            <Route path="/dashboard/student/bloom"
+              element={<BloomDashboard />} />
             <Route path="/player/:moduleId?"
               element={<VideoPlayer />} />
             <Route path="/lesson/:lessonId?"
@@ -67,11 +80,9 @@ export default function App() {
               element={<CreatorDashboard />} />
           </Route>
 
-          {/* Fallbacks */}
-          <Route path="/"
-            element={<Navigate to="/login" replace />} />
+          {/* Fallback */}
           <Route path="*"
-            element={<Navigate to="/login" replace />} />
+            element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>
         </ToastProvider>

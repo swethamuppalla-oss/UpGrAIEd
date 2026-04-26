@@ -1,0 +1,600 @@
+/* ================================================================
+   BLOOM DESIGN SYSTEM — UpGrAIed
+   Vibrant premium kids learning platform
+   Pixar + Duolingo polish, dark-forest premium feel
+   ================================================================ */
+
+/* ── Tokens ─────────────────────────────────────────────────────── */
+:root {
+  /* Core palette */
+  --bloom-green:   #6EDC5F;
+  --bloom-mint:    #A8F5A2;
+  --bloom-sky:     #63C7FF;
+  --bloom-yellow:  #FFD95A;
+  --bloom-coral:   #FF8A65;
+  --bloom-bg:      #10231A;
+  --bloom-bg2:     #0D1F16;
+  --bloom-surface: #162B1F;
+  --bloom-card:    #1C3328;
+  --bloom-border:  rgba(110, 220, 95, 0.18);
+  --bloom-glow-g:  rgba(110, 220, 95, 0.45);
+  --bloom-glow-s:  rgba(99, 199, 255, 0.35);
+  --bloom-glow-y:  rgba(255, 217, 90, 0.4);
+  --bloom-text:    #E8FAE6;
+  --bloom-muted:   rgba(168, 245, 162, 0.55);
+
+  /* Gradients (reusable) */
+  --bloom-grad-hero:    linear-gradient(135deg, #10231A 0%, #0D2B1A 50%, #102320 100%);
+  --bloom-grad-green:   linear-gradient(135deg, #6EDC5F, #A8F5A2);
+  --bloom-grad-sky:     linear-gradient(135deg, #63C7FF, #A8F5A2);
+  --bloom-grad-warm:    linear-gradient(135deg, #FFD95A, #FF8A65);
+  --bloom-grad-card:    linear-gradient(145deg, #1C3328, #162B1F);
+  --bloom-grad-glow:    radial-gradient(ellipse at center, rgba(110,220,95,0.2) 0%, transparent 70%);
+
+  /* Spacing */
+  --bloom-r-sm:  10px;
+  --bloom-r-md:  16px;
+  --bloom-r-lg:  24px;
+  --bloom-r-xl:  32px;
+  --bloom-r-2xl: 48px;
+
+  /* Shadows */
+  --bloom-shadow-card: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(110,220,95,0.1);
+  --bloom-shadow-glow: 0 0 40px rgba(110,220,95,0.25), 0 8px 32px rgba(0,0,0,0.5);
+  --bloom-shadow-sky:  0 0 30px rgba(99,199,255,0.2), 0 8px 24px rgba(0,0,0,0.4);
+}
+
+/* ── Animations ─────────────────────────────────────────────────── */
+@keyframes bloom-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-10px) rotate(1deg); }
+  66%       { transform: translateY(-5px) rotate(-1deg); }
+}
+@keyframes bloom-bounce {
+  0%, 100%  { transform: translateY(0) scaleY(1); }
+  20%       { transform: translateY(-18px) scaleY(0.95); }
+  40%       { transform: translateY(0) scaleY(1.06); }
+  60%       { transform: translateY(-8px) scaleY(0.98); }
+  80%       { transform: translateY(0) scaleY(1.02); }
+}
+@keyframes bloom-pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(110,220,95,0.2); }
+  50%       { box-shadow: 0 0 50px rgba(110,220,95,0.55), 0 0 80px rgba(110,220,95,0.15); }
+}
+@keyframes bloom-shimmer {
+  0%   { background-position: -300% center; }
+  100% { background-position: 300% center; }
+}
+@keyframes bloom-rise {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes bloom-pop {
+  0%   { transform: scale(0.7) rotate(-8deg); opacity: 0; }
+  60%  { transform: scale(1.08) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes bloom-spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes bloom-particle {
+  0%   { transform: translateY(0px) translateX(0px) scale(1); opacity: 0.7; }
+  50%  { opacity: 1; }
+  100% { transform: translateY(-120px) translateX(var(--dx, 20px)) scale(0); opacity: 0; }
+}
+@keyframes bloom-blink {
+  0%, 90%, 100% { scaleY: 1; }
+  95%            { transform: scaleY(0.05); }
+}
+@keyframes bloom-confetti {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-80px) rotate(720deg); opacity: 0; }
+}
+@keyframes bloom-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  20%      { transform: rotate(-8deg); }
+  40%      { transform: rotate(8deg); }
+  60%      { transform: rotate(-5deg); }
+  80%      { transform: rotate(5deg); }
+}
+@keyframes bloom-scan {
+  0%   { transform: translateY(-100%); opacity: 0.4; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+/* ── Base Reset for Bloom pages ──────────────────────────────────── */
+.bloom-page {
+  background: var(--bloom-bg);
+  color: var(--bloom-text);
+  min-height: 100vh;
+  font-family: 'Nunito', 'Inter', -apple-system, sans-serif;
+}
+
+/* ── Layout ──────────────────────────────────────────────────────── */
+.bloom-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.bloom-section {
+  padding: 80px 24px;
+}
+.bloom-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.bloom-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.bloom-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+@media (max-width: 1024px) {
+  .bloom-grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .bloom-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 680px) {
+  .bloom-grid-2, .bloom-grid-3, .bloom-grid-4 { grid-template-columns: 1fr; }
+  .bloom-section { padding: 48px 20px; }
+}
+
+/* ── Cards ───────────────────────────────────────────────────────── */
+.bloom-card {
+  background: var(--bloom-grad-card);
+  border: 1px solid var(--bloom-border);
+  border-radius: var(--bloom-r-xl);
+  box-shadow: var(--bloom-shadow-card);
+  padding: 28px;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+}
+.bloom-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(110,220,95,0.35);
+  box-shadow: var(--bloom-shadow-glow);
+}
+.bloom-card-glow {
+  position: relative;
+  overflow: hidden;
+}
+.bloom-card-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--bloom-grad-glow);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.bloom-card-glow:hover::before { opacity: 1; }
+
+.bloom-hero-card {
+  background: linear-gradient(135deg, #1C3328 0%, #0F2A1E 50%, #162B1F 100%);
+  border: 1px solid rgba(110,220,95,0.25);
+  border-radius: var(--bloom-r-2xl);
+  box-shadow: var(--bloom-shadow-glow);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+.bloom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: var(--bloom-r-xl);
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow 0.25s ease;
+  letter-spacing: 0.01em;
+}
+.bloom-btn:hover { transform: translateY(-3px) scale(1.03); }
+.bloom-btn:active { transform: scale(0.97); }
+
+.bloom-btn-primary {
+  background: var(--bloom-grad-green);
+  color: #0D2010;
+  box-shadow: 0 6px 24px rgba(110,220,95,0.4);
+}
+.bloom-btn-primary:hover { box-shadow: 0 12px 40px rgba(110,220,95,0.6); }
+
+.bloom-btn-sky {
+  background: var(--bloom-grad-sky);
+  color: #0D1F2D;
+  box-shadow: 0 6px 24px rgba(99,199,255,0.35);
+}
+
+.bloom-btn-warm {
+  background: var(--bloom-grad-warm);
+  color: #2D1200;
+  box-shadow: 0 6px 24px rgba(255,138,101,0.4);
+}
+
+.bloom-btn-ghost {
+  background: rgba(110,220,95,0.08);
+  color: var(--bloom-green);
+  border: 1px solid rgba(110,220,95,0.25);
+  box-shadow: none;
+}
+.bloom-btn-ghost:hover {
+  background: rgba(110,220,95,0.14);
+  box-shadow: 0 4px 16px rgba(110,220,95,0.2);
+}
+
+.bloom-btn-lg { padding: 18px 36px; font-size: 17px; border-radius: var(--bloom-r-2xl); }
+.bloom-btn-sm { padding: 9px 18px; font-size: 13px; border-radius: var(--bloom-r-md); }
+
+/* ── Pills & Badges ──────────────────────────────────────────────── */
+.bloom-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.bloom-pill-green {
+  background: rgba(110,220,95,0.15);
+  border: 1px solid rgba(110,220,95,0.3);
+  color: var(--bloom-green);
+}
+.bloom-pill-sky {
+  background: rgba(99,199,255,0.12);
+  border: 1px solid rgba(99,199,255,0.25);
+  color: var(--bloom-sky);
+}
+.bloom-pill-yellow {
+  background: rgba(255,217,90,0.12);
+  border: 1px solid rgba(255,217,90,0.25);
+  color: var(--bloom-yellow);
+}
+.bloom-pill-coral {
+  background: rgba(255,138,101,0.12);
+  border: 1px solid rgba(255,138,101,0.25);
+  color: var(--bloom-coral);
+}
+.bloom-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--bloom-green);
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* ── Typography ──────────────────────────────────────────────────── */
+.bloom-display {
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--bloom-text);
+}
+.bloom-display-sm {
+  font-size: clamp(24px, 4vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.bloom-heading {
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.bloom-body {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--bloom-muted);
+}
+.bloom-text-green {
+  background: var(--bloom-grad-green);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.bloom-text-sky {
+  background: var(--bloom-grad-sky);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.bloom-text-warm {
+  background: var(--bloom-grad-warm);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Progress Bars ───────────────────────────────────────────────── */
+.bloom-progress-track {
+  height: 10px;
+  background: rgba(110,220,95,0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+.bloom-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--bloom-grad-green);
+  position: relative;
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.bloom-progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: bloom-shimmer 2s linear infinite;
+}
+
+/* ── XP Ring ─────────────────────────────────────────────────────── */
+.bloom-xp-ring {
+  filter: drop-shadow(0 0 12px rgba(110,220,95,0.4));
+}
+
+/* ── Stat Cards ──────────────────────────────────────────────────── */
+.bloom-stat {
+  text-align: center;
+  padding: 20px 16px;
+  background: rgba(110,220,95,0.05);
+  border: 1px solid rgba(110,220,95,0.1);
+  border-radius: var(--bloom-r-lg);
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.bloom-stat:hover {
+  background: rgba(110,220,95,0.1);
+  border-color: rgba(110,220,95,0.3);
+  transform: translateY(-4px);
+}
+.bloom-stat-value {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--bloom-green);
+  font-family: 'Nunito', sans-serif;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.bloom-stat-label {
+  font-size: 12px;
+  color: var(--bloom-muted);
+  font-weight: 600;
+}
+
+/* ── Nav ─────────────────────────────────────────────────────────── */
+.bloom-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+  background: rgba(13,31,22,0.85);
+  border-bottom: 1px solid rgba(110,220,95,0.12);
+  padding: 0 32px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bloom-nav-logo {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────── */
+.bloom-sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 72px;
+  background: rgba(13,31,22,0.95);
+  border-right: 1px solid rgba(110,220,95,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 8px;
+  z-index: 50;
+  backdrop-filter: blur(20px);
+}
+.bloom-sidebar-item {
+  width: 48px; height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  border: none;
+  background: transparent;
+  color: var(--bloom-muted);
+  position: relative;
+}
+.bloom-sidebar-item:hover,
+.bloom-sidebar-item.active {
+  background: rgba(110,220,95,0.15);
+  color: var(--bloom-green);
+  transform: scale(1.12);
+  box-shadow: 0 4px 16px rgba(110,220,95,0.2);
+}
+.bloom-sidebar-item.active::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  width: 3px; height: 24px;
+  background: var(--bloom-grad-green);
+  border-radius: 0 4px 4px 0;
+}
+.bloom-main-content {
+  margin-left: 72px;
+  padding: 28px 32px;
+  min-height: 100vh;
+}
+
+/* ── Background Effects ──────────────────────────────────────────── */
+.bloom-bg-mesh {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.bloom-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
+}
+.bloom-bg-orb-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, #6EDC5F, transparent);
+  top: -200px; left: -100px;
+  animation: bloom-float 14s ease-in-out infinite;
+}
+.bloom-bg-orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, #63C7FF, transparent);
+  bottom: -100px; right: -100px;
+  animation: bloom-float 18s ease-in-out infinite reverse;
+}
+.bloom-bg-orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, #FFD95A, transparent);
+  top: 50%; left: 50%;
+  animation: bloom-float 22s ease-in-out infinite 5s;
+  opacity: 0.1;
+}
+
+/* ── Quiz & Game Panels ──────────────────────────────────────────── */
+.bloom-panel {
+  background: var(--bloom-grad-card);
+  border: 1px solid var(--bloom-border);
+  border-radius: var(--bloom-r-xl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 380px;
+  box-shadow: var(--bloom-shadow-card);
+  transition: box-shadow 0.3s;
+}
+.bloom-panel:hover { box-shadow: var(--bloom-shadow-glow); }
+
+/* ── Option buttons for quiz/game ────────────────────────────────── */
+.bloom-option {
+  width: 100%; text-align: left;
+  padding: 12px 16px;
+  border-radius: var(--bloom-r-md);
+  border: 1px solid rgba(110,220,95,0.12);
+  background: rgba(110,220,95,0.04);
+  color: var(--bloom-text);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 600;
+  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+.bloom-option:hover:not(:disabled) {
+  background: rgba(110,220,95,0.12);
+  border-color: rgba(110,220,95,0.35);
+  transform: translateX(4px);
+}
+.bloom-option.correct {
+  background: rgba(110,220,95,0.18);
+  border-color: #6EDC5F;
+  color: #A8F5A2;
+}
+.bloom-option.wrong {
+  background: rgba(255,138,101,0.15);
+  border-color: #FF8A65;
+  color: #FFBDA0;
+}
+
+/* ── Badge / Achievement ─────────────────────────────────────────── */
+.bloom-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 14px;
+  border-radius: var(--bloom-r-xl);
+  background: rgba(110,220,95,0.05);
+  border: 1px solid rgba(110,220,95,0.12);
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.bloom-badge:hover {
+  transform: translateY(-5px) scale(1.03);
+  border-color: rgba(110,220,95,0.35);
+  box-shadow: 0 12px 32px rgba(110,220,95,0.15);
+}
+.bloom-badge-icon {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--bloom-grad-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 6px 20px rgba(110,220,95,0.35);
+}
+.bloom-badge.locked {
+  opacity: 0.4;
+  filter: grayscale(0.8);
+}
+.bloom-badge.earned .bloom-badge-icon {
+  animation: bloom-pulse-glow 3s ease-in-out infinite;
+}
+
+/* ── Tooltip / Speech Bubble ─────────────────────────────────────── */
+.bloom-bubble {
+  background: linear-gradient(135deg, rgba(110,220,95,0.15), rgba(99,199,255,0.1));
+  border: 1px solid rgba(110,220,95,0.3);
+  border-radius: 20px 20px 20px 4px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bloom-text);
+  max-width: 260px;
+  position: relative;
+  line-height: 1.5;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* ── Separator ───────────────────────────────────────────────────── */
+.bloom-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(110,220,95,0.25), transparent);
+  margin: 40px 0;
+}
+
+/* ── Animation utilities ─────────────────────────────────────────── */
+.bloom-animate-float  { animation: bloom-float 6s ease-in-out infinite; }
+.bloom-animate-bounce { animation: bloom-bounce 1.2s cubic-bezier(0.34,1.56,0.64,1) infinite; }
+.bloom-animate-rise   { animation: bloom-rise 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+.bloom-animate-pop    { animation: bloom-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
+.bloom-animate-wiggle { animation: bloom-wiggle 0.6s ease-in-out; }
+.bloom-animate-shimmer {
+  background: linear-gradient(90deg, #6EDC5F, #A8F5A2, #63C7FF, #A8F5A2, #6EDC5F);
+  background-size: 300% 100%;
+  animation: bloom-shimmer 3s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Stagger helpers */
+.bloom-delay-1 { animation-delay: 0.1s; }
+.bloom-delay-2 { animation-delay: 0.2s; }
+.bloom-delay-3 { animation-delay: 0.3s; }
+.bloom-delay-4 { animation-delay: 0.4s; }
+.bloom-delay-5 { animation-delay: 0.5s; }
