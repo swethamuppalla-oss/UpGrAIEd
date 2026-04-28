@@ -6,6 +6,7 @@ import ParentBenefits from '../components/growth/ParentBenefits';
 import TrustSection from '../components/growth/TrustSection';
 import FAQSection from '../components/growth/FAQSection';
 import StickyCTA from '../components/growth/StickyCTA';
+import { useConfig } from '../context/ConfigContext';
 
 const WHY_NOW_CARDS = [
   { icon: '🤖', title: 'AI will shape future jobs', desc: 'Over 80% of jobs in 2035 will require AI literacy. The time to build this foundation is now.' },
@@ -16,6 +17,7 @@ const WHY_NOW_CARDS = [
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const config = useConfig();
   const [email, setEmail] = useState('');
   const [emailSent, setEmailSent] = useState(false);
 
@@ -278,7 +280,7 @@ export default function LandingPage() {
               className="bloom-btn-primary"
               style={{ padding: '16px 36px', fontSize: '17px' }}
             >
-              Book Free Demo
+              {config?.ui?.hero?.cta_book_demo || 'Book Free Demo'}
             </button>
             <button
               onClick={() => navigate('/pricing')}

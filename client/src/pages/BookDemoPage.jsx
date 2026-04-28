@@ -387,7 +387,7 @@ function SuccessState({ form, navigate }) {
         {[
           '📱 WhatsApp confirmation within 2 hours',
           '📧 Joining details sent to your email',
-          '🎯 Your child's first mission is ready',
+          "🎯 Your child's first mission is ready",
         ].map((step, i) => (
           <div key={i} style={{
             color: 'var(--text-primary)', fontSize: '14px', marginBottom: '8px',

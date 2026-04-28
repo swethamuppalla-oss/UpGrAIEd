@@ -1,9 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import BloomCharacter from '../Bloom/BloomCharacter';
+import { useConfig } from '../../context/ConfigContext';
 
 export default function HeroSection() {
   const navigate = useNavigate();
+  const config = useConfig();
 
   return (
     <section style={{
@@ -65,21 +67,31 @@ export default function HeroSection() {
             fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.03em',
             color: '#F0FFF4', marginBottom: '24px',
           }}>
-            Future Skills<br />
-            for Kids{' '}
-            <span className="bloom-text-green">
-              Bloom Here
-            </span>
+            {config?.ui?.hero?.title ? (
+              <span dangerouslySetInnerHTML={{ __html: config.ui.hero.title }} />
+            ) : (
+              <>
+                Future Skills<br />
+                for Kids{' '}
+                <span className="bloom-text-green">
+                  Bloom Here
+                </span>
+              </>
+            )}
           </h1>
 
           <p style={{
             fontSize: '18px', lineHeight: 1.75,
             color: 'rgba(168,245,162,0.7)', marginBottom: '40px', maxWidth: '460px',
           }}>
-            AI, confidence, focus and smart thinking — taught in a fun,
-            guided way with{' '}
-            <strong style={{ color: '#6EDC5F' }}>Bloom</strong>,
-            your child's AI learning buddy.
+            {config?.ui?.hero?.subtitle || (
+              <>
+                AI, confidence, focus and smart thinking — taught in a fun,
+                guided way with{' '}
+                <strong style={{ color: '#6EDC5F' }}>Bloom</strong>,
+                your child's AI learning buddy.
+              </>
+            )}
           </p>
 
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '48px' }}>
@@ -88,7 +100,7 @@ export default function HeroSection() {
               className="bloom-btn-primary"
               style={{ fontSize: '16px', padding: '15px 32px' }}
             >
-              Book Free Demo
+              {config?.ui?.hero?.cta_primary || 'Book Free Demo'}
             </button>
             <button
               onClick={() => navigate('/why')}
@@ -140,6 +152,7 @@ export default function HeroSection() {
 }
 
 function BloomVisual() {
+  const config = useConfig();
   const chips = [
     { label: '🧠 Critical Thinking', top: '5%', left: '-5%', delay: '0s' },
     { label: '🚀 AI Skills', top: '15%', right: '-8%', delay: '0.8s' },
@@ -167,12 +180,16 @@ function BloomVisual() {
       </svg>
 
       {/* Bloom mascot */}
-      <BloomCharacter
-        emotion="excited"
-        size="hero"
-        animate={true}
-        speech="Hi! I'm Bloom — let's learn AI together!"
-      />
+      {config?.mascot?.bloom?.main_image ? (
+        <img src={config.mascot.bloom.main_image} alt="Bloom" style={{ width: 240, height: 240, zIndex: 10, position: 'relative' }} />
+      ) : (
+        <BloomCharacter
+          emotion="excited"
+          size="hero"
+          animate={true}
+          speech="Hi! I'm Bloom — let's learn AI together!"
+        />
+      )}
 
       {/* Floating skill chips */}
       {chips.map((chip, i) => (

@@ -1,115 +1,62 @@
 import React from 'react';
+import BloomCharacter from '../Bloom/BloomCharacter';
 
 const TRUST_POINTS = [
-  {
-    icon: '🛡️',
-    title: 'Age-Appropriate Learning',
-    desc: 'Every piece of content is curated specifically for ages 8–14. No inappropriate AI outputs, ever.',
-    color: '#7B3FE4',
-  },
-  {
-    icon: '👀',
-    title: 'Guided AI Usage',
-    desc: 'Children learn to use AI with guardrails — supervised, purposeful, and skill-building.',
-    color: '#EC4899',
-  },
-  {
-    icon: '📊',
-    title: 'Progress Visibility',
-    desc: "Parents get a real-time dashboard showing exactly what their child learned, earned, and achieved.",
-    color: '#22C55E',
-  },
-  {
-    icon: '📚',
-    title: 'Structured Curriculum',
-    desc: 'Built by educators, not just engineers. Every module has clear goals, outcomes, and milestones.',
-    color: '#FF7A2F',
-  },
-  {
-    icon: '🎓',
-    title: 'Real Skills, Not Passive Videos',
-    desc: 'Interactive missions > passive watching. Children build, create, and solve every session.',
-    color: '#3B82F6',
-  },
-  {
-    icon: '🤝',
-    title: 'Parent-Friendly Design',
-    desc: 'Easy onboarding, simple controls, and transparent reporting built for busy parents.',
-    color: '#9B6FF4',
-  },
+  { icon: '🛡️', title: 'Age-Appropriate Learning',     desc: 'Every piece of content is curated for ages 8–14. No inappropriate AI outputs, ever.', iconClass: '' },
+  { icon: '👀', title: 'Guided AI Usage',               desc: 'Children learn to use AI with guardrails — supervised, purposeful, and skill-building.', iconClass: 'pg-icon-sky' },
+  { icon: '📊', title: 'Progress Visibility',           desc: 'Parents get a real-time dashboard showing exactly what their child learned and achieved.', iconClass: 'pg-icon-warm' },
+  { icon: '📚', title: 'Structured Curriculum',         desc: 'Built by educators, not just engineers. Every module has clear goals and milestones.', iconClass: '' },
+  { icon: '🎓', title: 'Real Skills, Not Passive Videos', desc: 'Interactive missions > passive watching. Children build and solve every session.', iconClass: 'pg-icon-sky' },
+  { icon: '🤝', title: 'Parent-Friendly Design',        desc: 'Easy onboarding, simple controls, and transparent reporting built for busy parents.', iconClass: 'pg-icon-warm' },
 ];
 
 const STATS = [
-  { value: '8–14', label: 'Target Age Group', icon: '👧' },
-  { value: '95%', label: 'Parent Satisfaction', icon: '⭐' },
-  { value: '12+', label: 'Interactive Modules', icon: '📦' },
-  { value: '0', label: 'Coding Knowledge Required', icon: '✅' },
+  { value: '8–14', label: 'Target Age Group', icon: '👧', delay: 0 },
+  { value: '95%',  label: 'Parent Satisfaction', icon: '⭐', delay: 0.1 },
+  { value: '12+',  label: 'Interactive Modules', icon: '📦', delay: 0.2 },
+  { value: '0',    label: 'Coding Knowledge Required', icon: '✅', delay: 0.3 },
 ];
 
 export default function TrustSection() {
   return (
-    <section style={{
-      padding: '100px 32px',
-      position: 'relative',
-      background: 'rgba(12,12,18,0.6)',
-    }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <section className="pg-section pg-section-alt">
+      {/* Ambient orbs */}
+      <div className="pg-orb" style={{ top: '10%', right: '-6%', width: 450, height: 450, background: 'radial-gradient(circle, rgba(99,199,255,0.08), transparent 70%)', filter: 'blur(55px)', animationDuration: '20s' }} />
+      <div className="pg-orb" style={{ bottom: '5%', left: '-4%', width: 350, height: 350, background: 'radial-gradient(circle, rgba(110,220,95,0.07), transparent 70%)', filter: 'blur(45px)', animationDelay: '9s' }} />
+
+      <div className="pg-container">
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <div style={{
-            display: 'inline-block', padding: '4px 14px', borderRadius: '50px',
-            background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)',
-            color: '#22C55E', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em',
-            marginBottom: '16px',
-          }}>
-            SAFE · GUIDED · PARENT-FRIENDLY
-          </div>
-          <h2 style={{
-            fontSize: 'clamp(30px, 4vw, 52px)', fontWeight: 800,
-            letterSpacing: '-0.02em', lineHeight: 1.1,
-            color: 'var(--text-primary)', marginBottom: '16px',
-          }}>
+        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+          <div className="pg-badge pg-badge-sky">SAFE · GUIDED · PARENT-FRIENDLY</div>
+          <h2 className="pg-h2">
             You're in control.{' '}
-            <span style={{
-              background: 'linear-gradient(135deg, #22C55E, #3B82F6)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            }}>Always.</span>
+            <span className="bloom-text-sky">Always.</span>
           </h2>
-          <p style={{
-            color: 'var(--text-secondary)', fontSize: '17px', maxWidth: '480px', margin: '0 auto',
-          }}>
+          <p className="pg-sub" style={{ maxWidth: 480, margin: '0 auto' }}>
             UpgrAIed was built with parents at the design table — not as an afterthought.
           </p>
         </div>
 
-        {/* Stats Bar */}
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '16px', marginBottom: '64px',
-        }} className="stats-grid">
-          {STATS.map((s, i) => (
-            <div key={i} style={{
-              padding: '24px 20px', borderRadius: '16px', textAlign: 'center',
-              background: 'rgba(26,26,38,0.7)',
-              border: '1px solid rgba(255,255,255,0.06)',
-            }}>
-              <div style={{ fontSize: '28px', marginBottom: '8px' }}>{s.icon}</div>
-              <div style={{
-                fontSize: '28px', fontWeight: 800, letterSpacing: '-0.02em',
-                background: 'linear-gradient(135deg, #9B6FF4, #EC4899)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                marginBottom: '4px',
-              }}>{s.value}</div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>{s.label}</div>
-            </div>
-          ))}
+        {/* Stats + Bloom mascot row */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 24, alignItems: 'center', marginBottom: 64 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            {STATS.slice(0, 2).map((s, i) => (
+              <StatCard key={i} {...s} />
+            ))}
+          </div>
+          <BloomCharacter size="medium" emotion="happy" speech="Parents can see everything! 📊" animate />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            {STATS.slice(2).map((s, i) => (
+              <StatCard key={i} {...s} />
+            ))}
+          </div>
         </div>
 
-        {/* Trust Grid */}
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '20px',
-        }} className="trust-grid">
+        {/* Divider */}
+        <div className="bloom-divider" style={{ marginBottom: 48 }} />
+
+        {/* Trust grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }} className="pg-grid-3">
           {TRUST_POINTS.map((point, i) => (
             <TrustCard key={i} {...point} />
           ))}
@@ -119,37 +66,25 @@ export default function TrustSection() {
   );
 }
 
-function TrustCard({ icon, title, desc, color }) {
-  const [hovered, setHovered] = React.useState(false);
-
+function StatCard({ icon, value, label, delay }) {
   return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'flex', gap: '16px', padding: '24px',
-        borderRadius: '16px',
-        background: hovered ? 'rgba(26,26,38,0.9)' : 'rgba(20,20,30,0.5)',
-        border: `1px solid ${hovered ? color + '30' : 'rgba(255,255,255,0.05)'}`,
-        transition: 'all 0.25s ease',
-        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
-      }}
-    >
-      <div style={{
-        width: '44px', height: '44px', flexShrink: 0, borderRadius: '12px',
-        background: `${color}15`, display: 'flex', alignItems: 'center',
-        justifyContent: 'center', fontSize: '22px',
-      }}>
+    <div className="pg-stat-card" style={{ animationDelay: `${delay}s` }}>
+      <div style={{ fontSize: 28, marginBottom: 8 }}>{icon}</div>
+      <div className="pg-stat-value">{value}</div>
+      <div className="pg-stat-label">{label}</div>
+    </div>
+  );
+}
+
+function TrustCard({ icon, title, desc, iconClass }) {
+  return (
+    <div className="pg-card" style={{ display: 'flex', gap: 16, padding: 24 }}>
+      <div className={`pg-icon ${iconClass}`} style={{ width: 44, height: 44, fontSize: 22 }}>
         {icon}
       </div>
       <div>
-        <h4 style={{
-          fontSize: '15px', fontWeight: 700,
-          color: 'var(--text-primary)', marginBottom: '6px',
-        }}>{title}</h4>
-        <p style={{
-          color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.6,
-        }}>{desc}</p>
+        <h4 style={{ fontSize: 15, fontWeight: 700, color: '#F0FFF4', marginBottom: 6 }}>{title}</h4>
+        <p style={{ color: 'rgba(168,245,162,0.65)', fontSize: 13, lineHeight: 1.65 }}>{desc}</p>
       </div>
     </div>
   );

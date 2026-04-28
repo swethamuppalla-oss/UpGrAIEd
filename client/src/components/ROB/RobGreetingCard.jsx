@@ -3,18 +3,20 @@ import { useROB } from '../../context/RobContext'
 import RobCharacter from './RobCharacter'
 import RobBubble from './RobBubble'
 import { getRobMood, ROB_COLORS } from '../../utils/RobMoodEngine'
+import { useConfigValue } from '../../hooks/useConfigValue'
 
 export default function RobGreetingCard({ onQuickRecap, onContinueMission, onMiniGame, onScrollToQuiz, onScrollToGame, streak, badges }) {
   const { robName, robColor, robLevel, companionData, xpToday, levelProgress, nextLevelXP } = useROB()
-  const displayName = robName || 'ROB'
-  const [mood, setMood] = useState(getRobMood(companionData, xpToday))
+  const personality  = useConfigValue('bloom.personality', null)
+  const displayName  = robName || 'ROB'
+  const [mood, setMood] = useState(getRobMood(companionData, xpToday, 100, personality))
   const [bubbleVisible, setBubbleVisible] = useState(true)
 
   const colors = ROB_COLORS[robColor] || ROB_COLORS.cyan
 
   useEffect(() => {
-    setMood(getRobMood(companionData, xpToday))
-  }, [companionData, xpToday])
+    setMood(getRobMood(companionData, xpToday, 100, personality))
+  }, [companionData, xpToday, personality])
 
   useEffect(() => {
     const interval = setInterval(() => {

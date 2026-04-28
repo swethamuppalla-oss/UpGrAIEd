@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useConfig } from '../../context/ConfigContext'
 
 // Size configs
 const SIZES = {
@@ -96,6 +97,9 @@ export default function BloomCharacter({
   const [blink, setBlink] = useState(false)
   const [eyeOffset, setEyeOffset] = useState({ x: 0, y: 0 })
   const blinkTimer = useRef(null)
+  
+  const config = useConfig()
+  const customImg = config?.mascot?.bloom?.expressions?.[emotion] || config?.mascot?.bloom?.avatar
 
   // Random blink every 3–6 s
   useEffect(() => {
@@ -139,6 +143,19 @@ export default function BloomCharacter({
         </div>
       )}
 
+      {customImg ? (
+        <img 
+          src={customImg} 
+          alt={`Bloom ${emotion}`} 
+          style={{ 
+            width: w, 
+            height: h, 
+            objectFit: 'contain', 
+            filter: 'drop-shadow(0 8px 24px rgba(110,220,95,0.35))',
+            animation: animate ? 'bloom-float 5s ease-in-out infinite' : undefined
+          }} 
+        />
+      ) : (
       <svg
         width={w}
         height={h}
@@ -320,6 +337,7 @@ export default function BloomCharacter({
           <line x1="154" y1="190" x2="172" y2="172" stroke="#FFD95A" strokeWidth="3" strokeLinecap="round" />
         )}
       </svg>
+      )}
     </div>
   )
 }

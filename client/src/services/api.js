@@ -135,4 +135,19 @@ export const createPaymentOrder = () =>
 export const verifyPayment = (data) =>
   api.post('/api/payments/verify', data).then(r => r.data)
 
+// Config
+export const getConfig = () =>
+  api.get('/api/config').then(r => r.data)
+export const getConfigByKey = (key) =>
+  api.get(`/api/config/${key}`).then(r => r.data)
+export const upsertConfig = (key, value) =>
+  api.put(`/api/config/${key}`, { value }).then(r => r.data)
+export const uploadMedia = (formData, onProgress) =>
+  api.post('/api/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress: (e) => {
+      if (onProgress) onProgress(Math.round((e.loaded * 100) / e.total))
+    }
+  }).then(r => r.data)
+
 export default api

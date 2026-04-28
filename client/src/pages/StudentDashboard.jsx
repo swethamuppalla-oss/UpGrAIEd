@@ -24,6 +24,7 @@ import {
   getStudentProgress,
   getStudentStats,
 } from '../services/api'
+import { useConfig } from '../context/ConfigContext'
 
 const NAV_ITEMS = [
   { id: 'home', icon: '🏠', label: 'Home' },
@@ -56,6 +57,7 @@ export default function StudentDashboard() {
   const { progress, isCompleted, isUnlocked, isInactive } = useStudentProgress()
   const quizPanelRef = useRef(null)
   const gamePanelRef = useRef(null)
+  const config = useConfig()
 
   const displayName = robName || 'ROB'
 
@@ -204,8 +206,12 @@ export default function StudentDashboard() {
 
         <header style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h1 className="clash-display" style={{ fontSize: 28, marginBottom: 4 }}>Mission Control</h1>
-            <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Welcome back, {firstName} 👋</p>
+            <h1 className="clash-display" style={{ fontSize: 28, marginBottom: 4 }}>
+              {config?.ui?.text?.student_dashboard_title || 'Mission Control'}
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+              {config?.ui?.text?.student_dashboard_welcome || 'Welcome back'}, {firstName} 👋
+            </p>
           </div>
           {todayLesson && (
             <button
@@ -249,7 +255,7 @@ export default function StudentDashboard() {
           {/* Section header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <div style={{ fontWeight: 800, fontSize: 17, color: 'var(--text-primary)' }}>
-              🗺 Level 1 Roadmap
+              🗺 {config?.ui?.text?.student_roadmap_title || 'Level 1 Roadmap'}
             </div>
             <div style={{
               fontSize: 11, fontWeight: 700, color: '#9B6FF4',
@@ -309,7 +315,7 @@ export default function StudentDashboard() {
                     marginBottom: 6,
                     textDecoration: done ? 'line-through' : 'none',
                   }}>
-                    M{idx + 1}. {mod.title}
+                    M{idx + 1}. {config?.curriculum?.modules?.[idx]?.title || mod.title}
                   </div>
                   <div style={{ fontSize: 11, fontWeight: 700, color: '#FFD700' }}>+{mod.xp} XP</div>
                 </button>

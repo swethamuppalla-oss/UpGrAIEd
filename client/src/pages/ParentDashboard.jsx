@@ -6,6 +6,7 @@ import Sidebar from '../components/layout/Sidebar'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import RobCharacter from '../components/ROB/RobCharacter'
 import { getChildInfo, getChildActivity, getParentBilling } from '../services/api'
+import { useConfig } from '../context/ConfigContext'
 
 const NAV_ITEMS = [
   { id: 'overview',  icon: '🏠', label: 'Overview'        },
@@ -54,11 +55,12 @@ function ActivityBadge({ status }) {
 }
 
 function ActivityTable({ activity }) {
+  const config = useConfig()
   const rows = (activity || []).slice(0, 10)
   return (
     <div className="table-wrapper">
       <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-card)' }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700 }}>Recent Activity</h2>
+        <h2 style={{ fontSize: 16, fontWeight: 700 }}>{config?.ui?.text?.parent_activity_title || 'Recent Activity'}</h2>
       </div>
       <table style={{ width: '100%', borderCollapse: 'collapse', background: 'var(--bg-card)' }}>
         <thead>
@@ -86,6 +88,8 @@ function ActivityTable({ activity }) {
 }
 
 function OverviewTab({ child, activity, loading }) {
+  const config = useConfig()
+  
   if (loading) return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <LoadingSkeleton height="120px" borderRadius="12px" />
@@ -118,7 +122,9 @@ function OverviewTab({ child, activity, loading }) {
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
             <span style={{ fontSize: 24 }}>🤖</span>
-            <span style={{ fontWeight: 700, color: '#00D4FF', textTransform: 'uppercase', letterSpacing: 1, fontSize: 13 }}>ROB Weekly Update</span>
+            <span style={{ fontWeight: 700, color: '#00D4FF', textTransform: 'uppercase', letterSpacing: 1, fontSize: 13 }}>
+              {config?.ui?.text?.parent_weekly_update || 'ROB Weekly Update'}
+            </span>
           </div>
           <p style={{ color: 'var(--text-primary)', fontSize: 18, lineHeight: 1.5, marginBottom: 24, maxWidth: 600 }}>
             <strong style={{ color: 'white' }}>{child.name}</strong> learned 4 days this week and improved consistency! They earned 150 XP and unlocked the "Prompt Explorer" badge.
@@ -259,6 +265,7 @@ export default function ParentDashboard() {
   const { user, logout } = useAuth()
   const { showToast }    = useToast()
   const navigate         = useNavigate()
+  const config           = useConfig()
 
   const [activeTab, setActiveTab] = useState('overview')
   const [loading, setLoading]     = useState(true)
@@ -304,9 +311,9 @@ export default function ParentDashboard() {
 
       <main className="main-content">
         <div className="page-header">
-          <h1 className="page-title">Parent Dashboard</h1>
+          <h1 className="page-title">{config?.ui?.text?.parent_dashboard_title || 'Parent Dashboard'}</h1>
           <p className="page-subtitle">
-            Monitoring <strong style={{ color: 'var(--accent-purple-light)' }}>{child?.name || 'your child'}</strong>'s learning journey
+            {config?.ui?.text?.parent_dashboard_subtitle || 'Monitoring'} <strong style={{ color: 'var(--accent-purple-light)' }}>{child?.name || 'your child'}</strong>'s learning journey
           </p>
         </div>
 

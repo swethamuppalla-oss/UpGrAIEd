@@ -19,87 +19,77 @@ export default function StickyCTA() {
       {/* WhatsApp floating button */}
       <a
         href={`https://wa.me/${WA_NUMBER}?text=${WA_MESSAGE}`}
-        target="_blank"
-        rel="noopener noreferrer"
+        target="_blank" rel="noopener noreferrer"
         style={{
-          position: 'fixed', bottom: '28px', right: '28px',
-          zIndex: 999,
-          width: '58px', height: '58px', borderRadius: '50%',
+          position: 'fixed', bottom: 28, right: 28, zIndex: 999,
+          width: 58, height: 58, borderRadius: '50%',
           background: 'linear-gradient(135deg, #25D366, #128C7E)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '28px',
-          boxShadow: '0 8px 32px rgba(37,211,102,0.45)',
-          transition: 'transform 0.2s, box-shadow 0.2s',
-          textDecoration: 'none',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26,
+          boxShadow: '0 8px 32px rgba(37,211,102,0.50)',
+          transition: 'transform 0.2s, box-shadow 0.2s', textDecoration: 'none',
         }}
-        onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 12px 40px rgba(37,211,102,0.6)'; }}
-        onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(37,211,102,0.45)'; }}
+        onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.12)'; e.currentTarget.style.boxShadow = '0 14px 44px rgba(37,211,102,0.65)'; }}
+        onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)';    e.currentTarget.style.boxShadow = '0 8px 32px rgba(37,211,102,0.50)'; }}
         title="Chat on WhatsApp"
-      >
-        💬
-      </a>
+      >💬</a>
 
-      {/* Sticky bottom bar (appears on scroll) */}
+      {/* Sticky bar */}
       <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        zIndex: 998,
-        background: 'rgba(10,10,15,0.95)',
+        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 998,
+        background: 'rgba(13,35,20,0.96)',
         backdropFilter: 'blur(20px)',
-        borderTop: '1px solid rgba(155,111,244,0.2)',
+        borderTop: '1px solid rgba(110,220,95,0.20)',
         padding: '14px 32px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        gap: '16px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
         transform: showBar ? 'translateY(0)' : 'translateY(100%)',
-        transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ fontSize: '28px' }}>🤖</div>
-          <div>
+        {/* Pulse dot + text */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ position: 'relative', width: 40, height: 40 }}>
             <div style={{
-              color: 'var(--text-primary)', fontWeight: 700, fontSize: '15px',
-            }}>
+              position: 'absolute', inset: -4, borderRadius: '50%',
+              background: 'rgba(110,220,95,0.15)',
+              animation: 'bloom-pulse-glow 2s ease-in-out infinite',
+            }} />
+            <div style={{
+              width: 40, height: 40, borderRadius: '50%',
+              background: 'linear-gradient(135deg, #6EDC5F, #3DAA3A)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+              boxShadow: '0 2px 12px rgba(110,220,95,0.4)',
+            }}>🌿</div>
+          </div>
+          <div>
+            <div style={{ color: '#F0FFF4', fontWeight: 700, fontSize: 15 }}>
               Future-proof your child today
             </div>
-            <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
+            <div style={{ color: 'rgba(168,245,162,0.6)', fontSize: 13 }}>
               First demo session is completely free
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', flexShrink: 0 }}>
+        {/* CTAs */}
+        <div style={{ display: 'flex', gap: 12, flexShrink: 0 }}>
           <a
             href={`https://wa.me/${WA_NUMBER}?text=${WA_MESSAGE}`}
-            target="_blank"
-            rel="noopener noreferrer"
+            target="_blank" rel="noopener noreferrer"
             style={{
-              padding: '10px 20px', borderRadius: '50px',
-              background: 'rgba(37,211,102,0.12)',
-              border: '1px solid rgba(37,211,102,0.3)',
-              color: '#25D366', fontWeight: 600, fontSize: '14px',
-              textDecoration: 'none',
-              display: 'flex', alignItems: 'center', gap: '6px',
-              transition: 'all 0.2s',
+              padding: '10px 20px', borderRadius: 50,
+              background: 'rgba(37,211,102,0.10)',
+              border: '1px solid rgba(37,211,102,0.30)',
+              color: '#25D366', fontWeight: 600, fontSize: 14,
+              textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6,
+              transition: 'background 0.2s',
             }}
-            onMouseOver={e => { e.currentTarget.style.background = 'rgba(37,211,102,0.2)'; }}
-            onMouseOut={e => { e.currentTarget.style.background = 'rgba(37,211,102,0.12)'; }}
-          >
-            💬 WhatsApp
-          </a>
+            onMouseOver={e => { e.currentTarget.style.background = 'rgba(37,211,102,0.20)'; }}
+            onMouseOut={e => { e.currentTarget.style.background = 'rgba(37,211,102,0.10)'; }}
+          >💬 WhatsApp</a>
           <button
             onClick={() => navigate('/book-demo')}
-            style={{
-              padding: '10px 24px', borderRadius: '50px',
-              background: 'linear-gradient(135deg, #7B3FE4, #EC4899)',
-              color: '#fff', border: 'none', fontWeight: 700,
-              fontSize: '14px', cursor: 'pointer',
-              boxShadow: '0 4px 20px rgba(123,63,228,0.35)',
-              transition: 'transform 0.2s',
-            }}
-            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.03)'}
-            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            Book Free Demo →
-          </button>
+            className="bloom-btn-primary"
+            style={{ padding: '10px 24px', fontSize: 14 }}
+          >Book Free Demo →</button>
         </div>
       </div>
     </>

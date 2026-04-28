@@ -1,93 +1,103 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { RobProvider } from './context/RobContext'
 import { ToastProvider } from './components/ui/Toast'
+import { ConfigProvider } from './context/ConfigContext'
+import { StudentProgressProvider } from './context/StudentProgressContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
+
+// ── Eagerly loaded (small / critical path) ────────────────────────────────────
 import Login from './pages/Login'
 import ReservePage from './pages/ReservePage'
-import StudentDashboard from './pages/StudentDashboard'
-import VideoPlayer from './pages/VideoPlayer'
-import ParentDashboard from './pages/ParentDashboard'
-import PaymentPage from './pages/PaymentPage'
-import AdminDashboard from './pages/AdminDashboard'
-import CreatorDashboard from './pages/CreatorDashboard'
-import LessonPage from './pages/LessonPage'
-import ModuleOnePage from './pages/ModuleOnePage'
-import { StudentProgressProvider } from './context/StudentProgressContext'
-import BloomDashboard from './pages/BloomDashboard'
 import LandingPage from './pages/LandingPage'
 import WhyUpgraied from './pages/WhyUpgraied'
 import PricingPage from './pages/PricingPage'
 import BookDemoPage from './pages/BookDemoPage'
 
+// ── Lazily loaded (heavy / role-gated) ────────────────────────────────────────
+const StudentDashboard   = lazy(() => import('./pages/StudentDashboard'))
+const BloomDashboard     = lazy(() => import('./pages/BloomDashboard'))
+const VideoPlayer        = lazy(() => import('./pages/VideoPlayer'))
+const LessonPage         = lazy(() => import('./pages/LessonPage'))
+const ModuleOnePage      = lazy(() => import('./pages/ModuleOnePage'))
+const ParentDashboard    = lazy(() => import('./pages/ParentDashboard'))
+const PaymentPage        = lazy(() => import('./pages/PaymentPage'))
+const AdminDashboard     = lazy(() => import('./pages/AdminDashboard'))
+const AdminControlPanel  = lazy(() => import('./pages/AdminControlPanel'))
+const CreatorDashboard   = lazy(() => import('./pages/CreatorDashboard'))
+
+function PageSpinner() {
+  return (
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: '#0A1F12',
+    }}>
+      <div style={{
+        width: 48, height: 48, borderRadius: '50%',
+        border: '4px solid rgba(110,220,95,0.15)',
+        borderTop: '4px solid #6EDC5F',
+        animation: 'bloom-spin-slow 0.9s linear infinite',
+      }} />
+    </div>
+  )
+}
+
 export default function App() {
   return (
-    <StudentProgressProvider>
-    <RobProvider>
-      <AuthProvider>
-        <ToastProvider>
-          <BrowserRouter>
-            <Routes>
-          {/* Public growth / marketing routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/why" element={<WhyUpgraied />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/book-demo" element={<BookDemoPage />} />
+    <ConfigProvider>
+      <StudentProgressProvider>
+        <RobProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <BrowserRouter>
+                <Suspense fallback={<PageSpinner />}>
+                  <Routes>
+                    {/* Public marketing */}
+                    <Route path="/"          element={<LandingPage />} />
+                    <Route path="/why"       element={<WhyUpgraied />} />
+                    <Route path="/pricing"   element={<PricingPage />} />
+                    <Route path="/book-demo" element={<BookDemoPage />} />
 
-          {/* Auth routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/reserve" element={<ReservePage />} />
+                    {/* Auth */}
+                    <Route path="/login"   element={<Login />} />
+                    <Route path="/reserve" element={<ReservePage />} />
 
-          {/* Student routes */}
-          <Route element={
-            <ProtectedRoute allowedRoles={['student']} />
-          }>
-            <Route path="/dashboard/student"
-              element={<StudentDashboard />} />
-            <Route path="/dashboard/student/bloom"
-              element={<BloomDashboard />} />
-            <Route path="/player/:moduleId?"
-              element={<VideoPlayer />} />
-            <Route path="/lesson/:lessonId?"
-              element={<LessonPage />} />
-            <Route path="/student/module/1"
-              element={<ModuleOnePage />} />
-          </Route>
+                    {/* Student */}
+                    <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+                      <Route path="/dashboard/student"       element={<StudentDashboard />} />
+                      <Route path="/dashboard/student/bloom" element={<BloomDashboard />} />
+                      <Route path="/player/:moduleId?"       element={<VideoPlayer />} />
+                      <Route path="/lesson/:lessonId?"       element={<LessonPage />} />
+                      <Route path="/student/module/1"        element={<ModuleOnePage />} />
+                    </Route>
 
-          {/* Parent routes */}
-          <Route element={
-            <ProtectedRoute allowedRoles={['parent']} />
-          }>
-            <Route path="/dashboard/parent"
-              element={<ParentDashboard />} />
-            <Route path="/payment"
-              element={<PaymentPage />} />
-          </Route>
+                    {/* Parent */}
+                    <Route element={<ProtectedRoute allowedRoles={['parent']} />}>
+                      <Route path="/dashboard/parent" element={<ParentDashboard />} />
+                      <Route path="/payment"          element={<PaymentPage />} />
+                    </Route>
 
-          {/* Admin routes */}
-          <Route element={
-            <ProtectedRoute allowedRoles={['admin']} />
-          }>
-            <Route path="/dashboard/admin"
-              element={<AdminDashboard />} />
-          </Route>
+                    {/* Admin */}
+                    <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                      <Route path="/dashboard/admin" element={<AdminDashboard />} />
+                      <Route path="/admin-control"   element={<AdminControlPanel />} />
+                    </Route>
 
-          {/* Creator routes */}
-          <Route element={
-            <ProtectedRoute allowedRoles={['creator']} />
-          }>
-            <Route path="/dashboard/creator"
-              element={<CreatorDashboard />} />
-          </Route>
+                    {/* Creator */}
+                    <Route element={<ProtectedRoute allowedRoles={['creator']} />}>
+                      <Route path="/dashboard/creator" element={<CreatorDashboard />} />
+                    </Route>
 
-          {/* Fallback */}
-          <Route path="*"
-            element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
-        </ToastProvider>
-      </AuthProvider>
-    </RobProvider>
-    </StudentProgressProvider>
+                    {/* Fallback */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </Suspense>
+              </BrowserRouter>
+            </ToastProvider>
+          </AuthProvider>
+        </RobProvider>
+      </StudentProgressProvider>
+    </ConfigProvider>
   )
 }

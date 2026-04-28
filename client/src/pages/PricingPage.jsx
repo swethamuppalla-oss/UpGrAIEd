@@ -4,109 +4,74 @@ import GrowthNavbar from '../components/growth/GrowthNavbar';
 import PricingCards from '../components/growth/PricingCards';
 import FAQSection from '../components/growth/FAQSection';
 import StickyCTA from '../components/growth/StickyCTA';
+import BloomCharacter from '../components/Bloom/BloomCharacter';
+import BloomParticles from '../components/Bloom/BloomParticles';
+import '../styles/bloom.css';
 
 const GUARANTEE_POINTS = [
-  { icon: '🎁', title: 'Free Demo First', desc: 'Try a full demo session before any payment. See ROB in action.' },
-  { icon: '🔒', title: 'Secure Payments', desc: 'All transactions are SSL-secured and processed via Razorpay.' },
-  { icon: '📞', title: 'Advisor Support', desc: 'Human advisors are available on WhatsApp for any questions.' },
-  { icon: '🔄', title: 'Easy Cancellation', desc: 'No lock-ins. Cancel anytime from your parent dashboard.' },
+  { icon: '🎁', title: 'Free Demo First',    desc: 'Try a full demo session before any payment. See Bloom in action.', accent: '#6EDC5F' },
+  { icon: '🔒', title: 'Secure Payments',    desc: 'All transactions are SSL-secured and processed via Razorpay.', accent: '#63C7FF' },
+  { icon: '📞', title: 'Advisor Support',    desc: 'Human advisors are available on WhatsApp for any questions.', accent: '#FFD95A' },
+  { icon: '🔄', title: 'Easy Cancellation', desc: 'No lock-ins. Cancel anytime from your parent dashboard.', accent: '#FF8A65' },
+];
+
+const INCLUDED = [
+  { icon: '🌿', title: 'Bloom AI Companion',  desc: 'Personality-driven buddy who adapts to your child.' },
+  { icon: '📊', title: 'Parent Dashboard',    desc: 'See progress, time spent, and achievements live.' },
+  { icon: '🎯', title: 'Daily Missions',      desc: 'Structured tasks that build real skills session by session.' },
+  { icon: '🏆', title: 'Badges & XP',        desc: 'Gamified rewards that keep children motivated.' },
+  { icon: '📱', title: 'Mobile Access',       desc: 'Learn on any device — phone, tablet, or desktop.' },
+  { icon: '🔒', title: 'Safe Environment',    desc: 'Zero unfiltered AI, zero inappropriate content.' },
 ];
 
 export default function PricingPage() {
   const navigate = useNavigate();
 
   return (
-    <div style={{ background: 'var(--bg-primary)', minHeight: '100vh' }}>
+    <div style={{ background: '#0A1F12', minHeight: '100vh' }}>
       <GrowthNavbar />
+      <BloomParticles count={12} zIndex={0} />
 
-      {/* PAGE HERO */}
-      <section style={{ padding: '130px 32px 60px', textAlign: 'center', position: 'relative' }}>
-        <div style={{
-          position: 'absolute', top: '0%', left: '30%',
-          width: '600px', height: '400px', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(123,63,228,0.1), transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-        <div style={{ maxWidth: '680px', margin: '0 auto', position: 'relative' }}>
-          <div style={{
-            display: 'inline-block', padding: '4px 14px', borderRadius: '50px',
-            background: 'rgba(255,122,47,0.1)', border: '1px solid rgba(255,122,47,0.2)',
-            color: '#FF7A2F', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em',
-            marginBottom: '20px',
-          }}>
-            SIMPLE, TRANSPARENT PRICING
-          </div>
-          <h1 style={{
-            fontSize: 'clamp(34px, 4.5vw, 60px)', fontWeight: 800,
-            letterSpacing: '-0.03em', lineHeight: 1.08, color: 'var(--text-primary)', marginBottom: '18px',
-          }}>
+      {/* HERO */}
+      <section className="pg-section" style={{ paddingTop: 130, textAlign: 'center', position: 'relative' }}>
+        <div className="pg-orb" style={{ top: 0, left: '25%', width: 700, height: 380, background: 'radial-gradient(ellipse, rgba(110,220,95,0.10), transparent 70%)', filter: 'blur(70px)' }} />
+        <div className="pg-orb" style={{ top: '20%', right: '-5%', width: 360, height: 360, background: 'radial-gradient(circle, rgba(99,199,255,0.07), transparent 70%)', filter: 'blur(50px)', animationDuration: '22s' }} />
+
+        <div style={{ maxWidth: 720, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <BloomCharacter size="medium" emotion="encouraging" speech="There's a plan for every family!" animate style={{ marginBottom: 20 }} />
+          <div className="pg-badge pg-badge-warm">SIMPLE, TRANSPARENT PRICING</div>
+          <h1 className="pg-h1" style={{ marginBottom: 18 }}>
             Invest in your child's{' '}
-            <span style={{
-              background: 'linear-gradient(135deg, #9B6FF4, #FF7A2F)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            }}>future skills</span>
+            <span className="bloom-text-green">future skills</span>
           </h1>
-          <p style={{
-            color: 'var(--text-secondary)', fontSize: '17px', lineHeight: 1.7,
-          }}>
+          <p className="pg-sub">
             No hidden fees. No pressure. Start with a free demo and upgrade when you're ready.
           </p>
         </div>
       </section>
 
       {/* PRICING CARDS */}
-      <section style={{ padding: '20px 32px 80px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <section className="pg-section" style={{ paddingTop: 24 }}>
+        <div className="pg-container">
           <PricingCards />
         </div>
       </section>
 
       {/* WHAT'S INCLUDED */}
-      <section style={{
-        padding: '80px 32px',
-        background: 'rgba(12,12,18,0.5)',
-      }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-            <h2 style={{
-              fontSize: 'clamp(26px, 3.5vw, 42px)', fontWeight: 800,
-              letterSpacing: '-0.02em', color: 'var(--text-primary)',
-            }}>
-              Every plan includes
-            </h2>
+      <section className="pg-section pg-section-alt">
+        <div className="pg-orb" style={{ bottom: '-5%', left: '-5%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(99,199,255,0.06), transparent 70%)', filter: 'blur(50px)', animationDuration: '25s' }} />
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <div className="pg-badge">EVERY PLAN INCLUDES</div>
+            <h2 className="pg-h2">Built to delight students <span className="bloom-text-sky">and</span> reassure parents</h2>
           </div>
-          <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px',
-          }} className="includes-grid">
-            {[
-              { icon: '🤖', title: 'ROB AI Companion', desc: 'Personality-driven buddy who adapts to your child.' },
-              { icon: '📊', title: 'Parent Dashboard', desc: 'See progress, time spent, and achievements live.' },
-              { icon: '🎯', title: 'Daily Missions', desc: 'Structured tasks that build real skills session by session.' },
-              { icon: '🏆', title: 'Badges & XP', desc: 'Gamified rewards that keep children motivated.' },
-              { icon: '📱', title: 'Mobile Access', desc: 'Learn on any device — phone, tablet, or desktop.' },
-              { icon: '🔒', title: 'Safe Environment', desc: 'Zero unfiltered AI, zero inappropriate content.' },
-            ].map((item, i) => (
-              <div key={i} style={{
-                padding: '22px', borderRadius: '16px',
-                background: 'rgba(26,26,38,0.7)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                display: 'flex', gap: '14px',
-              }}>
-                <div style={{
-                  fontSize: '24px', width: '44px', height: '44px', flexShrink: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: '12px', background: 'rgba(123,63,228,0.12)',
-                }}>
-                  {item.icon}
-                </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} className="pg-grid-3">
+            {INCLUDED.map((item, i) => (
+              <div key={i} className="pg-card" style={{ display: 'flex', gap: 14, padding: 22 }}>
+                <div className="pg-icon" style={{ width: 44, height: 44, fontSize: 22, flexShrink: 0 }}>{item.icon}</div>
                 <div>
-                  <div style={{
-                    fontWeight: 700, fontSize: '14px',
-                    color: 'var(--text-primary)', marginBottom: '5px',
-                  }}>{item.title}</div>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.5 }}>
-                    {item.desc}
-                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: '#F0FFF4', marginBottom: 5 }}>{item.title}</div>
+                  <div style={{ color: 'rgba(168,245,162,0.65)', fontSize: 13, lineHeight: 1.55 }}>{item.desc}</div>
                 </div>
               </div>
             ))}
@@ -115,31 +80,26 @@ export default function PricingPage() {
       </section>
 
       {/* GUARANTEES */}
-      <section style={{ padding: '80px 32px' }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-            <h2 style={{
-              fontSize: 'clamp(26px, 3.5vw, 42px)', fontWeight: 800,
-              letterSpacing: '-0.02em', color: 'var(--text-primary)',
-            }}>
-              Your trust matters to us
-            </h2>
+      <section className="pg-section" style={{ background: '#0D2318' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 56, alignItems: 'center', marginBottom: 56 }}>
+            <BloomCharacter size="medium" emotion="happy" speech="Your trust matters to us!" animate />
+            <div>
+              <div className="pg-badge">OUR PROMISE</div>
+              <h2 className="pg-h2">Your trust matters to us</h2>
+              <p className="pg-sub">Every plan comes with guarantees that put families first.</p>
+            </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }} className="guarantee-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="pg-grid-4">
             {GUARANTEE_POINTS.map((g, i) => (
-              <div key={i} style={{
-                padding: '24px 20px', borderRadius: '18px', textAlign: 'center',
-                background: 'rgba(26,26,38,0.7)',
-                border: '1px solid rgba(255,255,255,0.06)',
-              }}>
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>{g.icon}</div>
+              <div key={i} className="pg-card" style={{ padding: '28px 20px', textAlign: 'center' }}>
                 <div style={{
-                  fontWeight: 700, fontSize: '14px',
-                  color: 'var(--text-primary)', marginBottom: '8px',
-                }}>{g.title}</div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.55 }}>
-                  {g.desc}
-                </div>
+                  width: 52, height: 52, borderRadius: '50%', margin: '0 auto 14px',
+                  background: `${g.accent}14`, border: `1px solid ${g.accent}30`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26,
+                }}>{g.icon}</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: '#F0FFF4', marginBottom: 8 }}>{g.title}</div>
+                <div style={{ color: 'rgba(168,245,162,0.62)', fontSize: 13, lineHeight: 1.55 }}>{g.desc}</div>
               </div>
             ))}
           </div>
@@ -147,52 +107,34 @@ export default function PricingPage() {
       </section>
 
       {/* CTA BANNER */}
-      <section style={{ padding: '0 32px 80px' }}>
-        <div style={{
-          maxWidth: '900px', margin: '0 auto',
-          padding: '48px 40px', borderRadius: '28px', textAlign: 'center',
-          background: 'linear-gradient(135deg, rgba(123,63,228,0.14), rgba(236,72,153,0.08))',
-          border: '1px solid rgba(155,111,244,0.2)',
-        }}>
-          <h3 style={{
-            fontSize: 'clamp(22px, 3vw, 36px)', fontWeight: 800,
-            letterSpacing: '-0.02em', color: 'var(--text-primary)', marginBottom: '12px',
-          }}>
-            Not sure which plan fits?
-          </h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '15px', marginBottom: '28px' }}>
-            Start with the free demo. Our advisor will recommend the right plan for your child's age and goals.
-          </p>
-          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button
-              onClick={() => navigate('/book-demo')}
-              style={{
-                padding: '14px 32px', borderRadius: '50px',
-                background: 'linear-gradient(135deg, #7B3FE4, #EC4899)',
-                color: '#fff', border: 'none', fontWeight: 700, fontSize: '15px',
-                cursor: 'pointer', boxShadow: '0 6px 24px rgba(123,63,228,0.4)',
-                transition: 'transform 0.2s',
-              }}
-              onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-              onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
-            >
-              Book Free Demo
-            </button>
-            <a
-              href="https://wa.me/919999999999?text=Hi%2C+I+need+help+choosing+an+UpgrAIed+plan."
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: '14px 32px', borderRadius: '50px',
-                background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.25)',
-                color: '#25D366', fontWeight: 700, fontSize: '15px',
-                textDecoration: 'none', transition: 'background 0.2s',
-              }}
-              onMouseOver={e => e.currentTarget.style.background = 'rgba(37,211,102,0.18)'}
-              onMouseOut={e => e.currentTarget.style.background = 'rgba(37,211,102,0.1)'}
-            >
-              💬 Ask on WhatsApp
-            </a>
+      <section className="pg-section" style={{ paddingTop: 0 }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <div className="bloom-hero-card" style={{ padding: '48px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(110,220,95,0.15), transparent)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', bottom: '-30px', left: '-30px', width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,199,255,0.10), transparent)', pointerEvents: 'none' }} />
+            <h3 className="pg-h3" style={{ marginBottom: 12 }}>Not sure which plan fits?</h3>
+            <p className="pg-sub" style={{ marginBottom: 28 }}>
+              Start with the free demo. Our advisor will recommend the right plan for your child's age and goals.
+            </p>
+            <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button className="bloom-btn-primary" style={{ fontSize: 15, padding: '14px 32px' }} onClick={() => navigate('/book-demo')}>
+                Book Free Demo
+              </button>
+              <a
+                href="https://wa.me/919999999999?text=Hi%2C+I+need+help+choosing+an+UpgrAIed+plan."
+                target="_blank" rel="noopener noreferrer"
+                style={{
+                  padding: '14px 32px', borderRadius: 50,
+                  background: 'rgba(37,211,102,0.10)', border: '1px solid rgba(37,211,102,0.28)',
+                  color: '#25D366', fontWeight: 700, fontSize: 15,
+                  textDecoration: 'none', transition: 'background 0.2s',
+                }}
+                onMouseOver={e => { e.currentTarget.style.background = 'rgba(37,211,102,0.18)'; }}
+                onMouseOut={e => { e.currentTarget.style.background = 'rgba(37,211,102,0.10)'; }}
+              >
+                💬 Ask on WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       </section>

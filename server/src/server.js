@@ -20,6 +20,8 @@ import videoRouter from './routes/videos.js'
 import paymentRouter from './routes/payments.js'
 import robRouter from './routes/rob.js'
 import progressRouter from './routes/progress.js'
+import configRouter from './routes/config.js'
+import uploadRouter from './routes/upload.js'
 
 const app = express()
 await connectDB()
@@ -113,6 +115,11 @@ app.use('/api/videos', requireAuth, videoRouter)
 app.use('/api/payments', requireAuth, paymentRouter)
 app.use('/api/rob', robRouter)
 app.use('/api/progress', requireAuth, progressRouter)
+
+// Config & Upload routes
+app.use('/api/config', configRouter)
+app.use('/api/upload', uploadRouter)
+app.use('/uploads', express.static('uploads'))
 
 // Error handler (must be last)
 app.use(errorHandler)
