@@ -5,12 +5,14 @@ import { useToast } from '../components/ui/Toast'
 import Sidebar from '../components/layout/Sidebar'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import RobCharacter from '../components/ROB/RobCharacter'
+import ChapterUpload from '../components/chapter/ChapterUpload'
 import { getChildInfo, getChildActivity, getParentBilling } from '../services/api'
 import { useConfig } from '../context/ConfigContext'
 
 const NAV_ITEMS = [
   { id: 'overview',  icon: '🏠', label: 'Overview'        },
   { id: 'progress',  icon: '📊', label: "Child's Progress" },
+  { id: 'chapters',  icon: '📷', label: 'Upload Chapter'   },
   { id: 'billing',   icon: '💳', label: 'Billing'          },
   { id: 'support',   icon: '📞', label: 'Support'          },
 ]
@@ -319,6 +321,7 @@ export default function ParentDashboard() {
 
         {activeTab === 'overview' && <OverviewTab child={child} activity={activity} loading={loading} />}
         {activeTab === 'progress' && <OverviewTab child={child} activity={activity} loading={loading} />}
+        {activeTab === 'chapters' && <ChapterUpload />}
         {activeTab === 'billing'  && <BillingTab billing={billing} navigate={navigate} showToast={showToast} loading={loading} />}
         {activeTab === 'support'  && <SupportTab />}
       </main>

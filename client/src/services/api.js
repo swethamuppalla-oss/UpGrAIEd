@@ -142,12 +142,49 @@ export const getConfigByKey = (key) =>
   api.get(`/api/config/${key}`).then(r => r.data)
 export const upsertConfig = (key, value) =>
   api.put(`/api/config/${key}`, { value }).then(r => r.data)
-export const uploadMedia = (formData, onProgress) =>
-  api.post('/api/upload', formData, {
+export const uploadMedia = (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return api.post('/api/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
-    onUploadProgress: (e) => {
-      if (onProgress) onProgress(Math.round((e.loaded * 100) / e.total))
-    }
+  }).then(res => res.data)
+}
+
+// ── Chapter & Week Plan ──
+export const uploadChapterPhotos = (formData) =>
+  api.post('/api/chapters/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }).then(r => r.data)
+
+export const getChapterStatus = (chapterId) =>
+  api.get(`/api/chapters/${chapterId}/status`)
+    .then(r => r.data)
+
+export const getMyChapters = () =>
+  api.get('/api/chapters').then(r => r.data)
+
+export const getWeekPlan = (planId) =>
+  api.get(`/api/chapters/weekplan/${planId}`)
+    .then(r => r.data)
+
+export const getCurrentWeekPlan = () =>
+  api.get('/api/chapters/weekplan/current')
+    .then(r => r.data)
+
+export const approveWeekPlan = (planId) =>
+  api.post(`/api/chapters/weekplan/${planId}/approve`)
+    .then(r => r.data)
+
+export const completeDayLesson = (planId, dayNumber, data) =>
+  api.post(
+    `/api/chapters/weekplan/${planId}/day/${dayNumber}/complete`,
+    data
+  ).then(r => r.data)
+
+export const submitWeeklyExam = (planId, answers, timeTakenMinutes) =>
+  api.post(`/api/chapters/weekplan/${planId}/exam/submit`, {
+    answers,
+    timeTakenMinutes
   }).then(r => r.data)
 
 export default api

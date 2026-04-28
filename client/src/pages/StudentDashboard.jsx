@@ -13,6 +13,7 @@ import RobGreetingCard from '../components/ROB/RobGreetingCard'
 import RobOnboardingModal from '../components/ROB/RobOnboardingModal'
 import RobQuizPanel from '../components/ROB/RobQuizPanel'
 import RobGamePanel from '../components/ROB/RobGamePanel'
+import TodayLesson from '../components/chapter/TodayLesson'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import { useAuth } from '../context/AuthContext'
 import { useROB } from '../context/RobContext'
@@ -27,6 +28,7 @@ import {
 import { useConfig } from '../context/ConfigContext'
 
 const NAV_ITEMS = [
+  { id: 'today', icon: '🎯', label: "Today's Lesson" },
   { id: 'home', icon: '🏠', label: 'Home' },
   { id: 'courses', icon: '📚', label: 'My Courses' },
   { id: 'progress', icon: '📈', label: 'Progress' },
@@ -61,7 +63,7 @@ export default function StudentDashboard() {
 
   const displayName = robName || 'ROB'
 
-  const [activeTab, setActiveTab] = useState('home')
+  const [activeTab, setActiveTab] = useState('today')
   const [loading, setLoading] = useState(true)
   const [progressData, setProgressData] = useState(null)
   const [statsData, setStatsData] = useState(null)
@@ -202,8 +204,12 @@ export default function StudentDashboard() {
       />
 
       <main className="main-content" style={{ animation: 'dashboardRise 0.28s ease' }}>
-        <RobOnboardingModal visible={showOnboarding} onComplete={() => setShowOnboarding(false)} />
+        {activeTab !== 'today' && <RobOnboardingModal visible={showOnboarding} onComplete={() => setShowOnboarding(false)} />}
 
+        {activeTab === 'today' ? (
+          <TodayLesson />
+        ) : (
+          <>
         <header style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h1 className="clash-display" style={{ fontSize: 28, marginBottom: 4 }}>
@@ -482,9 +488,11 @@ export default function StudentDashboard() {
             ))}
           </div>
         </section>
+        </>
+        )}
       </main>
 
-      <RobFloating currentModuleId={activeCurriculumModule?._id} />
+      {activeTab !== 'today' && <RobFloating currentModuleId={activeCurriculumModule?._id} />}
 
       <RobLessonModal open={Boolean(activeLesson)} onClose={() => setActiveLesson(null)}>
         {activeLesson && (

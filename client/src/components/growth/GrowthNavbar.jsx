@@ -77,6 +77,13 @@ export default function GrowthNavbar() {
           </span>
         ))}
         <button
+          onClick={() => navigate('/login')}
+          className="bloom-btn-ghost"
+          style={{ fontSize: '13px', padding: '9px 16px', marginRight: '-24px' }}
+        >
+          Login
+        </button>
+        <button
           onClick={() => navigate('/book-demo')}
           className="bloom-btn-primary"
           style={{ fontSize: '13px', padding: '9px 22px' }}
@@ -115,6 +122,13 @@ export default function GrowthNavbar() {
               {link.label}
             </span>
           ))}
+          <button
+            onClick={() => { navigate('/login'); setMenuOpen(false); }}
+            className="bloom-btn-ghost"
+            style={{ padding: '12px 24px', width: '100%', fontSize: '15px' }}
+          >
+            Login
+          </button>
           <button
             onClick={() => { navigate('/book-demo'); setMenuOpen(false); }}
             className="bloom-btn-primary"

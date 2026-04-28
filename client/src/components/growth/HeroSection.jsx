@@ -94,20 +94,20 @@ export default function HeroSection() {
             )}
           </p>
 
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '48px' }}>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '48px' }} className="hero-actions">
             <button
-              onClick={() => navigate('/book-demo')}
-              className="bloom-btn-primary"
+              onClick={() => navigate('/login?role=student')}
+              className="bloom-btn-primary btn-primary"
               style={{ fontSize: '16px', padding: '15px 32px' }}
             >
-              {config?.ui?.hero?.cta_primary || 'Book Free Demo'}
+              Start Learning
             </button>
             <button
-              onClick={() => navigate('/why')}
-              className="bloom-btn-ghost"
+              onClick={() => navigate('/login?role=parent')}
+              className="bloom-btn-ghost btn-secondary"
               style={{ fontSize: '16px', padding: '15px 32px' }}
             >
-              Explore Program →
+              For Parents
             </button>
           </div>
 
@@ -184,7 +184,7 @@ function BloomVisual() {
         <img src={config.mascot.bloom.main_image} alt="Bloom" style={{ width: 240, height: 240, zIndex: 10, position: 'relative' }} />
       ) : (
         <BloomCharacter
-          emotion="excited"
+          emotion="welcome"
           size="hero"
           animate={true}
           speech="Hi! I'm Bloom — let's learn AI together!"

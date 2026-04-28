@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 /* ─── Route map ─────────────────────────────────────────────── */
@@ -86,8 +86,19 @@ export default function Login() {
   const [formError,    setFormError]    = useState('')
   const [mounted,      setMounted]      = useState(false)
 
-  /* Kick entrance animation */
-  useEffect(() => { setMounted(true) }, [])
+  const location = useLocation()
+
+  /* Kick entrance animation and handle role query param */
+  useEffect(() => { 
+    setMounted(true) 
+    const roleParam = new URLSearchParams(location.search).get("role")
+    if (roleParam) {
+      const demoRole = DEMO_ROLES.find(r => r.id === roleParam)
+      if (demoRole) {
+        handleDemoLogin(demoRole)
+      }
+    }
+  }, [location.search])
 
   /* Redirect if already logged in */
   useEffect(() => {

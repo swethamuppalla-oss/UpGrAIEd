@@ -22,6 +22,7 @@ const VideoPlayer        = lazy(() => import('./pages/VideoPlayer'))
 const LessonPage         = lazy(() => import('./pages/LessonPage'))
 const ModuleOnePage      = lazy(() => import('./pages/ModuleOnePage'))
 const ParentDashboard    = lazy(() => import('./pages/ParentDashboard'))
+const WeekPlanView       = lazy(() => import('./pages/WeekPlanView'))
 const PaymentPage        = lazy(() => import('./pages/PaymentPage'))
 const AdminDashboard     = lazy(() => import('./pages/AdminDashboard'))
 const AdminControlPanel  = lazy(() => import('./pages/AdminControlPanel'))
@@ -76,6 +77,7 @@ export default function App() {
                     <Route element={<ProtectedRoute allowedRoles={['parent']} />}>
                       <Route path="/dashboard/parent" element={<ParentDashboard />} />
                       <Route path="/payment"          element={<PaymentPage />} />
+                      <Route path="/dashboard/parent/weekplan/:planId" element={<WeekPlanView />} />
                     </Route>
 
                     {/* Admin */}

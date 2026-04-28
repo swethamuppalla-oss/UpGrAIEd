@@ -22,6 +22,7 @@ import robRouter from './routes/rob.js'
 import progressRouter from './routes/progress.js'
 import configRouter from './routes/config.js'
 import uploadRouter from './routes/upload.js'
+import chapterRouter from './routes/chapters.js'
 
 const app = express()
 await connectDB()
@@ -116,9 +117,13 @@ app.use('/api/payments', requireAuth, paymentRouter)
 app.use('/api/rob', robRouter)
 app.use('/api/progress', requireAuth, progressRouter)
 
+import bloomRouter from './routes/bloomRoutes.js'
+
 // Config & Upload routes
 app.use('/api/config', configRouter)
 app.use('/api/upload', uploadRouter)
+app.use('/api/chapters', chapterRouter)
+app.use('/api/bloom', bloomRouter)
 app.use('/uploads', express.static('uploads'))
 
 // Error handler (must be last)
