@@ -9,3 +9,10 @@ Videos/
 .vercel/
 
 .vercel
+
+# Temp / Scratch files
+fake_temp
+fix*.js
+fix.py
+temp_phase3/
+temp_stubs.js
