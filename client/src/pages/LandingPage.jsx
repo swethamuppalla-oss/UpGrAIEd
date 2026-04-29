@@ -8,11 +8,10 @@ import FAQSection from '../components/growth/FAQSection';
 import StickyCTA from '../components/growth/StickyCTA';
 import { useConfig } from '../context/ConfigContext';
 
-const WHY_NOW_CARDS = [
-  { icon: '🤖', title: 'AI will shape future jobs', desc: 'Over 80% of jobs in 2035 will require AI literacy. The time to build this foundation is now.' },
-  { icon: '📉', title: 'Attention spans are shrinking', desc: 'Kids raised on passive content struggle with focus. Structured, active learning rewires that.' },
-  { icon: '🎯', title: 'Kids need guidance, not random screens', desc: 'Unguided screen time offers no skill return. UpgrAIed turns that time into compound growth.' },
-  { icon: '🏫', title: "Schools don't teach practical AI", desc: 'Curricula are years behind. Parents who act now give their children a meaningful head start.' },
+const HOW_IT_WORKS_STEPS = [
+  { icon: '📄', title: 'Upload your school pages', desc: 'Any subject, any syllabus.' },
+  { icon: '🧠', title: 'AI builds your learning plan', desc: 'A structured 7-day journey.' },
+  { icon: '🎓', title: 'Learn daily with guidance', desc: 'Understand, think, apply.' },
 ];
 
 export default function LandingPage() {
@@ -35,6 +34,30 @@ export default function LandingPage() {
       {/* HERO */}
       <HeroSection />
 
+      {/* NOT A COURSE */}
+      <section style={{ padding: '0 32px 32px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div className="ui-card" style={{
+            background: 'rgba(22,43,31,0.7)',
+            border: '1px solid rgba(110,220,95,0.18)',
+            borderRadius: 20,
+            padding: '32px 40px',
+            display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap',
+            color: '#F0FFF4',
+          }}>
+            <div style={{ fontSize: 40, flexShrink: 0 }}>🌿</div>
+            <div>
+              <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8, color: '#A8F5A2' }}>
+                This is not a course
+              </h2>
+              <p style={{ fontSize: 15, color: 'rgba(168,245,162,0.75)', lineHeight: 1.65, margin: 0 }}>
+                It's a system that helps your child learn any subject better, using structured guidance and AI thinking.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* WHY NOW */}
       <section style={{ padding: '80px 32px', position: 'relative' }}>
         <div style={{
@@ -49,35 +72,34 @@ export default function LandingPage() {
               color: '#6EDC5F', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em',
               marginBottom: '16px',
             }}>
-              WHY IT MATTERS NOW
+              SIMPLE PROCESS
             </div>
             <h2 style={{
               fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800,
               letterSpacing: '-0.02em', lineHeight: 1.1, color: '#F0FFF4',
             }}>
-              The world is changing fast.{' '}
               <span className="bloom-text-green">
-                Is your child ready?
+                How It Works
               </span>
             </h2>
           </div>
 
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px',
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px',
           }} className="why-grid">
-            {WHY_NOW_CARDS.map((card, i) => (
+            {HOW_IT_WORKS_STEPS.map((step, i) => (
               <div key={i} className="bloom-card" style={{
-                padding: '28px 22px', transition: 'all 0.25s ease',
+                padding: '28px 22px', transition: 'all 0.25s ease', textAlign: 'center'
               }}
                 onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'rgba(110,220,95,0.25)'; }}
                 onMouseOut={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(110,220,95,0.12)'; }}
               >
-                <div style={{ fontSize: '32px', marginBottom: '14px' }}>{card.icon}</div>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#F0FFF4', marginBottom: '10px' }}>
-                  {card.title}
+                <div style={{ fontSize: '32px', marginBottom: '14px' }}>{step.icon}</div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#F0FFF4', marginBottom: '10px' }}>
+                  {i + 1}. {step.title}
                 </h3>
-                <p style={{ color: 'rgba(168,245,162,0.65)', fontSize: '13px', lineHeight: 1.65 }}>
-                  {card.desc}
+                <p style={{ color: 'rgba(168,245,162,0.65)', fontSize: '14px', lineHeight: 1.65 }}>
+                  {step.desc}
                 </p>
               </div>
             ))}
@@ -148,26 +170,26 @@ export default function LandingPage() {
                 color: '#6EDC5F', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em',
                 marginBottom: '20px',
               }}>
-                MEET BLOOM
+                AI THINKING
               </div>
               <h2 style={{
                 fontSize: 'clamp(28px, 3.5vw, 46px)', fontWeight: 800,
                 letterSpacing: '-0.02em', lineHeight: 1.1, color: '#F0FFF4', marginBottom: '20px',
               }}>
-                Your child's{' '}
-                <span className="bloom-text-green">AI learning buddy</span>
+                Learn How to{' '}
+                <span className="bloom-text-green">Think with AI</span>
               </h2>
               <p style={{
                 color: 'rgba(168,245,162,0.7)', fontSize: '17px', lineHeight: 1.7, marginBottom: '32px',
               }}>
-                Bloom isn't a chatbot. Bloom is a personality-driven companion who remembers your
-                child's progress, adjusts to their mood, and makes every session feel like an adventure.
+                Our system doesn't just give answers. It guides students to break down problems,
+                ask better questions, and build strong logical thinking skills.
               </p>
               {[
-                { icon: '🎮', text: 'Keeps children engaged with interactive missions' },
-                { icon: '❓', text: 'Encourages asking questions and exploring' },
-                { icon: '✅', text: 'Celebrates every win — big and small' },
-                { icon: '📈', text: "Adapts to your child's learning pace" },
+                { icon: '❓', text: 'Ask better questions' },
+                { icon: '🧩', text: 'Solve problems step-by-step' },
+                { icon: '🗣️', text: 'Explain concepts clearly' },
+                { icon: '🧠', text: 'Build logical thinking' },
               ].map((item, i) => (
                 <div key={i} style={{
                   display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px',
@@ -195,18 +217,18 @@ export default function LandingPage() {
       <section style={{ padding: '80px 32px' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
           <div className="bloom-hero-card" style={{ padding: '48px 40px' }}>
-            <div style={{ fontSize: '44px', marginBottom: '16px' }}>🎁</div>
+            <div style={{ fontSize: '44px', marginBottom: '16px' }}>🎒</div>
             <h3 style={{
               fontSize: '26px', fontWeight: 800, letterSpacing: '-0.02em',
               color: '#F0FFF4', marginBottom: '12px',
             }}>
-              Free Guide for Parents
+              For Students
             </h3>
             <p style={{ color: 'rgba(168,245,162,0.7)', fontSize: '15px', lineHeight: 1.65, marginBottom: '28px' }}>
               <strong style={{ color: '#A8F5A2' }}>
-                "How to Prepare Your Child for the AI Future"
+                Stop memorizing. Start understanding.
               </strong>{' '}
-              — a practical guide for parents. Free, no spam.
+              Learn step-by-step, ask questions, and build your thinking skills with AI.
             </p>
             {emailSent ? (
               <div style={{
@@ -265,29 +287,28 @@ export default function LandingPage() {
             letterSpacing: '-0.02em', lineHeight: 1.1,
             color: '#F0FFF4', marginBottom: '16px',
           }}>
-            Ready to future-proof your child?
+            Start Your Learning Journey
           </h2>
           <p style={{
             color: 'rgba(168,245,162,0.7)', fontSize: '17px', maxWidth: '480px',
             margin: '0 auto 36px',
           }}>
-            Book a free demo session. See Bloom in action.
-            Watch your child light up in the first 10 minutes.
+            Upload your first page and see how it works.
           </p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button
-              onClick={() => navigate('/book-demo')}
+              onClick={() => navigate('/login?role=student')}
               className="bloom-btn-primary"
               style={{ padding: '16px 36px', fontSize: '17px' }}
             >
-              {config?.ui?.hero?.cta_book_demo || 'Book Free Demo'}
+              Start Learning
             </button>
             <button
-              onClick={() => navigate('/pricing')}
+              onClick={() => navigate('/login?role=parent')}
               className="bloom-btn-ghost"
               style={{ padding: '16px 36px', fontSize: '17px' }}
             >
-              View Pricing
+              For Parents
             </button>
           </div>
         </div>
@@ -354,14 +375,6 @@ function GrowthFooter() {
             <div style={{ color: '#A8F5A2', fontWeight: 700, marginBottom: '16px', fontSize: '13px' }}>
               CONTACT
             </div>
-            <a
-              href="https://wa.me/919999999999"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: 'block', color: 'rgba(168,245,162,0.45)', fontSize: '13px', marginBottom: '10px', textDecoration: 'none' }}
-            >
-              💬 WhatsApp
-            </a>
             <a
               href="mailto:hello@upgraied.com"
               style={{ display: 'block', color: 'rgba(168,245,162,0.45)', fontSize: '13px', textDecoration: 'none' }}

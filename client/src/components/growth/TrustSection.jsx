@@ -27,13 +27,13 @@ export default function TrustSection() {
       <div className="pg-container">
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
-          <div className="pg-badge pg-badge-sky">SAFE · GUIDED · PARENT-FRIENDLY</div>
+          <div className="pg-badge pg-badge-sky">FOR PARENTS</div>
           <h2 className="pg-h2">
-            You're in control.{' '}
-            <span className="bloom-text-sky">Always.</span>
+            Give your child more than{' '}
+            <span className="bloom-text-sky">just answers.</span>
           </h2>
           <p className="pg-sub" style={{ maxWidth: 480, margin: '0 auto' }}>
-            UpgrAIed was built with parents at the design table — not as an afterthought.
+            Our system helps them understand concepts, think independently, and build confidence — across any subject.
           </p>
         </div>
 

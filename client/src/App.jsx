@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { RobProvider } from './context/RobContext'
@@ -6,6 +6,7 @@ import { ToastProvider } from './components/ui/Toast'
 import { ConfigProvider } from './context/ConfigContext'
 import { StudentProgressProvider } from './context/StudentProgressContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
+import { applyTheme, getAutoTheme } from "./theme/themeUtils";
 
 // ── Eagerly loaded (small / critical path) ────────────────────────────────────
 import Login from './pages/Login'
@@ -45,6 +46,23 @@ function PageSpinner() {
 }
 
 export default function App() {
+  useEffect(() => {
+    let configTheme = null;
+    try {
+      const raw = localStorage.getItem('upgraied_config_v2');
+      if (raw) configTheme = JSON.parse(raw).data?.theme?.mode;
+    } catch (e) {}
+
+    const savedTheme = configTheme || localStorage.getItem("theme");
+
+    if (savedTheme && savedTheme !== "auto") {
+      applyTheme(savedTheme);
+    } else {
+      const autoTheme = getAutoTheme();
+      applyTheme(autoTheme);
+    }
+  }, []);
+
   return (
     <ConfigProvider>
       <StudentProgressProvider>

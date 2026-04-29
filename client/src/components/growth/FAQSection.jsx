@@ -78,11 +78,10 @@ export default function FAQSection() {
               <p style={{ color: 'rgba(168,245,162,0.7)', fontSize: 15, margin: 0 }}>
                 Still have questions?{' '}
                 <a
-                  href="https://wa.me/919999999999?text=Hi%2C%20I%27d%20like%20to%20know%20more%20about%20UpgrAIed%20for%20my%20child."
-                  target="_blank" rel="noopener noreferrer"
+                  href="mailto:hello@upgraied.com"
                   style={{ color: '#6EDC5F', fontWeight: 700 }}
                 >
-                  Chat with us on WhatsApp →
+                  Email us at hello@upgraied.com →
                 </a>
               </p>
             </div>

@@ -28,22 +28,22 @@ export default function AudioPlayer({ planId, dayNumber, dayData, onComplete }) 
   }
 
   return (
-    <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', padding: 40, maxWidth: 800, margin: '0 auto' }}>
+    <div className="lesson-container" style={{ padding: 40, maxWidth: 800, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
         <BloomCharacter emotion={isPlaying ? "excited" : "happy"} size="medium" />
         <h2 className="clash-display" style={{ fontSize: 24, marginTop: 16 }}>{dayData.title || 'Listen and Learn'}</h2>
       </div>
 
       <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginBottom: 40 }}>
-        <button className="btn-primary" onClick={handlePlay} style={{ width: 140 }}>
+        <button className="ui-button-primary" onClick={handlePlay} style={{ width: 140 }}>
           {isPlaying ? '⏸ Stop' : '🔊 Listen'}
         </button>
-        <button className="btn-ghost" onClick={handleComplete}>
+        <button className="ui-button-secondary" onClick={handleComplete}>
           Mark Complete ✅
         </button>
       </div>
 
-      <div style={{ background: 'var(--bg-elevated)', padding: 32, borderRadius: 'var(--radius-md)' }}>
+      <div style={{ background: 'rgba(0,0,0,0.03)', padding: 32, borderRadius: 'var(--radius-md)' }}>
         <h3 style={{ fontSize: 13, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>Transcript</h3>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

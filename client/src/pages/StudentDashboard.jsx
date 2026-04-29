@@ -30,7 +30,7 @@ import { useConfig } from '../context/ConfigContext'
 const NAV_ITEMS = [
   { id: 'today', icon: '🎯', label: "Today's Lesson" },
   { id: 'home', icon: '🏠', label: 'Home' },
-  { id: 'courses', icon: '📚', label: 'My Courses' },
+  { id: 'courses', icon: '📚', label: 'My Learning' },
   { id: 'progress', icon: '📈', label: 'Progress' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
 ]
@@ -61,7 +61,7 @@ export default function StudentDashboard() {
   const gamePanelRef = useRef(null)
   const config = useConfig()
 
-  const displayName = robName || 'ROB'
+  const displayName = robName || 'Bloom'
 
   const [activeTab, setActiveTab] = useState('today')
   const [loading, setLoading] = useState(true)
@@ -154,7 +154,7 @@ export default function StudentDashboard() {
   if (loading) return <LoadingSkeleton rows={5} />
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+    <div className="dark-surface" style={{ minHeight: '100vh' }}>
       <style>{`
         @keyframes barShimmer {
           0% { background-position: -200% center; }
@@ -209,286 +209,292 @@ export default function StudentDashboard() {
         {activeTab === 'today' ? (
           <TodayLesson />
         ) : (
-          <>
-        <header style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <h1 className="clash-display" style={{ fontSize: 28, marginBottom: 4 }}>
-              {config?.ui?.text?.student_dashboard_title || 'Mission Control'}
-            </h1>
-            <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-              {config?.ui?.text?.student_dashboard_welcome || 'Welcome back'}, {firstName} 👋
-            </p>
-          </div>
-          {todayLesson && (
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => setActiveLesson(todayLesson)}
-              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 20px', borderRadius: 999, fontSize: 14 }}
-            >
-              <span>🎓</span>
-              <span>Today's {displayName} Lesson</span>
-            </button>
-          )}
-        </header>
+          <div className="dashboard-container">
 
-        {/* ROB HQ Hero */}
-        <RobGreetingCard
-          onContinueMission={() => navigate(`/player/${activeCurriculumModule?._id || ''}`)}
-          onScrollToQuiz={scrollToQuiz}
-          onScrollToGame={scrollToGame}
-          streak={streak}
-          badges={badges}
-        />
-
-        {/* ── Progress-aware learning section ───────────────────── */}
-
-        {/* Comeback card — shown only when inactive 2+ days */}
-        {isInactive() && progress.completedModules.length > 0 && (
-          <div style={{ marginBottom: 20 }}>
-            <RobComebackCard
-              robName={displayName}
-              robColor={companionData?.color || 'cyan'}
-              daysMissed={3}
-              onQuickQuiz={scrollToQuiz}
-              onResume={() => navigate(isCompleted('L1M1') ? '/student/module/2' : '/student/module/1')}
-            />
-          </div>
-        )}
-
-        {/* Module roadmap */}
-        <div style={{ marginBottom: 20 }}>
-          {/* Section header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <div style={{ fontWeight: 800, fontSize: 17, color: 'var(--text-primary)' }}>
-              🗺 {config?.ui?.text?.student_roadmap_title || 'Level 1 Roadmap'}
-            </div>
-            <div style={{
-              fontSize: 11, fontWeight: 700, color: '#9B6FF4',
-              background: 'rgba(123,63,228,0.12)',
-              border: '1px solid rgba(123,63,228,0.25)',
-              borderRadius: 20, padding: '3px 12px',
-            }}>
-              {progress.completedModules.length} / 4 Complete
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
-            {[
-              { key: 'L1M1', icon: '🤖', title: 'ROB Saves Your Day', xp: 50,  route: '/student/module/1' },
-              { key: 'L1M2', icon: '💬', title: 'Better Questions',    xp: 60,  route: '/student/module/2' },
-              { key: 'L1M3', icon: '📚', title: 'ROB Becomes Tutor',   xp: 75,  route: '/student/module/3' },
-              { key: 'L1M4', icon: '🔍', title: 'Catch ROB Wrong',     xp: 80,  route: '/student/module/4' },
-            ].map((mod, idx) => {
-              const done    = isCompleted(mod.key)
-              const active  = isUnlocked(mod.key) && !done
-              const locked  = !isUnlocked(mod.key) && !done
-
-              return (
-                <button
-                  key={mod.key}
-                  disabled={locked}
-                  onClick={() => !locked && navigate(mod.route)}
-                  style={{
-                    textAlign: 'left', cursor: locked ? 'not-allowed' : 'pointer',
-                    background: done
-                      ? 'rgba(34,197,94,0.08)'
-                      : active
-                        ? 'linear-gradient(135deg, rgba(123,63,228,0.15), rgba(155,111,244,0.08))'
-                        : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${done ? 'rgba(34,197,94,0.3)' : active ? 'rgba(123,63,228,0.4)' : 'rgba(255,255,255,0.06)'}`,
-                    borderRadius: 16, padding: '14px 14px',
-                    opacity: locked ? 0.4 : 1,
-                    transition: 'all 0.25s',
-                    boxShadow: active ? '0 0 20px rgba(123,63,228,0.12)' : 'none',
-                  }}
-                  onMouseEnter={e => { if (!locked) { e.currentTarget.style.transform = 'translateY(-2px)' } }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = '' }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                    <span style={{ fontSize: 22 }}>{done ? '✅' : locked ? '🔒' : mod.icon}</span>
-                    <span style={{
-                      fontSize: 10, fontWeight: 800, letterSpacing: 1,
-                      color: done ? '#4ADE80' : active ? '#9B6FF4' : 'var(--text-muted)',
-                      textTransform: 'uppercase',
-                    }}>
-                      {done ? 'Done' : active ? 'Available' : 'Locked'}
-                    </span>
-                  </div>
-                  <div style={{
-                    fontSize: 13, fontWeight: 700, lineHeight: 1.35,
-                    color: done ? '#4ADE80' : 'var(--text-primary)',
-                    marginBottom: 6,
-                    textDecoration: done ? 'line-through' : 'none',
-                  }}>
-                    M{idx + 1}. {config?.curriculum?.modules?.[idx]?.title || mod.title}
-                  </div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#FFD700' }}>+{mod.xp} XP</div>
+            {/* ── Header ────────────────────────────────────────── */}
+            <div className="dashboard-header">
+              <div>
+                <button type="button" className="ui-button secondary" onClick={() => navigate('/')} style={{ marginBottom: 10, fontSize: 12, padding: '6px 12px' }}>
+                  ← Home
                 </button>
-              )
-            })}
-          </div>
-        </div>
+                <h1 className="ui-title" style={{ fontSize: 22 }}>
+                  {config?.ui?.text?.student_dashboard_title || `Welcome Back 🌱`}
+                </h1>
+                <p className="ui-text">Your learning journey today, {firstName}</p>
+              </div>
+              {todayLesson && (
+                <button type="button" className="btn-primary" onClick={() => setActiveLesson(todayLesson)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 999, fontSize: 14 }}>
+                  <span>🌱</span>
+                  <span>Today's Bloom Lesson</span>
+                </button>
+              )}
+            </div>
 
-        {/* Unlock card — only show when M1 done and M2 unlocked */}
-        {isCompleted('L1M1') && isUnlocked('L1M2') && (
-          <div style={{ marginBottom: 20 }}>
-            <UnlockCard
-              moduleKey="L1M2"
-              title="Better Questions, Better Answers"
-              subtitle="Learn why better prompts give smarter AI answers. The secret skill every AI champion needs."
-              xp={60}
-              duration="12 min"
-              icon="💬"
-              onStart={() => navigate('/student/module/2')}
+            {/* ── Summary grid ──────────────────────────────────── */}
+            <div className="dashboard-grid">
+              <div className="ui-card">
+                <div className="ui-title">Progress</div>
+                <div className="progress-bar" style={{ marginBottom: 8 }}>
+                  <div className="progress-fill" style={{ width: `${Math.round((progress.completedModules.length / 4) * 100)}%` }} />
+                </div>
+                <p className="ui-text">{progress.completedModules.length} / 4 modules completed</p>
+              </div>
+
+              <div className="ui-card">
+                <div className="ui-title">Rewards</div>
+                <p style={{ fontWeight: 700, marginBottom: 6, color: 'var(--text-inverse)', fontSize: 14 }}>⭐ Level {robLevel} · {robXP} XP</p>
+                <p className="ui-text">🏆 Badges earned: {badges.length}</p>
+              </div>
+
+              <div className="ui-card">
+                <div className="ui-title">Upcoming</div>
+                <p className="ui-text" style={{ marginBottom: 4 }}>📅 Saturday — Weekly Check</p>
+                <p className="ui-text">🔥 {streak} day streak active</p>
+              </div>
+
+              <div className="ui-card">
+                <div className="ui-title">Bloom Says 🌱</div>
+                <p className="ui-text">Let's complete today's learning and earn your reward!</p>
+              </div>
+            </div>
+
+            {/* ── Plan grid ─────────────────────────────────────── */}
+            <div className="dashboard-grid">
+              <div className="ui-card">
+                <div className="ui-title">Today's Learning</div>
+                <ul className="ui-text" style={{ paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {[
+                    { key: 'L1M1', icon: '🤖', title: 'AI Basics' },
+                    { key: 'L1M2', icon: '💬', title: 'Prompting Skills' },
+                    { key: 'L1M3', icon: '📚', title: 'AI as Tutor' },
+                  ].map(mod => (
+                    <li key={mod.key} style={{ color: isCompleted(mod.key) ? 'var(--accent-green)' : 'var(--text-secondary)', listStyle: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {isCompleted(mod.key) ? '✅' : mod.icon} {mod.title}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="ui-card">
+                <div className="ui-title">This Week</div>
+                <p className="ui-text">Next: Apply → Analyze → Create</p>
+              </div>
+
+              <div className="ui-card">
+                <div className="ui-title">After School Plan</div>
+                <ul className="ui-text" style={{ paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <li>5:00 PM — AI Basics</li>
+                  <li>5:30 PM — Prompting Skills</li>
+                  <li>6:00 PM — Break</li>
+                  <li>6:30 PM — Creative AI</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* ── Empty state ───────────────────────────────────── */}
+            {curriculum.length === 0 && progress.completedModules.length === 0 && (
+              <div className="ui-card" style={{ textAlign: 'center', padding: '32px 24px' }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>🌱</div>
+                <h2 className="ui-title" style={{ marginBottom: 8 }}>No learning journey yet</h2>
+                <p className="ui-text" style={{ maxWidth: 380, margin: '0 auto 20px' }}>
+                  Ask your parent to upload your school pages and we'll create your learning plan.
+                </p>
+                <button type="button" className="ui-button primary" onClick={() => navigate('/')}>
+                  Go to Home
+                </button>
+              </div>
+            )}
+
+            {/* ── Bloom companion card ──────────────────────────── */}
+            <RobGreetingCard
+              onContinueMission={() => navigate(`/player/${activeCurriculumModule?._id || ''}`)}
+              onScrollToQuiz={scrollToQuiz}
+              onScrollToGame={scrollToGame}
+              streak={streak}
+              badges={badges}
             />
-          </div>
-        )}
 
-        {/* Module 1 CTA — only show when not yet completed */}
-        {!isCompleted('L1M1') && (
-          <div style={{
-            marginBottom: 20,
-            background: 'linear-gradient(135deg, rgba(123,63,228,0.12), rgba(0,212,255,0.07))',
-            border: '1px solid rgba(123,63,228,0.3)',
-            borderRadius: 16, padding: '18px 24px',
-            display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap',
-          }}>
-            <div style={{ fontSize: 28 }}>🤖</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--text-primary)' }}>
-                Module 1 · ROB Saves Your Day with AI
-              </div>
-              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>
-                10 min · Beginner · +50 XP · Your first lesson!
-              </div>
-            </div>
-            <button
-              onClick={() => navigate('/student/module/1')}
-              style={{
-                background: 'linear-gradient(135deg, #7B3FE4, #5B2DB4)',
-                border: 'none', borderRadius: 12, padding: '11px 24px',
-                color: '#fff', fontWeight: 800, fontSize: 13, cursor: 'pointer',
-                boxShadow: '0 4px 16px rgba(123,63,228,0.4)',
-                transition: 'all 0.2s',
-              }}
-            >
-              Start Lesson →
-            </button>
-          </div>
-        )}
+            {/* ── Comeback card ─────────────────────────────────── */}
+            {isInactive() && progress.completedModules.length > 0 && (
+              <RobComebackCard
+                robName={displayName}
+                robColor={companionData?.color || 'cyan'}
+                daysMissed={3}
+                onQuickQuiz={scrollToQuiz}
+                onResume={() => navigate(isCompleted('L1M1') ? '/student/module/2' : '/student/module/1')}
+              />
+            )}
 
-        {/* Streak card */}
-        <div style={{ marginBottom: 24 }}>
-          <StreakCard
-            streakDays={progress.streakDays}
-            lastStreakDate={progress.lastStreakDate}
-          />
-        </div>
-
-        {/* Inline Quiz + Game */}
-        <section className="student-quiz-game-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
-          <div ref={quizPanelRef}>
-            <RobQuizPanel currentModuleId={activeCurriculumModule?._id} />
-          </div>
-          <div ref={gamePanelRef}>
-            <RobGamePanel />
-          </div>
-        </section>
-
-        {/* Progress + XP Ring */}
-        <section className="student-progress-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 24, marginBottom: 32 }}>
-          <div className="glass-card" style={{ padding: 24 }}>
-            <div className="clash-display" style={{ fontSize: 20, marginBottom: 16 }}>📊 Learning Journey</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {levelRows.map((row, index) => (
-                <div key={row.number} style={{ display: 'grid', gridTemplateColumns: '150px 1fr 44px 22px', gap: 10, alignItems: 'center' }}>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600 }}>Level {row.number}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{row.title}</div>
-                  </div>
-                  <div style={{ height: 8, borderRadius: 999, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
-                    <div style={{
-                      width: `${row.percentage}%`, height: '100%', borderRadius: 999,
-                      background: row.status === 'completed' ? '#4CD964' : row.status === 'active' ? 'linear-gradient(90deg, #FF5C28, #7B3FE4)' : 'rgba(255,255,255,0.06)',
-                      transition: `width 0.8s cubic-bezier(0.4,0,0.2,1) ${index * 80}ms`,
-                    }} />
-                  </div>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{row.percentage}%</div>
-                  <div>{row.status === 'completed' ? '✅' : row.status === 'active' ? '▶️' : '🔒'}</div>
+            {/* ── Level roadmap ─────────────────────────────────── */}
+            <div className="ui-card">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                <div className="ui-title" style={{ margin: 0 }}>
+                  🗺 {config?.ui?.text?.student_roadmap_title || 'Level 1 Roadmap'}
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="glass-card" style={{ padding: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-              <svg width="140" height="170" viewBox="0 0 140 170">
-                <defs>
-                  <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#FF5C28" />
-                    <stop offset="100%" stopColor="#7B3FE4" />
-                  </linearGradient>
-                </defs>
-                <circle cx="70" cy="70" r="54" stroke="rgba(255,255,255,0.08)" strokeWidth="12" fill="none" />
-                <circle cx="70" cy="70" r="54" stroke="url(#ringGrad)" strokeWidth="12" strokeLinecap="round" fill="none"
-                  strokeDasharray={ringCircumference} strokeDashoffset={ringOffset}
-                  transform="rotate(-90 70 70)" style={{ transition: 'stroke-dashoffset 0.8s ease' }} />
-                <text x="70" y="68" textAnchor="middle" fill="white" fontSize="36" fontFamily="Clash Display, Inter, sans-serif">{robLevel}</text>
-                <text x="70" y="90" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="14">Level</text>
-                <text x="70" y="156" textAnchor="middle" fill="white" fontSize="20" fontFamily="Clash Display, Inter, sans-serif">{robXP} XP</text>
-              </svg>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              {[
-                ['📚', modulesDone, 'Modules'],
-                ['🏆', badges.length, 'Badges'],
-                ['🔥', streak, 'Day Streak'],
-                ['⚡', xpToday, 'XP Today'],
-              ].map(([icon, value, label]) => (
-                <div key={label} style={{ padding: 14, borderRadius: 16, background: 'rgba(255,255,255,0.03)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 22 }}>{icon}</div>
-                  <div className="clash-display" style={{ fontSize: 22 }}>{value}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Badges */}
-        <section style={{ marginBottom: 40 }}>
-          <div className="section-header" style={{ marginBottom: 16 }}>
-            <span className="section-title">🏆 Your Badges</span>
-            <button type="button" className="btn-ghost">View all →</button>
-          </div>
-          <div className="student-badges-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-            {earnedBadgeCards.map(badge => (
-              <div
-                key={badge.id}
-                className="hoverable-card"
-                style={{
-                  padding: 18, borderRadius: 20, background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center',
-                  opacity: badge.earned ? 1 : 0.4, filter: badge.earned ? 'none' : 'grayscale(1)',
-                }}
-              >
-                <div style={{
-                  width: 72, height: 72, margin: '0 auto 12px', borderRadius: '50%', padding: 2,
-                  background: 'linear-gradient(135deg, #FF5C28, #7B3FE4)',
-                  boxShadow: badge.earned ? '0 0 20px rgba(123,63,228,0.4)' : 'none',
-                }}>
-                  <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#0F0B1C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>
-                    {badge.emoji}
-                  </div>
-                </div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{badge.name}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{badge.earned ? '✅ Earned' : '🔒 Locked'}</div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-purple-light)', background: 'rgba(123,63,228,0.12)', border: '1px solid rgba(123,63,228,0.25)', borderRadius: 20, padding: '3px 12px' }}>
+                  {progress.completedModules.length} / 4 Complete
+                </span>
               </div>
-            ))}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10 }}>
+                {[
+                  { key: 'L1M1', icon: '🤖', title: 'AI Saves Your Day',     xp: 50, route: '/student/module/1' },
+                  { key: 'L1M2', icon: '💬', title: 'Better Questions',       xp: 60, route: '/student/module/2' },
+                  { key: 'L1M3', icon: '📚', title: 'AI Becomes Your Tutor',  xp: 75, route: '/student/module/3' },
+                  { key: 'L1M4', icon: '🔍', title: 'Catch AI Being Wrong',   xp: 80, route: '/student/module/4' },
+                ].map((mod, idx) => {
+                  const done   = isCompleted(mod.key)
+                  const active = isUnlocked(mod.key) && !done
+                  const locked = !isUnlocked(mod.key) && !done
+                  return (
+                    <button key={mod.key} disabled={locked} onClick={() => !locked && navigate(mod.route)}
+                      style={{
+                        textAlign: 'left', cursor: locked ? 'not-allowed' : 'pointer',
+                        background: done ? 'rgba(34,197,94,0.1)' : active ? 'var(--accent-secondary)' : 'var(--bg-card)',
+                        border: `1px solid ${done ? 'rgba(34,197,94,0.3)' : active ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                        borderRadius: 12, padding: 14, opacity: locked ? 0.6 : 1,
+                        transition: 'all 0.25s', fontFamily: 'inherit',
+                      }}
+                      onMouseEnter={e => { if (!locked) e.currentTarget.style.transform = 'translateY(-2px)' }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = '' }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                        <span style={{ fontSize: 18 }}>{done ? '✅' : locked ? '🔒' : mod.icon}</span>
+                        <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase', color: done ? 'var(--accent-green)' : active ? 'var(--accent-purple-light)' : 'var(--text-muted)' }}>
+                          {done ? 'Done' : active ? 'Active' : 'Locked'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: done ? 'var(--accent-green)' : active ? 'var(--text-inverse)' : 'var(--text-primary)', marginBottom: 4, textDecoration: done ? 'line-through' : 'none' }}>
+                        M{idx + 1}. {config?.curriculum?.modules?.[idx]?.title || mod.title}
+                      </div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: '#FFD700' }}>+{mod.xp} XP</div>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* ── Unlock card ───────────────────────────────────── */}
+            {isCompleted('L1M1') && isUnlocked('L1M2') && (
+              <UnlockCard
+                moduleKey="L1M2"
+                title="Better Questions, Better Answers"
+                subtitle="Learn why better prompts give smarter AI answers. The secret skill every AI champion needs."
+                xp={60}
+                duration="12 min"
+                icon="💬"
+                onStart={() => navigate('/student/module/2')}
+              />
+            )}
+
+            {/* ── Module 1 CTA ──────────────────────────────────── */}
+            {!isCompleted('L1M1') && (
+              <div className="ui-card" style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                <div style={{ fontSize: 28 }}>🌱</div>
+                <div style={{ flex: 1 }}>
+                  <div className="ui-title" style={{ margin: 0 }}>Module 1 · Start Your First AI Mission</div>
+                  <p className="ui-text">10 min · Beginner · +50 XP · Your first lesson!</p>
+                </div>
+                <button onClick={() => navigate('/student/module/1')} className="ui-button primary">
+                  Start →
+                </button>
+              </div>
+            )}
+
+            {/* ── Streak ────────────────────────────────────────── */}
+            <StreakCard streakDays={progress.streakDays} lastStreakDate={progress.lastStreakDate} />
+
+            {/* ── Quiz + Game ───────────────────────────────────── */}
+            <section className="dashboard-grid student-quiz-game-grid">
+              <div ref={quizPanelRef}><RobQuizPanel currentModuleId={activeCurriculumModule?._id} /></div>
+              <div ref={gamePanelRef}><RobGamePanel /></div>
+            </section>
+
+            {/* ── Progress journey + XP ring ────────────────────── */}
+            <section className="dashboard-grid student-progress-grid" style={{ gridTemplateColumns: '1.2fr 0.8fr' }}>
+              <div className="ui-card">
+                <div className="ui-title">📊 Learning Journey</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {levelRows.map((row, index) => (
+                    <div key={row.number} style={{ display: 'grid', gridTemplateColumns: '140px 1fr 40px 20px', gap: 10, alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-inverse)' }}>Level {row.number}</div>
+                        <div className="ui-text" style={{ fontSize: 11 }}>{row.title}</div>
+                      </div>
+                      <div className="progress-bar">
+                        <div className="progress-fill" style={{
+                          width: `${row.percentage}%`,
+                          background: row.status === 'completed' ? 'var(--accent-green)' : row.status === 'active' ? 'var(--accent-primary)' : 'var(--bg-soft)',
+                          transition: `width 0.8s cubic-bezier(0.4,0,0.2,1) ${index * 80}ms`,
+                        }} />
+                      </div>
+                      <div className="ui-text" style={{ fontSize: 11 }}>{row.percentage}%</div>
+                      <div style={{ fontSize: 14 }}>{row.status === 'completed' ? '✅' : row.status === 'active' ? '▶️' : '🔒'}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="ui-card">
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+                  <svg width="140" height="170" viewBox="0 0 140 170">
+                    <defs>
+                      <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stopColor="#FF5C28" />
+                        <stop offset="100%" stopColor="#7B3FE4" />
+                      </linearGradient>
+                    </defs>
+                    <circle cx="70" cy="70" r="54" stroke="rgba(255,255,255,0.08)" strokeWidth="12" fill="none" />
+                    <circle cx="70" cy="70" r="54" stroke="url(#ringGrad)" strokeWidth="12" strokeLinecap="round" fill="none"
+                      strokeDasharray={ringCircumference} strokeDashoffset={ringOffset}
+                      transform="rotate(-90 70 70)" style={{ transition: 'stroke-dashoffset 0.8s ease' }} />
+                    <text x="70" y="68" textAnchor="middle" fill="white" fontSize="36" fontFamily="Clash Display, Inter, sans-serif">{robLevel}</text>
+                    <text x="70" y="90" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="14">Level</text>
+                    <text x="70" y="156" textAnchor="middle" fill="white" fontSize="20" fontFamily="Clash Display, Inter, sans-serif">{robXP} XP</text>
+                  </svg>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  {[
+                    ['📚', modulesDone, 'Modules'],
+                    ['🏆', badges.length, 'Badges'],
+                    ['🔥', streak, 'Streak'],
+                    ['⚡', xpToday, 'XP Today'],
+                  ].map(([icon, value, label]) => (
+                    <div key={label} style={{ padding: 12, borderRadius: 12, background: 'var(--bg-soft)', textAlign: 'center' }}>
+                      <div style={{ fontSize: 20 }}>{icon}</div>
+                      <div className="clash-display" style={{ fontSize: 20, color: 'var(--text-inverse)' }}>{value}</div>
+                      <div className="ui-text">{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* ── Badges ────────────────────────────────────────── */}
+            <section>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div className="ui-title" style={{ margin: 0 }}>🏆 Your Badges</div>
+                <button type="button" className="btn-ghost" style={{ fontSize: 12 }}>View all →</button>
+              </div>
+              <div className="dashboard-grid student-badges-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))' }}>
+                {earnedBadgeCards.map(badge => (
+                  <div key={badge.id} className="ui-card hoverable-card" style={{
+                    textAlign: 'center', padding: 16,
+                    opacity: badge.earned ? 1 : 0.4, filter: badge.earned ? 'none' : 'grayscale(1)',
+                  }}>
+                    <div style={{ width: 56, height: 56, margin: '0 auto 10px', borderRadius: '50%', padding: 2, background: 'linear-gradient(135deg, #FF5C28, #7B3FE4)', boxShadow: badge.earned ? '0 0 16px rgba(123,63,228,0.4)' : 'none' }}>
+                      <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'var(--bg-card)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>
+                        {badge.emoji}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{badge.name}</div>
+                    <div className="ui-text" style={{ fontSize: 11 }}>{badge.earned ? '✅ Earned' : '🔒 Locked'}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
           </div>
-        </section>
-        </>
         )}
       </main>
 

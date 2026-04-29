@@ -3,6 +3,7 @@ import BloomCharacter from '../Bloom/BloomCharacter'
 import { completeDayLesson } from '../../services/api'
 import { useToast } from '../ui/Toast'
 import { useConfig } from '../../context/ConfigContext'
+import ThinkingBlock from './ThinkingBlock'
 
 export default function LessonPlayer({ planId, dayNumber, dayData, onComplete }) {
   const [currentSectionIdx, setCurrentSectionIdx] = useState(0)
@@ -84,10 +85,10 @@ export default function LessonPlayer({ planId, dayNumber, dayData, onComplete })
   if (!sections.length) return <div style={{ padding: 40, color: 'white' }}>No content available for this lesson.</div>
 
   return (
-    <div style={{ position: 'relative', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', minHeight: 400, border: '1px solid var(--border-color)', display: 'flex' }}>
+    <div className="lesson-container" style={{ position: 'relative', minHeight: 400, display: 'flex' }}>
       
       {/* Bloom Avatar Column */}
-      <div style={{ width: 240, background: 'var(--bg-elevated)', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 32 }}>
+      <div style={{ width: 240, background: 'rgba(0,0,0,0.03)', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 32 }}>
         <div style={{ padding: '4px 12px', background: 'rgba(123,63,228,0.1)', color: 'var(--accent-purple-light)', borderRadius: 'var(--radius-xl)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', marginBottom: 32 }}>
           {dayData.bloomLevel}
         </div>
@@ -100,23 +101,30 @@ export default function LessonPlayer({ planId, dayNumber, dayData, onComplete })
         {/* Progress Bar */}
         <div style={{ display: 'flex', gap: 4, marginBottom: 32 }}>
           {sections.map((s, i) => (
-            <div key={i} style={{ flex: 1, height: 4, background: i <= currentSectionIdx ? 'var(--accent-purple)' : 'var(--border-light)', borderRadius: 2 }} />
+            <div key={i} style={{ flex: 1, height: 4, background: i <= currentSectionIdx ? 'var(--accent-primary)' : 'rgba(0,0,0,0.1)', borderRadius: 2 }} />
           ))}
         </div>
 
         {/* Normal Section Rendering (Explanation / Activity) */}
         {!showQuiz && currentSection && currentSection.type !== 'quiz' && (
           <div style={{ flex: 1, animation: 'fadeIn 0.3s ease' }}>
-            <h3 style={{ fontSize: 13, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: 16 }}>{currentSection.type}</h3>
-            <div style={{ fontSize: 20, color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-              {currentSection.text}
-            </div>
+            <h3 style={{ fontSize: 13, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: 16 }}>{currentSection.type.replace('_', ' ')}</h3>
             
-            <div style={{ marginTop: 40 }}>
-              <button className="btn-primary" onClick={handleNextSection}>
-                {currentSectionIdx === sections.length - 1 ? 'Complete Lesson ✅' : 'Continue →'}
-              </button>
-            </div>
+            {(currentSection.type === 'guided_thinking' || currentSection.type === 'reflection') ? (
+              <ThinkingBlock section={currentSection} onContinue={handleNextSection} />
+            ) : (
+              <>
+                <div style={{ fontSize: 20, color: 'var(--text-primary)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                  {currentSection.content || currentSection.task || currentSection.text}
+                </div>
+                
+                <div style={{ marginTop: 40 }}>
+                  <button className="ui-button-primary" onClick={handleNextSection}>
+                    {currentSectionIdx === sections.length - 1 ? 'Complete Lesson ✅' : 'Continue →'}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -133,7 +141,7 @@ export default function LessonPlayer({ planId, dayNumber, dayData, onComplete })
               {currentSection.options?.map((opt, i) => {
                 const isSelected = selectedOption === i;
                 const isCorrect = opt === currentSection.answer;
-                let bg = 'var(--bg-elevated)';
+                let bg = 'rgba(0,0,0,0.02)';
                 let border = 'var(--border-color)';
                 
                 if (quizState !== 'unanswered') {
@@ -158,12 +166,12 @@ export default function LessonPlayer({ planId, dayNumber, dayData, onComplete })
             </div>
 
             {quizState === 'unanswered' ? (
-              <button className="btn-primary" disabled={selectedOption === null} onClick={checkAnswer}>
+              <button className="ui-button-primary" disabled={selectedOption === null} onClick={checkAnswer}>
                 Check Answer
               </button>
             ) : (
               <div>
-                <button className="btn-primary" onClick={continueAfterQuiz}>
+                <button className="ui-button-primary" onClick={continueAfterQuiz}>
                   {currentSectionIdx === sections.length - 1 ? 'Complete Lesson ✅' : 'Continue Lesson →'}
                 </button>
               </div>

@@ -14,9 +14,9 @@ export default function GrowthNavbar() {
   }, []);
 
   const navLinks = [
+    { label: 'Home', path: '/' },
     { label: 'Why UpgrAIed', path: '/why' },
     { label: 'Pricing', path: '/pricing' },
-    { label: 'Book Demo', path: '/book-demo' },
   ];
 
   return (
@@ -78,17 +78,10 @@ export default function GrowthNavbar() {
         ))}
         <button
           onClick={() => navigate('/login')}
-          className="bloom-btn-ghost"
-          style={{ fontSize: '13px', padding: '9px 16px', marginRight: '-24px' }}
-        >
-          Login
-        </button>
-        <button
-          onClick={() => navigate('/book-demo')}
           className="bloom-btn-primary"
           style={{ fontSize: '13px', padding: '9px 22px' }}
         >
-          Book Free Demo
+          Login
         </button>
       </div>
 
@@ -124,17 +117,10 @@ export default function GrowthNavbar() {
           ))}
           <button
             onClick={() => { navigate('/login'); setMenuOpen(false); }}
-            className="bloom-btn-ghost"
-            style={{ padding: '12px 24px', width: '100%', fontSize: '15px' }}
-          >
-            Login
-          </button>
-          <button
-            onClick={() => { navigate('/book-demo'); setMenuOpen(false); }}
             className="bloom-btn-primary"
             style={{ padding: '12px 24px', width: '100%', fontSize: '15px' }}
           >
-            Book Free Demo
+            Login
           </button>
         </div>
       )}

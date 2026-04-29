@@ -5,19 +5,15 @@
 
 :root {
   /* Backgrounds */
-  --bg-primary:    #0A0A0F;
-  --bg-secondary:  #12121A;
-  --bg-card:       #1A1A26;
-  --bg-card-hover: #1E1E2E;
-
-  /* Borders */
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-glow:  rgba(123, 63, 228, 0.4);
+  --bg-main: #0f172a;        /* dark app background */
+  --bg-card: #f9fafb;        /* content cards (softened) */
+  --bg-soft: #1e293b;        /* secondary panels */
 
   /* Text */
-  --text-primary:   #F0F0FF;
-  --text-secondary: #8888AA;
-  --text-muted:     #555577;
+  --text-primary: #111827;   /* for light cards */
+  --text-secondary: #6b7280;
+  --text-inverse: #ffffff;   /* for dark backgrounds */
+  --text-muted: #94a3b8;     /* fallback for old references */
 
   /* Accent palette */
   --accent-purple:       #7B3FE4;
@@ -27,14 +23,106 @@
   --accent-pink:         #EC4899;
   --accent-blue:         #3B82F6;
 
-  /* Radii */
+  /* Accent references (for hybrid map) */
+  --accent-primary: var(--accent-purple);
+  --accent-secondary: var(--accent-purple-light);
+
+  /* UI */
+  --border-color: #e5e7eb;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-xl: 24px;
+  --spacing-md: 16px;
 
   /* Shadows */
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   SURFACE CLASSES (HYBRID THEME)
+   ============================================================ */
+.dark-surface {
+  background: var(--bg-main);
+  color: var(--text-inverse);
+}
+
+.light-surface {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.ui-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  color: var(--text-primary);
+}
+
+.lesson-container {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.ui-button-primary {
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.ui-button-secondary {
+  background: var(--bg-soft);
+  color: var(--text-inverse);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.ui-button {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.ui-button:hover { opacity: 0.88; transform: translateY(-1px); }
+.ui-button.primary {
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+}
+.ui-button.secondary {
+  background: transparent;
+  color: var(--text-inverse);
+  border: 1px solid var(--border-color);
 }
 
 /* ============================================================
@@ -44,6 +132,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* ============================================================
@@ -56,8 +145,8 @@ html {
 }
 
 body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: var(--bg-main);
+  color: var(--text-inverse);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.6;
   min-height: 100vh;
@@ -104,11 +193,10 @@ a:hover {
    GLASS CARD
    ============================================================ */
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-primary);
 }
 
 /* ============================================================
@@ -278,15 +366,15 @@ a:hover {
    STAT CARD
    ============================================================ */
 .stat-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  backdrop-filter: blur(10px);
   padding: 20px;
+  color: var(--text-primary);
   transition: border-color 0.2s, transform 0.2s;
 }
 .stat-card:hover {
-  border-color: var(--border-glow);
+  border-color: var(--accent-purple);
   transform: translateY(-2px);
 }
 
@@ -341,7 +429,64 @@ tbody tr:hover {
 }
 
 /* ============================================================
+   UI SYSTEM TOKENS
+   ============================================================ */
+.ui-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-inverse);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.ui-text {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* ============================================================
+   DASHBOARD LAYOUT
+   ============================================================ */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* ============================================================
    PROGRESS BAR
+   ============================================================ */
+.progress-bar {
+  height: 10px;
+  background: var(--bg-soft);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-primary);
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+/* ============================================================
+   PROGRESS BAR (legacy)
    ============================================================ */
 .progress-bar-track {
   width: 100%;
@@ -375,13 +520,14 @@ tbody tr:hover {
   top: 0;
   width: 260px;
   height: 100vh;
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border-color);
+  background: var(--bg-main);
+  border-right: 1px solid var(--bg-soft);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   transition: transform 0.3s ease;
   z-index: 1000;
+  color: var(--text-inverse);
 }
 
 .sidebar-item {
@@ -413,7 +559,8 @@ tbody tr:hover {
   margin-left: 260px;
   padding: 32px;
   min-height: 100vh;
-  background: var(--bg-primary);
+  background: var(--bg-main);
+  color: var(--text-inverse);
 }
 
 /* ============================================================
@@ -450,7 +597,7 @@ tbody tr:hover {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .input-field::placeholder {
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 .input-field:focus {
   border-color: var(--accent-purple);

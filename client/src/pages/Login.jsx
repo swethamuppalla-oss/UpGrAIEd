@@ -153,14 +153,23 @@ export default function Login() {
 
   /* ─────────────────────────────────────────────────────────── */
   return (
-    <div style={{
+    <div className="dark-surface" style={{
       minHeight: '100vh',
       display: 'flex',
-      background: '#08080F',
       fontFamily: "'Inter', -apple-system, sans-serif",
       overflow: 'hidden',
       position: 'relative',
     }}>
+      <button
+        onClick={() => navigate('/')}
+        className="bloom-btn-ghost"
+        style={{
+          position: 'absolute', top: 24, left: 32, zIndex: 10,
+          padding: '8px 16px', fontSize: 14, color: 'var(--text-secondary)'
+        }}
+      >
+        ← Back to Home
+      </button>
 
       {/* ── Global ambient orbs ─────────────────────────────── */}
       <Orb style={{ width: 700, height: 700, background: 'rgba(123,63,228,0.12)', top: -200, left: -200 }} />
@@ -209,7 +218,7 @@ export default function Login() {
 
           <h1 style={{
             fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em',
-            lineHeight: 1.15, color: '#F5F5FF', marginBottom: 16,
+            lineHeight: 1.15, color: 'var(--text-inverse)', marginBottom: 16,
           }}>
             Build.{' '}
             <span style={{
@@ -293,7 +302,7 @@ export default function Login() {
           <div style={{ marginBottom: 32, textAlign: 'left' }}>
             <h2 style={{
               fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em',
-              color: '#F5F5FF', marginBottom: 8,
+              color: 'var(--text-inverse)', marginBottom: 8,
             }}>Welcome Back 👋</h2>
             <p style={{ color: '#8888AA', fontSize: 14 }}>
               Choose your role for instant demo access — or sign in with your credentials below.
@@ -428,7 +437,7 @@ export default function Login() {
                   ? 'rgba(123,63,228,0.5)'
                   : 'linear-gradient(135deg, #7B3FE4 0%, #3B82F6 100%)',
                 border: 'none', borderRadius: 12,
-                color: '#fff', fontSize: 15, fontWeight: 700,
+                color: 'var(--text-inverse)', fontSize: 15, fontWeight: 700,
                 cursor: formLoading ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 transition: 'opacity 0.2s, transform 0.15s, box-shadow 0.2s',
@@ -560,13 +569,13 @@ function RoleCard({ role, isHovered, isActive, isLoading, delay, mounted, onHove
             <div style={{
               width: 16, height: 16,
               border: '2px solid rgba(255,255,255,0.15)',
-              borderTopColor: '#fff',
+              borderTopColor: 'var(--text-inverse)',
               borderRadius: '50%',
               animation: 'loginSpin 0.7s linear infinite',
             }} />
           ) : (
             <span style={{
-              fontSize: 14, color: isHovered ? '#fff' : '#444466',
+              fontSize: 14, color: isHovered ? 'var(--text-inverse)' : '#444466',
               transition: 'all 0.2s',
               transform: isHovered ? 'translate(2px, -2px)' : 'none',
               display: 'block',
@@ -577,7 +586,7 @@ function RoleCard({ role, isHovered, isActive, isLoading, delay, mounted, onHove
 
       {/* label */}
       <div style={{
-        fontSize: 15, fontWeight: 700, color: '#F0F0FF', marginBottom: 2,
+        fontSize: 15, fontWeight: 700, color: 'var(--text-inverse)', marginBottom: 2,
         letterSpacing: '-0.01em',
       }}>
         {role.label}
@@ -602,7 +611,7 @@ const inputStyle = {
   border: '1px solid rgba(255,255,255,0.08)',
   borderRadius: 10,
   padding: '11px 14px 11px 42px',
-  color: '#F0F0FF',
+  color: 'var(--text-inverse)',
   fontFamily: 'inherit',
   fontSize: 14,
   outline: 'none',

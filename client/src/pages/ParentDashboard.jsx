@@ -61,7 +61,7 @@ function ActivityTable({ activity }) {
   const rows = (activity || []).slice(0, 10)
   return (
     <div className="table-wrapper">
-      <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-card)' }}>
+      <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-card)', color: 'var(--text-primary)' }}>
         <h2 style={{ fontSize: 16, fontWeight: 700 }}>{config?.ui?.text?.parent_activity_title || 'Recent Activity'}</h2>
       </div>
       <table style={{ width: '100%', borderCollapse: 'collapse', background: 'var(--bg-card)' }}>
@@ -112,7 +112,7 @@ function OverviewTab({ child, activity, loading }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* ROB Parent Update Card */}
-      <div className="glass-card" style={{
+      <div className="ui-card dark-surface" style={{
         background: 'linear-gradient(135deg, rgba(0,212,255,0.08) 0%, rgba(123,63,228,0.08) 100%)',
         border: '1px solid rgba(0,212,255,0.2)',
         padding: '30px 40px',
@@ -128,7 +128,7 @@ function OverviewTab({ child, activity, loading }) {
               {config?.ui?.text?.parent_weekly_update || 'ROB Weekly Update'}
             </span>
           </div>
-          <p style={{ color: 'var(--text-primary)', fontSize: 18, lineHeight: 1.5, marginBottom: 24, maxWidth: 600 }}>
+          <p style={{ color: 'var(--text-inverse)', fontSize: 18, lineHeight: 1.5, marginBottom: 24, maxWidth: 600 }}>
             <strong style={{ color: 'white' }}>{child.name}</strong> learned 4 days this week and improved consistency! They earned 150 XP and unlocked the "Prompt Explorer" badge.
           </p>
           <div style={{ display: 'flex', gap: 12 }}>
@@ -140,7 +140,7 @@ function OverviewTab({ child, activity, loading }) {
       </div>
 
       {/* Child Card */}
-      <div className="glass-card" style={{
+      <div className="ui-card" style={{
         padding: '24px 28px',
         display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap',
       }}>
@@ -185,7 +185,7 @@ function BillingTab({ billing, navigate, showToast, loading }) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <h2 className="clash-display" style={{ fontSize: 22 }}>Billing</h2>
-        <div className="glass-card" style={{ padding: 40, textAlign: 'center' }}>
+        <div className="ui-card" style={{ padding: 40, textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>⏳</div>
           <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent-orange)', marginBottom: 8 }}>Application under Review</div>
           <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
@@ -200,7 +200,7 @@ function BillingTab({ billing, navigate, showToast, loading }) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <h2 className="clash-display" style={{ fontSize: 22 }}>Billing</h2>
-        <div className="glass-card" style={{ padding: 40, textAlign: 'center', border: '1px solid var(--accent-blue)' }}>
+        <div className="ui-card" style={{ padding: 40, textAlign: 'center', border: '1px solid var(--accent-blue)' }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>✨</div>
           <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent-blue)', marginBottom: 8 }}>Application Approved!</div>
           <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 24 }}>
@@ -251,7 +251,7 @@ function SupportTab() {
           { icon: '📧', title: 'Email Support',    desc: 'Write to us at support@upgraied.com',     action: 'Send Email' },
           { icon: '📞', title: 'Call Us',          desc: 'Mon–Sat, 10am–7pm IST',                   action: 'View Number' },
         ].map(s => (
-          <div key={s.title} className="glass-card" style={{ padding: 24 }}>
+          <div key={s.title} className="ui-card" style={{ padding: 24 }}>
             <div style={{ fontSize: 32, marginBottom: 12 }}>{s.icon}</div>
             <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{s.title}</div>
             <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>{s.desc}</div>
@@ -300,7 +300,7 @@ export default function ParentDashboard() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+    <div className="dark-surface" style={{ minHeight: '100vh' }}>
       <Sidebar
         items={NAV_ITEMS}
         activeItem={activeTab}
@@ -313,6 +313,14 @@ export default function ParentDashboard() {
 
       <main className="main-content">
         <div className="page-header">
+          <button
+            type="button"
+            className="ui-button secondary"
+            onClick={() => navigate('/')}
+            style={{ marginBottom: 12, fontSize: 12, padding: '6px 12px' }}
+          >
+            ← Home
+          </button>
           <h1 className="page-title">{config?.ui?.text?.parent_dashboard_title || 'Parent Dashboard'}</h1>
           <p className="page-subtitle">
             {config?.ui?.text?.parent_dashboard_subtitle || 'Monitoring'} <strong style={{ color: 'var(--accent-purple-light)' }}>{child?.name || 'your child'}</strong>'s learning journey

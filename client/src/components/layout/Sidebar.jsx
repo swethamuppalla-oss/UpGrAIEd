@@ -8,14 +8,13 @@ export default function Sidebar({
   onSignOut
 }) {
   return (
-    <div style={{
+    <div className="dark-surface" style={{
       width: '240px',
       height: '100vh',
       position: 'fixed',
       top: 0,
       left: 0,
-      background: '#0F0B1C',
-      borderRight: '1px solid rgba(255,255,255,0.08)',
+      borderRight: '1px solid var(--bg-soft)',
       display: 'flex',
       flexDirection: 'column',
       zIndex: 50
@@ -71,8 +70,8 @@ export default function Sidebar({
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.background = 'var(--bg-card)'
-                  e.currentTarget.style.color = 'var(--text-primary)'
+                  e.currentTarget.style.background = 'var(--bg-soft)'
+                  e.currentTarget.style.color = 'var(--text-inverse)'
                 }
               }}
               onMouseLeave={(e) => {
@@ -111,7 +110,7 @@ export default function Sidebar({
             {userInitials}
           </div>
           <div>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-inverse)' }}>
               {userName || 'User'}
             </div>
             <div style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'capitalize' }}>
@@ -138,7 +137,7 @@ export default function Sidebar({
             color: 'rgba(255,80,80,0.7)',
             textAlign: 'left'
           }}
-          onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-card)'}
+          onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-soft)'}
           onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
         >
           Sign Out

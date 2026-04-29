@@ -120,20 +120,6 @@ export default function PricingPage() {
               <button className="bloom-btn-primary" style={{ fontSize: 15, padding: '14px 32px' }} onClick={() => navigate('/book-demo')}>
                 Book Free Demo
               </button>
-              <a
-                href="https://wa.me/919999999999?text=Hi%2C+I+need+help+choosing+an+UpgrAIed+plan."
-                target="_blank" rel="noopener noreferrer"
-                style={{
-                  padding: '14px 32px', borderRadius: 50,
-                  background: 'rgba(37,211,102,0.10)', border: '1px solid rgba(37,211,102,0.28)',
-                  color: '#25D366', fontWeight: 700, fontSize: 15,
-                  textDecoration: 'none', transition: 'background 0.2s',
-                }}
-                onMouseOver={e => { e.currentTarget.style.background = 'rgba(37,211,102,0.18)'; }}
-                onMouseOut={e => { e.currentTarget.style.background = 'rgba(37,211,102,0.10)'; }}
-              >
-                💬 Ask on WhatsApp
-              </a>
             </div>
           </div>
         </div>

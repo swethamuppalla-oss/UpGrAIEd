@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import BloomCharacter from '../Bloom/BloomCharacter';
 
 const BENEFITS = [
-  { icon: '🧠', title: 'AI Skills',        desc: 'Learn to think with AI tools the right way — not as a shortcut, but as a superpower.', accent: '#6EDC5F', iconClass: '' },
-  { icon: '💡', title: 'Better Thinking',  desc: 'Problem-solving frameworks and structured reasoning that lift performance across all subjects.', accent: '#63C7FF', iconClass: 'pg-icon-sky' },
-  { icon: '🦁', title: 'Confidence',       desc: 'Celebrate wins, earn badges, and build a track record your child can be proud of.', accent: '#FFD95A', iconClass: 'pg-icon-warm' },
-  { icon: '🎯', title: 'Discipline',       desc: 'Structured missions and daily goals build habits that last a lifetime — not just streaks.', accent: '#FF8A65', iconClass: 'pg-icon-coral' },
-  { icon: '🗣️', title: 'Communication',   desc: 'Express ideas clearly — to humans and AI — through guided prompting and articulation practice.', accent: '#63C7FF', iconClass: 'pg-icon-sky' },
-  { icon: '🎨', title: 'Creativity',       desc: 'Use AI as a canvas. Invent, build, and imagine things that were impossible before.', accent: '#6EDC5F', iconClass: '' },
+  { icon: '🧠', title: 'Learn concepts clearly',        desc: 'Focus on core principles instead of memorizing facts.', accent: '#6EDC5F', iconClass: '' },
+  { icon: '🧩', title: 'Break problems into steps',  desc: 'Tackle complex topics by dividing them into manageable parts.', accent: '#63C7FF', iconClass: 'pg-icon-sky' },
+  { icon: '❓', title: 'Ask better questions',       desc: 'Develop the curiosity and logical thinking needed to explore deeply.', accent: '#FFD95A', iconClass: 'pg-icon-warm' },
+  { icon: '🤖', title: 'Use AI as a thinking partner',       desc: 'Collaborate with AI to validate ideas and strengthen arguments.', accent: '#FF8A65', iconClass: 'pg-icon-coral' },
 ];
 
 export default function ParentBenefits() {
@@ -24,13 +22,13 @@ export default function ParentBenefits() {
         {/* Header with Bloom mascot */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 48, alignItems: 'center', marginBottom: 64 }}>
           <div>
-            <div className="pg-badge">WHAT YOUR CHILD GAINS</div>
+            <div className="pg-badge">REAL UNDERSTANDING</div>
             <h2 className="pg-h2">
-              Six skills that shape a{' '}
-              <span className="bloom-text-green">remarkable future</span>
+              More Than Studying.{' '}
+              <span className="bloom-text-green">Real Understanding.</span>
             </h2>
             <p className="pg-sub" style={{ maxWidth: 500 }}>
-              Every module develops compound skills — things that make every other skill better.
+              Our system focuses on mastery, teaching students how to think rather than what to memorize.
             </p>
           </div>
           <div style={{ flexShrink: 0 }}>

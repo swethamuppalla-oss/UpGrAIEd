@@ -13,9 +13,10 @@ RULES:
    - Day 5: apply
    - Day 6: analyze
    - Day 7: create
-4. Each day must contain 'sections' array. Allowed section types: "explanation", "activity", "quiz".
-5. Quiz sections MUST contain 'question', 'options' (array of strings), and 'answer' (exact string matching one option).
-6. Provide reasonable estimates for 'estimatedTime' (minutes) and 'xpReward' (e.g. 50-150).
+16. Each day must contain 'sections' array. The sections array MUST include all 4 of these types: "explanation", "guided_thinking", "application", and "reflection". (You may also include a "quiz" section if appropriate).
+17. Quiz sections MUST contain 'question', 'options' (array of strings), and 'answer' (exact string matching one option).
+18. Guided Thinking and Reflection sections MUST contain a 'prompt' string instead of 'text'. Application sections MUST contain a 'task' string. Explanation sections MUST contain 'content' string instead of 'text'.
+19. Provide reasonable estimates for 'estimatedTime' (minutes) and 'xpReward' (e.g. 50-150).
 
 RETURN ONLY STRICT VALID JSON in this exact schema. Do not include markdown code blocks (\`\`\`json) or any conversational text.
 
@@ -31,7 +32,19 @@ SCHEMA:
       "sections": [
         {
           "type": "explanation",
-          "text": "Simple explanation..."
+          "content": "Simple explanation..."
+        },
+        {
+          "type": "guided_thinking",
+          "prompt": "How would you solve...?"
+        },
+        {
+          "type": "application",
+          "task": "Try to calculate..."
+        },
+        {
+          "type": "reflection",
+          "prompt": "What did you learn today?"
         },
         {
           "type": "quiz",

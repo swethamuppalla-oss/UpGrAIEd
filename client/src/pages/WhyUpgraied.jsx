@@ -57,11 +57,11 @@ export default function WhyUpgraied() {
         <div style={{ maxWidth: 780, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           {/* Bloom mascot hero */}
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
-            <BloomCharacter size="large" emotion="excited" speech="Not just another course — a transformation!" animate />
+            <BloomCharacter size="large" emotion="excited" speech="Not just another learning journey — a transformation!" animate />
           </div>
           <div className="pg-badge">WHY UPGRAIED</div>
           <h1 className="pg-h1" style={{ marginBottom: 20 }}>
-            Not another course platform.{' '}
+            Not another learning system.{' '}
             <span className="bloom-text-green">A transformation system.</span>
           </h1>
           <p className="pg-sub" style={{ maxWidth: 560, margin: '0 auto 40px' }}>
@@ -111,12 +111,12 @@ export default function WhyUpgraied() {
         </div>
       </section>
 
-      {/* CURRICULUM PREVIEW */}
+      {/* LEARNING JOURNEY PREVIEW */}
       <section className="pg-section" style={{ background: '#0D2318' }}>
         <div className="pg-orb" style={{ bottom: '-5%', right: '-5%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(99,199,255,0.06), transparent 70%)', filter: 'blur(60px)' }} />
         <div className="pg-container">
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <div className="pg-badge pg-badge-sky">CURRICULUM PREVIEW</div>
+            <div className="pg-badge pg-badge-sky">LEARNING JOURNEY PREVIEW</div>
             <h2 className="pg-h2">What children actually learn</h2>
             <p className="pg-sub">Every module is hands-on, outcome-driven, and built around Bloom missions.</p>
           </div>

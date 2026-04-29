@@ -71,10 +71,10 @@ export default function HeroSection() {
               <span dangerouslySetInnerHTML={{ __html: config.ui.hero.title }} />
             ) : (
               <>
-                Future Skills<br />
-                for Kids{' '}
+                Learn Your Subjects.<br />
+                Master How to{' '}
                 <span className="bloom-text-green">
-                  Bloom Here
+                  Think with AI
                 </span>
               </>
             )}
@@ -86,10 +86,7 @@ export default function HeroSection() {
           }}>
             {config?.ui?.hero?.subtitle || (
               <>
-                AI, confidence, focus and smart thinking — taught in a fun,
-                guided way with{' '}
-                <strong style={{ color: '#6EDC5F' }}>Bloom</strong>,
-                your child's AI learning buddy.
+                Upload your school pages. We turn them into a structured 7-day learning journey that builds understanding, problem-solving, and confidence.
               </>
             )}
           </p>
