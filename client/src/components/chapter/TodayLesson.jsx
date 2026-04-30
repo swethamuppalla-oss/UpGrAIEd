@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getCurrentWeekPlan } from '../../services/api'
 import LoadingSkeleton from '../ui/LoadingSkeleton'
 import BloomCharacter from '../Bloom/BloomCharacter'
@@ -7,6 +8,7 @@ import LessonPlayer from './LessonPlayer'
 export default function TodayLesson() {
   const [plan, setPlan] = useState(null)
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
   const fetchPlan = async () => {
     try {
@@ -29,8 +31,9 @@ export default function TodayLesson() {
     return (
       <div style={{ textAlign: 'center', padding: 80 }}>
         <BloomCharacter emotion="encouraging" size="medium" />
-        <h2 style={{ fontSize: 24, marginTop: 24, color: 'var(--text-inverse)' }}>No learning plan active!</h2>
-        <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>Ask your parent to upload a chapter to generate your journey.</p>
+        <h2 style={{ fontSize: 24, marginTop: 24, color: 'var(--text-inverse)' }}>No learning journey yet 🌱</h2>
+        <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>Ask your parent to upload your school pages</p>
+        <button type="button" className="ui-button primary" style={{ marginTop: 20 }} onClick={() => navigate('/')}>Go to Home</button>
       </div>
     )
   }

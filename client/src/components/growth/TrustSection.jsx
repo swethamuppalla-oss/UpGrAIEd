@@ -5,7 +5,7 @@ const TRUST_POINTS = [
   { icon: '🛡️', title: 'Age-Appropriate Learning',     desc: 'Every piece of content is curated for ages 8–14. No inappropriate AI outputs, ever.', iconClass: '' },
   { icon: '👀', title: 'Guided AI Usage',               desc: 'Children learn to use AI with guardrails — supervised, purposeful, and skill-building.', iconClass: 'pg-icon-sky' },
   { icon: '📊', title: 'Progress Visibility',           desc: 'Parents get a real-time dashboard showing exactly what their child learned and achieved.', iconClass: 'pg-icon-warm' },
-  { icon: '📚', title: 'Structured Curriculum',         desc: 'Built by educators, not just engineers. Every module has clear goals and milestones.', iconClass: '' },
+  { icon: '📚', title: 'Structured Learning System',         desc: 'Built by educators, not just engineers. Every module has clear goals and milestones.', iconClass: '' },
   { icon: '🎓', title: 'Real Skills, Not Passive Videos', desc: 'Interactive missions > passive watching. Children build and solve every session.', iconClass: 'pg-icon-sky' },
   { icon: '🤝', title: 'Parent-Friendly Design',        desc: 'Easy onboarding, simple controls, and transparent reporting built for busy parents.', iconClass: 'pg-icon-warm' },
 ];

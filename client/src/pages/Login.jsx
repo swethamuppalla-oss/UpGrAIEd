@@ -50,7 +50,7 @@ const DEMO_ROLES = [
     icon: '🎬',
     label: 'Creator',
     tagline: 'Studio Portal',
-    description: 'Upload courses, manage videos & review submissions',
+    description: 'Upload materials, manage videos & review submissions',
     gradient: 'linear-gradient(135deg, #EC4899 0%, #8B5CF6 100%)',
     glow: 'rgba(236,72,153,0.35)',
     border: 'rgba(236,72,153,0.4)',
@@ -236,7 +236,7 @@ export default function Login() {
         {/* Feature pills */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, position: 'relative', zIndex: 1 }}>
           {[
-            { icon: '⚡', text: 'AI-powered personalised curriculum' },
+            { icon: '⚡', text: 'AI-powered personalised learning journey' },
             { icon: '🏆', text: 'Gamified badge & reward system' },
             { icon: '👨‍👩‍👧', text: 'Real-time parent progress tracking' },
             { icon: '📊', text: 'In-depth analytics for every role' },
