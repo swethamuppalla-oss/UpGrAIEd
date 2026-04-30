@@ -1,4 +1,5 @@
 import express from 'express'
+import mongoose from 'mongoose'
 import cors from 'cors'
 import dotenv from 'dotenv'
 dotenv.config()
@@ -102,6 +103,18 @@ const swaggerUiOptions = {
 }
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions))
 app.get('/api/docs.json', (_req, res) => res.json(swaggerSpec))
+
+// DB connectivity test
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const result = await mongoose.connection.db
+      .collection('test')
+      .insertOne({ message: 'hello', time: new Date() })
+    res.json({ status: 'DB write success', id: result.insertedId })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
 
 // PUBLIC routes (no auth)
 app.use('/api/auth', authRouter)
