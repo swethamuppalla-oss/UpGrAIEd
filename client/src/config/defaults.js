@@ -43,7 +43,7 @@ export const DEFAULT_PRICING = {
 
 export const DEFAULT_CURRICULUM = {
   modules: [
-    { module: '01', title: 'What is AI?',      desc: 'Understanding AI in everyday life. How it works, where it lives.', icon: '🧠', emotion: 'curious' },
+    { module: '01', title: 'What is AI?1',      desc: 'Understanding AI in everyday life. How it works, where it lives.', icon: '🧠', emotion: 'curious' },
     { module: '02', title: 'Talking to AI',    desc: 'Prompting as a skill. Getting AI to do exactly what you want.',     icon: '💬', emotion: 'happy' },
     { module: '03', title: 'AI Tools Lab',     desc: 'Hands-on practice with real AI tools in a safe sandbox.',           icon: '🔬', emotion: 'excited' },
     { module: '04', title: 'Creative AI',      desc: 'Use AI for art, stories, and invention. Creativity amplified.',     icon: '🎨', emotion: 'celebrating' },
