@@ -11,7 +11,7 @@ export const GRADE_PRICES = {
   'Grade 11': 3999, 'Grade 12': 2499,
 }
 
-export const GST_RATE = 0.18
+export const GST_RATE = 0.19
 
 export const calculatePricing = (grade) => {
   const base = GRADE_PRICES[grade] || 6999
