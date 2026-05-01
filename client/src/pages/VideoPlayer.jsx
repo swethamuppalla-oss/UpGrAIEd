@@ -151,7 +151,7 @@ export default function VideoPlayer() {
                           {mod.title}
                         </div>
                       </div>
-                      {mod.isMustDo && <span style={{ fontSize: 10, background: 'rgba(239, 68, 68, 0.15)', color: '#EF4444', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>MUST DO</span>}
+                      {mod.isMustDo && mod.status !== 'completed' && <span style={{ fontSize: 10, background: 'rgba(239, 68, 68, 0.15)', color: '#EF4444', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>MUST DO</span>}
                     </div>
                   ))}
                 </div>
