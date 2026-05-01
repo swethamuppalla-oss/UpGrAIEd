@@ -1,38 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 
 const MODULES = [
-  {
-    id: 1,
-    title: 'ROB Saves Your Day with AI',
-    status: 'active',
-    xp: 50,
-    duration: '10 min',
-    icon: '🤖',
-  },
-  {
-    id: 2,
-    title: 'Better Questions, Better Answers',
-    status: 'locked',
-    xp: 60,
-    duration: '12 min',
-    icon: '💬',
-  },
-  {
-    id: 3,
-    title: 'ROB Becomes Your Tutor',
-    status: 'locked',
-    xp: 75,
-    duration: '15 min',
-    icon: '📚',
-  },
-  {
-    id: 4,
-    title: "Catch ROB's Wrong Facts",
-    status: 'locked',
-    xp: 80,
-    duration: '14 min',
-    icon: '🔍',
-  },
+  { id: 1, title: 'ROB Saves Your Day with AI', status: 'active', xp: 50, duration: '10 min', icon: '🤖' },
+  { id: 2, title: 'Better Questions, Better Answers', status: 'locked', xp: 60, duration: '12 min', icon: '💬' },
+  { id: 3, title: 'ROB Becomes Your Tutor', status: 'locked', xp: 75, duration: '15 min', icon: '📚' },
+  { id: 4, title: "Catch ROB's Wrong Facts", status: 'locked', xp: 80, duration: '14 min', icon: '🔍' },
+  { id: 5, title: 'Applied Prompting Kickoff', status: 'locked', xp: 100, duration: '16 min', icon: '🚀' },
 ]
 
 export default function ModuleSidebar({
@@ -56,7 +29,6 @@ export default function ModuleSidebar({
       top: 0,
       overflowY: 'auto',
     }}>
-      {/* Brand */}
       <div style={{
         padding: '20px 20px 16px',
         borderBottom: '1px solid rgba(255,255,255,0.07)',
@@ -78,14 +50,13 @@ export default function ModuleSidebar({
           UpgrAIed
         </div>
         <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-          Level 1 · AI Foundations
+          Learning Journey
         </div>
       </div>
 
-      {/* Level Progress */}
       <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Level 1 Progress</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>Overall Progress</span>
           <span style={{ fontSize: 12, fontWeight: 700, color: '#9B6FF4' }}>{progressPercent}%</span>
         </div>
         <div style={{
@@ -105,12 +76,11 @@ export default function ModuleSidebar({
             {completedModules.length} of {MODULES.length} modules
           </span>
           <span style={{ fontSize: 10, color: '#FFD700', fontWeight: 700 }}>
-            ⚡ {completedModules.length * 50} / 265 XP
+            ⚡ {completedModules.length * 50} / 365 XP
           </span>
         </div>
       </div>
 
-      {/* Module List */}
       <div style={{ padding: '12px 12px', flex: 1 }}>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '4px 8px 10px' }}>
           Modules
@@ -119,7 +89,7 @@ export default function ModuleSidebar({
         {MODULES.map((mod) => {
           const isActive = mod.id === activeModuleId
           const isDone = completedModules.includes(mod.id)
-          const moduleKey = `L1M${mod.id}`
+          const moduleKey = mod.id <= 4 ? `L1M${mod.id}` : 'L2M1'
           const isUnlocked = unlockedModules.includes(moduleKey)
           const isLocked = !isUnlocked && !isDone && !isActive
 
@@ -129,7 +99,8 @@ export default function ModuleSidebar({
               onClick={() => !isLocked && navigate(`/student/module/${mod.id}`)}
               disabled={isLocked}
               style={{
-                width: '100%', textAlign: 'left',
+                width: '100%',
+                textAlign: 'left',
                 background: isActive
                   ? 'linear-gradient(135deg, rgba(123,63,228,0.18), rgba(155,111,244,0.1))'
                   : isDone
@@ -145,7 +116,6 @@ export default function ModuleSidebar({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                {/* Status icon */}
                 <div style={{
                   width: 28, height: 28, borderRadius: 8, flexShrink: 0,
                   background: isActive
@@ -190,7 +160,6 @@ export default function ModuleSidebar({
         })}
       </div>
 
-      {/* Bottom badge */}
       <div style={{
         padding: '16px 20px',
         borderTop: '1px solid rgba(255,255,255,0.07)',
@@ -203,7 +172,7 @@ export default function ModuleSidebar({
         }}>
           <div style={{ fontSize: 18, marginBottom: 4 }}>🏆</div>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#FFD700' }}>Complete Level 1</div>
-          <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>Earn the AI Pioneer badge</div>
+          <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>Unlock Level 2 missions</div>
         </div>
       </div>
     </aside>

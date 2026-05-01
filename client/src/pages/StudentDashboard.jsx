@@ -265,7 +265,7 @@ export default function StudentDashboard() {
             🗺 {config?.ui?.text?.student_roadmap_title || 'Level 1 Roadmap'}
           </div>
           <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-purple-light)', background: 'rgba(123,63,228,0.12)', border: '1px solid rgba(123,63,228,0.25)', borderRadius: 20, padding: '3px 12px' }}>
-            {progress.completedModules.length} / 4 Complete
+            {progress.completedModules.length} / 5 Complete
           </span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10 }}>
@@ -274,6 +274,7 @@ export default function StudentDashboard() {
             { key: 'L1M2', icon: '💬', title: 'Better Questions',       xp: 60, route: '/student/module/2' },
             { key: 'L1M3', icon: '📚', title: 'AI Becomes Your Tutor',  xp: 75, route: '/student/module/3' },
             { key: 'L1M4', icon: '🔍', title: 'Catch AI Being Wrong',   xp: 80, route: '/student/module/4' },
+            { key: 'L2M1', icon: 'ðŸš€', title: 'Applied Prompting Kickoff', xp: 100, route: '/student/module/5' },
           ].map((mod, idx) => {
             const done   = isCompleted(mod.key)
             const active = isUnlocked(mod.key) && !done
@@ -315,6 +316,18 @@ export default function StudentDashboard() {
           duration="12 min"
           icon="💬"
           onStart={() => navigate('/student/module/2')}
+        />
+      )}
+
+      {isCompleted('L1M4') && isUnlocked('L2M1') && (
+        <UnlockCard
+          moduleKey="L2M1"
+          title="Applied Prompting Kickoff"
+          subtitle="Level 2 begins here. Start using advanced prompt patterns to guide AI more precisely."
+          xp={100}
+          duration="16 min"
+          icon="ðŸš€"
+          onStart={() => navigate('/student/module/5')}
         />
       )}
 

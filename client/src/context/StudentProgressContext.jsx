@@ -2,15 +2,14 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 import { useAuth } from './AuthContext'
 import { getProgressDashboard, apiCompleteModule } from '../services/api'
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const STORAGE_KEY = 'upgraied_student_progress'
 
 const MODULE_MAP = {
-  'L1M1': { level: 1, module: 1, title: 'ROB Saves Your Day with AI',     xp: 50,  badge: 'Time Tamer',           badgeEmoji: '⏰', unlocks: 'L1M2' },
-  'L1M2': { level: 1, module: 2, title: 'Better Questions, Better Answers', xp: 60,  badge: 'Prompt Wizard',        badgeEmoji: '💬', unlocks: 'L1M3' },
-  'L1M3': { level: 1, module: 3, title: 'ROB Becomes Your Tutor',           xp: 75,  badge: 'Learning Champion',    badgeEmoji: '📚', unlocks: 'L1M4' },
-  'L1M4': { level: 1, module: 4, title: "Catch ROB's Wrong Facts",           xp: 80,  badge: 'Fact Checker',         badgeEmoji: '🔍', unlocks: null   },
+  L1M1: { level: 1, module: 1, title: 'ROB Saves Your Day with AI', xp: 50, badge: 'Time Tamer', badgeEmoji: '⏰', unlocks: 'L1M2' },
+  L1M2: { level: 1, module: 2, title: 'Better Questions, Better Answers', xp: 60, badge: 'Prompt Wizard', badgeEmoji: '💬', unlocks: 'L1M3' },
+  L1M3: { level: 1, module: 3, title: 'ROB Becomes Your Tutor', xp: 75, badge: 'Learning Champion', badgeEmoji: '📚', unlocks: 'L1M4' },
+  L1M4: { level: 1, module: 4, title: "Catch ROB's Wrong Facts", xp: 80, badge: 'Fact Checker', badgeEmoji: '🔍', unlocks: 'L2M1' },
+  L2M1: { level: 2, module: 5, title: 'Applied Prompting Kickoff', xp: 100, badge: 'Level Two Starter', badgeEmoji: '🚀', unlocks: null },
 }
 
 const DEFAULT_STATE = {
@@ -28,9 +27,8 @@ const LEGACY_MODULE_MAP = {
   mod2: 'L1M2',
   mod3: 'L1M3',
   mod4: 'L1M4',
+  mod5: 'L2M1',
 }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10)
@@ -40,6 +38,15 @@ function daysBetween(a, b) {
   if (!a || !b) return Infinity
   const msPerDay = 86400000
   return Math.floor((new Date(b) - new Date(a)) / msPerDay)
+}
+
+function normalizeModuleKey(key) {
+  return LEGACY_MODULE_MAP[key] || key
+}
+
+function normalizeModuleList(list, fallback = []) {
+  const source = Array.isArray(list) ? list : fallback
+  return [...new Set(source.map(normalizeModuleKey))]
 }
 
 function readState() {
@@ -60,17 +67,6 @@ function writeState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
 }
 
-function normalizeModuleKey(key) {
-  return LEGACY_MODULE_MAP[key] || key
-}
-
-function normalizeModuleList(list, fallback = []) {
-  const source = Array.isArray(list) ? list : fallback
-  return [...new Set(source.map(normalizeModuleKey))]
-}
-
-// ─── Context ──────────────────────────────────────────────────────────────────
-
 const StudentProgressContext = createContext(null)
 
 export function StudentProgressProvider({ children }) {
@@ -78,7 +74,6 @@ export function StudentProgressProvider({ children }) {
   const [progress, setProgress] = useState(readState)
   const [isSyncing, setIsSyncing] = useState(false)
 
-  // 1. Fetch real progress from backend on mount/login
   useEffect(() => {
     if (!token || user?.role !== 'student') return
 
@@ -94,9 +89,8 @@ export function StudentProgressProvider({ children }) {
             unlockedModules: normalizeModuleList(res.data.unlockedModules, ['L1M1']),
             badges: res.data.badges || [],
             lastLoginAt: res.data.lastLoginAt,
-            // we keep lastStreakDate local or derive it if needed
           }
-          setProgress(prev => ({ ...prev, ...cloudData }))
+          setProgress((prev) => ({ ...prev, ...cloudData }))
           writeState({ ...progress, ...cloudData })
         }
       } catch (err) {
@@ -109,7 +103,6 @@ export function StudentProgressProvider({ children }) {
     syncProgress()
   }, [token, user?.role])
 
-  // Sync to localStorage whenever state changes
   useEffect(() => {
     writeState(progress)
   }, [progress])
@@ -118,8 +111,7 @@ export function StudentProgressProvider({ children }) {
     const meta = MODULE_MAP[moduleKey]
     if (!meta) return
 
-    // Optimitically update local state
-    setProgress(prev => {
+    setProgress((prev) => {
       if (prev.completedModules.includes(moduleKey)) return prev
 
       const today = todayISO()
@@ -146,7 +138,6 @@ export function StudentProgressProvider({ children }) {
       }
     })
 
-    // Sync to backend if logged in
     if (token && user?.role === 'student') {
       try {
         await apiCompleteModule(moduleKey, meta.xp, meta.badge)
