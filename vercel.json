@@ -1,20 +1,14 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    },
-    {
-      "src": "server/api/index.js",
-      "use": "@vercel/node",
-      "config": { "includeFiles": ["server/src/**/*"] }
+  "buildCommand": "cd client && npm install && npm run build",
+  "outputDirectory": "client/dist",
+  "functions": {
+    "server/api/index.js": {
+      "includeFiles": "server/src/**"
     }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/server/api/index.js" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/server/api/index.js" },
+    { "source": "/((?!assets/).*)", "destination": "/index.html" }
   ]
 }
