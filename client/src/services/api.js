@@ -53,6 +53,14 @@ export const getStudentLevels = () =>
 export const getCurriculum = () =>
   api.get('/api/student/curriculum').then(r => r.data)
 
+// Real Progress Sync
+export const getProgressDashboard = () =>
+  api.get('/api/progress/dashboard').then(r => r.data)
+export const apiCompleteModule = (moduleId, xp, badge) =>
+  api.post('/api/progress/complete-module', { moduleId, xp, badge }).then(r => r.data)
+export const apiLoginCheck = () =>
+  api.post('/api/progress/login-check').then(r => r.data)
+
 // Video
 export const getStreamUrl = (moduleId) =>
   api.get(`/api/videos/${moduleId}/stream-url`).then(r => r.data)

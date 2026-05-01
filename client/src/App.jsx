@@ -65,9 +65,9 @@ export default function App() {
 
   return (
     <ConfigProvider>
-      <StudentProgressProvider>
-        <RobProvider>
-          <AuthProvider>
+      <AuthProvider>
+        <StudentProgressProvider>
+          <RobProvider>
             <ToastProvider>
               <BrowserRouter>
                 <Suspense fallback={<PageSpinner />}>
@@ -115,9 +115,9 @@ export default function App() {
                 </Suspense>
               </BrowserRouter>
             </ToastProvider>
-          </AuthProvider>
-        </RobProvider>
-      </StudentProgressProvider>
+          </RobProvider>
+        </StudentProgressProvider>
+      </AuthProvider>
     </ConfigProvider>
   )
 }

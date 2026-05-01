@@ -1,4 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { useAuth } from './AuthContext'
+import { getProgressDashboard, apiCompleteModule } from '../services/api'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -50,46 +52,51 @@ function writeState(state) {
 const StudentProgressContext = createContext(null)
 
 export function StudentProgressProvider({ children }) {
+  const { user, token } = useAuth()
   const [progress, setProgress] = useState(readState)
+  const [isSyncing, setIsSyncing] = useState(false)
+
+  // 1. Fetch real progress from backend on mount/login
+  useEffect(() => {
+    if (!token || user?.role !== 'student') return
+
+    const syncProgress = async () => {
+      setIsSyncing(true)
+      try {
+        const res = await getProgressDashboard()
+        if (res.success && res.data) {
+          const cloudData = {
+            completedModules: res.data.completedModules || [],
+            totalXP: res.data.totalXP || 0,
+            streakDays: res.data.streakDays || 0,
+            unlockedModules: res.data.unlockedModules || ['L1M1'],
+            badges: res.data.badges || [],
+            lastLoginAt: res.data.lastLoginAt,
+            // we keep lastStreakDate local or derive it if needed
+          }
+          setProgress(prev => ({ ...prev, ...cloudData }))
+          writeState({ ...progress, ...cloudData })
+        }
+      } catch (err) {
+        console.error('Failed to sync student progress:', err)
+      } finally {
+        setIsSyncing(false)
+      }
+    }
+
+    syncProgress()
+  }, [token, user?.role])
 
   // Sync to localStorage whenever state changes
   useEffect(() => {
     writeState(progress)
   }, [progress])
 
-  // Update streak and lastLoginAt on mount
-  useEffect(() => {
-    const today = todayISO()
-    setProgress(prev => {
-      const daysSinceLast = daysBetween(prev.lastStreakDate, today)
-      let streakDays = prev.streakDays
-
-      if (prev.lastStreakDate === today) {
-        // already logged in today — no change
-      } else if (daysSinceLast === 1) {
-        // consecutive day — increment
-        streakDays = streakDays + 1
-      } else if (daysSinceLast > 1) {
-        // streak broken — reset
-        streakDays = prev.completedModules.length > 0 ? 1 : 0
-      } else {
-        // first ever login or same day
-        streakDays = Math.max(streakDays, prev.completedModules.length > 0 ? 1 : 0)
-      }
-
-      return {
-        ...prev,
-        lastLoginAt: new Date().toISOString(),
-        lastStreakDate: today,
-        streakDays,
-      }
-    })
-  }, [])
-
-  const completeModule = useCallback((moduleKey) => {
+  const completeModule = useCallback(async (moduleKey) => {
     const meta = MODULE_MAP[moduleKey]
     if (!meta) return
 
+    // Optimitically update local state
     setProgress(prev => {
       if (prev.completedModules.includes(moduleKey)) return prev
 
@@ -102,7 +109,6 @@ export function StudentProgressProvider({ children }) {
         ? [...prev.badges, meta.badge]
         : prev.badges
 
-      // Streak: if they complete a module today and didn't already update streak
       const daysSinceLast = daysBetween(prev.lastStreakDate, today)
       const streakDays = daysSinceLast <= 1 ? Math.max(prev.streakDays, 1) : 1
 
@@ -117,7 +123,16 @@ export function StudentProgressProvider({ children }) {
         lastLoginAt: new Date().toISOString(),
       }
     })
-  }, [])
+
+    // Sync to backend if logged in
+    if (token && user?.role === 'student') {
+      try {
+        await apiCompleteModule(moduleKey, meta.xp, meta.badge)
+      } catch (err) {
+        console.error('Failed to sync module completion to backend:', err)
+      }
+    }
+  }, [token, user?.role])
 
   const isCompleted = useCallback((moduleKey) => {
     return progress.completedModules.includes(moduleKey)
@@ -127,7 +142,6 @@ export function StudentProgressProvider({ children }) {
     return progress.unlockedModules.includes(moduleKey)
   }, [progress.unlockedModules])
 
-  // Inactivity = last login was more than 2 days ago
   const isInactive = useCallback(() => {
     if (!progress.lastLoginAt) return false
     const days = daysBetween(progress.lastLoginAt.slice(0, 10), todayISO())
@@ -143,6 +157,7 @@ export function StudentProgressProvider({ children }) {
   return (
     <StudentProgressContext.Provider value={{
       progress,
+      isSyncing,
       completeModule,
       isCompleted,
       isUnlocked,
