@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
+const API = import.meta.env.VITE_API_URL || ''
+
 /* ─── Route map ─────────────────────────────────────────────── */
 const ROLE_ROUTES = {
   student: '/dashboard/student',
@@ -135,7 +137,7 @@ export default function Login() {
     }
     setFormLoading(true)
     try {
-      const res = await fetch('/api/auth/admin-login', {
+      const res = await fetch(`${API}/api/auth/admin-login`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ email, password }),
