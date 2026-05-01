@@ -9,12 +9,6 @@ export const requireAuth = async (req, res, next) => {
 
   const token = authHeader.split(' ')[1]
 
-  if (token.startsWith('demo-token-')) {
-    const role = token.split('demo-token-')[1]
-    req.user = { _id: 'demo', role, name: 'Demo User', email: `demo-${role}@upgraied.com` }
-    return next()
-  }
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const user = await User.findById(decoded.sub || decoded.id)

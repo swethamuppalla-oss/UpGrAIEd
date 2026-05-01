@@ -115,16 +115,22 @@ export default function Login() {
     setActiveRole(role.id)
     setLoadingRole(role.id)
 
-    await new Promise(r => setTimeout(r, 600)) // satisfying mini-delay
-
-    const mockUser = {
-      id:   `demo-${role.id}`,
-      name: `Demo ${role.label}`,
-      role: role.id,
-      email: `demo.${role.id}@upgraied.dev`,
+    try {
+      const res = await fetch(`${API}/api/auth/demo-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: role.id })
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.message || 'Demo login failed')
+      
+      login(data.user, data.token)
+      navigate(ROLE_ROUTES[role.id], { replace: true })
+    } catch (err) {
+      console.error('Demo login error:', err)
+      setFormError(err.message)
+      setLoadingRole(null)
     }
-    login(mockUser, role.token)
-    navigate(ROLE_ROUTES[role.id], { replace: true })
   }
 
   /* ── Manual login (placeholder — wire to real API when ready) ── */
