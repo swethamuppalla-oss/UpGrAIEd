@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import BloomCharacter from '../Bloom/BloomCharacter'
 import { completeDayLesson } from '../../services/api'
+import BloomCharacter from '../Bloom/BloomCharacter'
 import { useToast } from '../ui/Toast'
 
 export default function AudioPlayer({ planId, dayNumber, dayData, onComplete }) {
@@ -10,7 +10,7 @@ export default function AudioPlayer({ planId, dayNumber, dayData, onComplete }) 
   const handlePlay = () => {
     setIsPlaying(!isPlaying)
     if (!isPlaying && window.speechSynthesis) {
-      const msg = new SpeechSynthesisUtterance(dayData.audioScript || 'No audio script found')
+      const msg = new SpeechSynthesisUtterance(dayData.audioScript || 'No audio script found1')
       window.speechSynthesis.speak(msg)
     } else {
       window.speechSynthesis.cancel()
