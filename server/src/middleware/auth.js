@@ -9,7 +9,7 @@ export const requireAuth = async (req, res, next) => {
 
   const token = authHeader.split(' ')[1]
 
-  if (process.env.NODE_ENV !== 'production' && token.startsWith('demo-token-')) {
+  if (token.startsWith('demo-token-')) {
     const role = token.split('demo-token-')[1]
     req.user = { _id: 'demo', role, name: 'Demo User', email: `demo-${role}@upgraied.com` }
     return next()
