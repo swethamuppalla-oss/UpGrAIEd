@@ -33,7 +33,7 @@ const resetStudent = async () => {
         streakDays: 0,
         badges: [],
         completedModules: [],
-        unlockedModules: ['mod1'],
+        unlockedModules: ['L1M1'],
         lastCompletedAt: null,
         lastLoginAt: new Date(),
         currentLevel: 1

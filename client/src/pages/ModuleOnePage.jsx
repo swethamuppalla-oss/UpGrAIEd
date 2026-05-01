@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useROB } from '../context/RobContext'
 import { useToast } from '../context/ToastContext'
 
@@ -10,8 +10,6 @@ import QuizCard from '../components/module/QuizCard'
 import MissionCard from '../components/module/MissionCard'
 import CompletionModal from '../components/progress/CompletionModal'
 import { useStudentProgress } from '../context/StudentProgressContext'
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function SectionLabel({ step, label, sublabel }) {
   return (
@@ -52,28 +50,68 @@ function Divider() {
   )
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
+const UPCOMING_MODULES = [
+  {
+    key: 'L1M2',
+    icon: '💬',
+    title: 'Module 2',
+    desc: 'Better Questions, Better Answers',
+    xp: '+60 XP',
+    color: '#9B6FF4',
+  },
+  {
+    key: 'L1M3',
+    icon: '📚',
+    title: 'Module 3',
+    desc: 'ROB Becomes Your Tutor',
+    xp: '+75 XP',
+    color: '#00D4FF',
+  },
+  {
+    key: 'L1M4',
+    icon: '🔍',
+    title: 'Module 4',
+    desc: "Catch ROB's Wrong Facts",
+    xp: '+80 XP',
+    color: '#FF7A2F',
+  },
+]
 
 export default function ModuleOnePage() {
   const navigate = useNavigate()
+  const { moduleNumber = '1' } = useParams()
   const { addXP, robColor } = useROB()
   const { showToast } = useToast()
-  const { completeModule, progress } = useStudentProgress()
+  const {
+    completeModule,
+    progress,
+    isCompleted,
+    isUnlocked,
+    MODULE_MAP,
+  } = useStudentProgress()
 
-  // ROB name from localStorage (falls back to 'ROB')
   const robName = localStorage.getItem('robName') || 'ROB'
+  const moduleIndex = Number(moduleNumber)
+  const moduleKey = `L1M${moduleIndex}`
+  const moduleMeta = MODULE_MAP[moduleKey]
+  const nextModuleKey = moduleMeta?.unlocks || null
+  const nextModuleMeta = nextModuleKey ? MODULE_MAP[nextModuleKey] : null
 
-  // Page state
   const [isVideoStarted, setIsVideoStarted] = useState(false)
   const [quizXP, setQuizXP] = useState(0)
   const [missionSubmitted, setMissionSubmitted] = useState(false)
   const [showReward, setShowReward] = useState(false)
   const [progressPercent, setProgressPercent] = useState(5)
-  const [completedModules, setCompletedModules] = useState([])
   const [isMobile, setIsMobile] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // Responsive detection
+  const completedModuleIds = useMemo(
+    () => progress.completedModules
+      .map((key) => Number(key.replace('L1M', '')))
+      .filter((id) => Number.isFinite(id)),
+    [progress.completedModules]
+  )
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 900)
     check()
@@ -81,46 +119,77 @@ export default function ModuleOnePage() {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // Progress ticks
+  useEffect(() => {
+    if (!moduleMeta) {
+      showToast('That module is not available yet.', 'error')
+      navigate('/dashboard/student', { replace: true })
+      return
+    }
+
+    if (!isUnlocked(moduleKey) && !isCompleted(moduleKey)) {
+      showToast('This module is still locked. Complete the previous one first.', 'error')
+      navigate('/dashboard/student', { replace: true })
+    }
+  }, [moduleKey, moduleMeta, navigate, isUnlocked, isCompleted, showToast])
+
+  useEffect(() => {
+    if (isCompleted(moduleKey)) {
+      setMissionSubmitted(true)
+      setProgressPercent(100)
+    }
+  }, [moduleKey, isCompleted])
+
   useEffect(() => {
     if (isVideoStarted && progressPercent < 60) {
-      const t = setInterval(() => setProgressPercent(p => Math.min(p + 2, 60)), 4000)
+      const t = setInterval(() => setProgressPercent((p) => Math.min(p + 2, 60)), 4000)
       return () => clearInterval(t)
     }
   }, [isVideoStarted, progressPercent])
 
   const handleVideoStart = () => {
     setIsVideoStarted(true)
-    setProgressPercent(p => Math.max(p, 20))
-    showToast('🎬 Lesson started! Earn XP as you learn.', 'success')
+    setProgressPercent((p) => Math.max(p, 20))
+    showToast('Lesson started! Earn XP as you learn.', 'success')
   }
 
   const handleAskRob = () => {
-    showToast(`💬 ${robName} is ready to help! Scroll to the Quick Help panel.`, 'success')
+    showToast(`${robName} is ready to help! Scroll to the Quick Help panel.`, 'success')
     document.getElementById('video-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   const handleQuizUpdate = useCallback(({ correct, xp }) => {
     if (correct && xp > 0) {
-      setQuizXP(prev => prev + xp)
-      setProgressPercent(p => Math.min(p + 8, 90))
-      showToast(`⚡ +${xp} XP! Keep going!`, 'success')
+      setQuizXP((prev) => prev + xp)
+      setProgressPercent((p) => Math.min(p + 8, 90))
+      showToast(`+${xp} XP! Keep going!`, 'success')
     }
   }, [showToast])
 
   const handleMissionSubmit = async () => {
     setMissionSubmitted(true)
     setProgressPercent(100)
-    setCompletedModules([1])
-    completeModule('L1M1')
-    try { await addXP(50) } catch {}
+
+    if (!isCompleted(moduleKey)) {
+      await completeModule(moduleKey)
+    }
+
+    try {
+      await addXP(moduleMeta?.xp || 50)
+    } catch {}
+
     setTimeout(() => setShowReward(true), 600)
   }
 
   const handleContinue = () => {
     setShowReward(false)
+    if (nextModuleMeta && isUnlocked(nextModuleKey)) {
+      navigate(`/student/module/${nextModuleMeta.module}`)
+      return
+    }
     navigate('/dashboard/student')
   }
+
+  if (!moduleMeta) return null
 
   return (
     <div style={{
@@ -130,17 +199,15 @@ export default function ModuleOnePage() {
       fontFamily: "'Inter', -apple-system, sans-serif",
       display: 'flex',
     }}>
-
-      {/* ── Sidebar (desktop) ─────────────────────────────────── */}
       {!isMobile && (
         <ModuleSidebar
-          activeModuleId={1}
-          completedModules={completedModules}
+          activeModuleId={moduleIndex}
+          completedModules={completedModuleIds}
+          unlockedModules={progress.unlockedModules}
           progressPercent={progressPercent}
         />
       )}
 
-      {/* ── Mobile sidebar drawer ──────────────────────────────── */}
       {isMobile && sidebarOpen && (
         <>
           <div
@@ -152,22 +219,20 @@ export default function ModuleOnePage() {
           />
           <div style={{ position: 'fixed', left: 0, top: 0, zIndex: 50 }}>
             <ModuleSidebar
-              activeModuleId={1}
-              completedModules={completedModules}
+              activeModuleId={moduleIndex}
+              completedModules={completedModuleIds}
+              unlockedModules={progress.unlockedModules}
               progressPercent={progressPercent}
             />
           </div>
         </>
       )}
 
-      {/* ── Main content ──────────────────────────────────────── */}
       <div style={{
         flex: 1,
         marginLeft: isMobile ? 0 : 260,
         minWidth: 0,
       }}>
-
-        {/* ── Top bar ──────────────────────────────────────────── */}
         <div style={{
           position: 'sticky', top: 0, zIndex: 30,
           background: 'rgba(10,10,15,0.92)', backdropFilter: 'blur(14px)',
@@ -178,7 +243,6 @@ export default function ModuleOnePage() {
             display: 'flex', alignItems: 'center', gap: 16,
             minHeight: 60,
           }}>
-            {/* Mobile menu */}
             {isMobile && (
               <button
                 onClick={() => setSidebarOpen(true)}
@@ -193,24 +257,21 @@ export default function ModuleOnePage() {
               </button>
             )}
 
-            {/* Module tag */}
             <div style={{
               fontSize: 11, fontWeight: 700, letterSpacing: 1.5,
               color: '#9B6FF4', textTransform: 'uppercase', whiteSpace: 'nowrap',
             }}>
-              Level 1 · Module 1
+              {`Level ${moduleMeta.level} · Module ${moduleMeta.module}`}
             </div>
 
-            {/* Title */}
             <div style={{
               flex: 1, fontWeight: 800, fontSize: 14,
               color: 'var(--text-primary)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
-              {robName} Saves Your Day with AI
+              {moduleMeta.title}
             </div>
 
-            {/* Progress bar */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
               <div style={{ width: 140, display: isMobile ? 'none' : 'block' }}>
                 <div style={{
@@ -231,7 +292,6 @@ export default function ModuleOnePage() {
               </span>
             </div>
 
-            {/* XP pill */}
             <div style={{
               background: 'rgba(255,215,0,0.1)',
               border: '1px solid rgba(255,215,0,0.25)',
@@ -239,31 +299,27 @@ export default function ModuleOnePage() {
               fontSize: 11, fontWeight: 700, color: '#FFD700', whiteSpace: 'nowrap',
               flexShrink: 0,
             }}>
-              ⚡ {quizXP + (missionSubmitted ? 50 : 0)} XP
+              {`⚡ ${quizXP + (missionSubmitted ? (moduleMeta.xp || 50) : 0)} XP`}
             </div>
           </div>
         </div>
 
-        {/* ── Page sections ─────────────────────────────────────── */}
         <div style={{ padding: isMobile ? '24px 16px 60px' : '36px 36px 72px', maxWidth: 1100 }}>
-
-          {/* Section 1: Hero */}
           <LessonHero
             robName={robName}
             robColor={robColor || 'cyan'}
-            xpReward={50}
+            xpReward={moduleMeta.xp || 50}
             onStartLesson={handleVideoStart}
             onAskRob={handleAskRob}
           />
 
           <Divider />
 
-          {/* Section 2: Video */}
           <div id="video-section">
             <SectionLabel
               step="1"
               label="Watch the Lesson"
-              sublabel="8–10 min · See how AI can transform your daily routine"
+              sublabel="8-10 min · See how AI can transform your daily routine"
             />
             <VideoSection
               robName={robName}
@@ -275,7 +331,6 @@ export default function ModuleOnePage() {
 
           <Divider />
 
-          {/* Section 3: Quiz + Mission */}
           <div>
             <SectionLabel
               step="2"
@@ -298,14 +353,13 @@ export default function ModuleOnePage() {
                 robName={robName}
                 robColor={robColor || 'cyan'}
                 submitted={missionSubmitted}
-                onSubmit={(text) => handleMissionSubmit(text)}
+                onSubmit={handleMissionSubmit}
               />
             </div>
           </div>
 
           <Divider />
 
-          {/* Section 4: Reward / Next CTA */}
           <div>
             <SectionLabel
               step="3"
@@ -318,59 +372,43 @@ export default function ModuleOnePage() {
               gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
               gap: 16,
             }}>
-              {[
-                {
-                  icon: '💬',
-                  title: 'Module 2',
-                  desc: 'Better Questions, Better Answers',
-                  xp: '+60 XP',
-                  locked: true,
-                  color: '#9B6FF4',
-                },
-                {
-                  icon: '📚',
-                  title: 'Module 3',
-                  desc: 'ROB Becomes Your Tutor',
-                  xp: '+75 XP',
-                  locked: true,
-                  color: '#00D4FF',
-                },
-                {
-                  icon: '🔍',
-                  title: 'Module 4',
-                  desc: "Catch ROB's Wrong Facts",
-                  xp: '+80 XP',
-                  locked: true,
-                  color: '#FF7A2F',
-                },
-              ].map(mod => (
-                <div key={mod.title} style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.07)',
-                  borderRadius: 16, padding: '20px',
-                  opacity: 0.6, position: 'relative', overflow: 'hidden',
-                }}>
-                  <div style={{ fontSize: 28, marginBottom: 10 }}>{mod.icon}</div>
-                  <div style={{ fontWeight: 800, fontSize: 14, color: mod.color, marginBottom: 4 }}>{mod.title}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12, lineHeight: 1.5 }}>{mod.desc}</div>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              {UPCOMING_MODULES.map((mod) => {
+                const unlocked = isUnlocked(mod.key) || isCompleted(mod.key)
+                const targetMeta = MODULE_MAP[mod.key]
+
+                return (
+                  <div key={mod.key} style={{
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.07)',
+                    borderRadius: 16, padding: '20px',
+                    opacity: unlocked ? 1 : 0.6, position: 'relative', overflow: 'hidden',
                   }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#FFD700' }}>{mod.xp}</span>
-                    <div style={{
-                      background: 'rgba(255,255,255,0.07)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: 6, padding: '3px 8px',
-                      fontSize: 11, fontWeight: 600, color: 'var(--text-muted)',
-                    }}>
-                      🔒 Locked
+                    <div style={{ fontSize: 28, marginBottom: 10 }}>{mod.icon}</div>
+                    <div style={{ fontWeight: 800, fontSize: 14, color: mod.color, marginBottom: 4 }}>{mod.title}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12, lineHeight: 1.5 }}>{mod.desc}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: '#FFD700' }}>{mod.xp}</span>
+                      <button
+                        type="button"
+                        disabled={!unlocked}
+                        onClick={() => navigate(`/student/module/${targetMeta.module}`)}
+                        style={{
+                          background: unlocked ? 'rgba(34,197,94,0.16)' : 'rgba(255,255,255,0.07)',
+                          border: `1px solid ${unlocked ? 'rgba(34,197,94,0.35)' : 'rgba(255,255,255,0.1)'}`,
+                          borderRadius: 6, padding: '3px 8px',
+                          fontSize: 11, fontWeight: 600,
+                          color: unlocked ? '#4ADE80' : 'var(--text-muted)',
+                          cursor: unlocked ? 'pointer' : 'not-allowed',
+                        }}
+                      >
+                        {isCompleted(mod.key) ? 'Completed' : unlocked ? 'Unlocked' : 'Locked'}
+                      </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
 
-            {/* Completion CTA */}
             {missionSubmitted && (
               <div style={{
                 marginTop: 24,
@@ -383,10 +421,10 @@ export default function ModuleOnePage() {
               }}>
                 <div>
                   <div style={{ fontWeight: 900, fontSize: 18, color: '#4ADE80', marginBottom: 4 }}>
-                    🏆 Level 1 · Module 1 Complete!
+                    {`Level ${moduleMeta.level} · Module ${moduleMeta.module} Complete!`}
                   </div>
                   <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-                    You've earned the Time Tamer badge and {quizXP + 50} XP total!
+                    {`You've earned the ${moduleMeta.badge} badge and ${quizXP + (moduleMeta.xp || 50)} XP total!`}
                   </div>
                 </div>
                 <button
@@ -398,7 +436,7 @@ export default function ModuleOnePage() {
                     boxShadow: '0 4px 20px rgba(34,197,94,0.4)',
                   }}
                 >
-                  🎉 Claim Reward
+                  Claim Reward
                 </button>
               </div>
             )}
@@ -406,17 +444,16 @@ export default function ModuleOnePage() {
         </div>
       </div>
 
-      {/* ── Completion modal ──────────────────────────────────────── */}
       {showReward && (
         <CompletionModal
-          xpEarned={quizXP + 50}
+          xpEarned={quizXP + (moduleMeta.xp || 50)}
           totalXP={progress.totalXP}
-          badgeName="Time Tamer"
-          badgeEmoji="⏰"
+          badgeName={moduleMeta.badge}
+          badgeEmoji={moduleMeta.badgeEmoji}
           streakDays={progress.streakDays}
           robName={robName}
           robColor={robColor || 'cyan'}
-          nextModuleTitle="Better Questions, Better Answers"
+          nextModuleTitle={nextModuleMeta?.title || 'Keep going'}
           onContinue={handleContinue}
           onDashboard={() => navigate('/dashboard/student')}
         />

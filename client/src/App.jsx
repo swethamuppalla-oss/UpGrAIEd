@@ -88,7 +88,7 @@ export default function App() {
                       <Route path="/dashboard/student/bloom" element={<BloomDashboard />} />
                       <Route path="/player/:moduleId?"       element={<VideoPlayer />} />
                       <Route path="/lesson/:lessonId?"       element={<LessonPage />} />
-                      <Route path="/student/module/1"        element={<ModuleOnePage />} />
+                      <Route path="/student/module/:moduleNumber" element={<ModuleOnePage />} />
                     </Route>
 
                     {/* Parent */}

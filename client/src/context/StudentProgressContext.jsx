@@ -23,6 +23,13 @@ const DEFAULT_STATE = {
   lastLoginAt: null,
 }
 
+const LEGACY_MODULE_MAP = {
+  mod1: 'L1M1',
+  mod2: 'L1M2',
+  mod3: 'L1M3',
+  mod4: 'L1M4',
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function todayISO() {
@@ -37,7 +44,13 @@ function daysBetween(a, b) {
 
 function readState() {
   try {
-    return { ...DEFAULT_STATE, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') }
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
+    return {
+      ...DEFAULT_STATE,
+      ...parsed,
+      completedModules: normalizeModuleList(parsed.completedModules),
+      unlockedModules: normalizeModuleList(parsed.unlockedModules, ['L1M1']),
+    }
   } catch {
     return { ...DEFAULT_STATE }
   }
@@ -45,6 +58,15 @@ function readState() {
 
 function writeState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+}
+
+function normalizeModuleKey(key) {
+  return LEGACY_MODULE_MAP[key] || key
+}
+
+function normalizeModuleList(list, fallback = []) {
+  const source = Array.isArray(list) ? list : fallback
+  return [...new Set(source.map(normalizeModuleKey))]
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -66,10 +88,10 @@ export function StudentProgressProvider({ children }) {
         const res = await getProgressDashboard()
         if (res.success && res.data) {
           const cloudData = {
-            completedModules: res.data.completedModules || [],
+            completedModules: normalizeModuleList(res.data.completedModules),
             totalXP: res.data.totalXP || 0,
             streakDays: res.data.streakDays || 0,
-            unlockedModules: res.data.unlockedModules || ['L1M1'],
+            unlockedModules: normalizeModuleList(res.data.unlockedModules, ['L1M1']),
             badges: res.data.badges || [],
             lastLoginAt: res.data.lastLoginAt,
             // we keep lastStreakDate local or derive it if needed

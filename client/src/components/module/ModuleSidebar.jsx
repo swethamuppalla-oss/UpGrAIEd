@@ -35,7 +35,12 @@ const MODULES = [
   },
 ]
 
-export default function ModuleSidebar({ activeModuleId = 1, completedModules = [], progressPercent = 0 }) {
+export default function ModuleSidebar({
+  activeModuleId = 1,
+  completedModules = [],
+  unlockedModules = ['L1M1'],
+  progressPercent = 0,
+}) {
   const navigate = useNavigate()
 
   return (
@@ -114,12 +119,14 @@ export default function ModuleSidebar({ activeModuleId = 1, completedModules = [
         {MODULES.map((mod) => {
           const isActive = mod.id === activeModuleId
           const isDone = completedModules.includes(mod.id)
-          const isLocked = mod.status === 'locked' && !isDone && !isActive
+          const moduleKey = `L1M${mod.id}`
+          const isUnlocked = unlockedModules.includes(moduleKey)
+          const isLocked = !isUnlocked && !isDone && !isActive
 
           return (
             <button
               key={mod.id}
-              onClick={() => !isLocked && mod.id === 1 && navigate('/student/module/1')}
+              onClick={() => !isLocked && navigate(`/student/module/${mod.id}`)}
               disabled={isLocked}
               style={{
                 width: '100%', textAlign: 'left',
