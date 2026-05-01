@@ -137,7 +137,7 @@ export default function Login() {
     }
     setFormLoading(true)
     try {
-      const res = await fetch(`${API}/api/auth/admin-login`, {
+      const res = await fetch(`${API}/api/auth/login`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ email, password }),

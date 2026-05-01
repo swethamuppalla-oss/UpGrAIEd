@@ -118,8 +118,8 @@ export const verifyOtpAndLogin = async (identifier, candidateCode) => {
   return { token, user: { id: user._id, name: user.name, role: user.role } };
 };
 
-export const adminLogin = async (email, password) => {
-  const user = await User.findOne({ email, role: 'admin', isActive: true }).select('+password');
+export const loginUser = async (email, password) => {
+  const user = await User.findOne({ email, isActive: true }).select('+password');
   if (!user) {
     throw Object.assign(new Error('Invalid credentials'), { statusCode: 401 });
   }

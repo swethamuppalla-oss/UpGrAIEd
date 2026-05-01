@@ -1,4 +1,4 @@
-import { sendOtpForPhone, verifyOtpAndLogin, adminLogin as adminLoginSvc, demoLogin as demoLoginSvc } from '../services/authService.js'
+import { sendOtpForPhone, verifyOtpAndLogin, loginUser as loginUserSvc, demoLogin as demoLoginSvc } from '../services/authService.js'
 
 export const sendOtp = async (req, res, next) => {
   try {
@@ -21,11 +21,11 @@ export const verifyOtp = async (req, res, next) => {
   } catch (err) { next(err) }
 }
 
-export const adminLogin = async (req, res, next) => {
+export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body
     if (!email || !password) return res.status(400).json({ message: 'email and password required' })
-    const data = await adminLoginSvc(email, password)
+    const data = await loginUserSvc(email, password)
     res.json(data)
   } catch (err) { next(err) }
 }
