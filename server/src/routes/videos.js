@@ -4,12 +4,10 @@ const router = Router()
 // requireAuth already applied at server level
 
 // GET /api/videos/:id/stream-url
-router.get('/:id/stream-url', async (req, res, next) => {
-  try {
-    const { id } = req.params
-    // Stub — real implementation would query Bunny.net CDN
-    const cdnHost = process.env.BUNNY_CDN_HOSTNAME || 'vz-demo.b-cdn.net'
-    const streamUrl = `https://${cdnHost}/${id}/play_720p.mp4`
+    // Use the specific video ID provided by the user for all modules
+    const videoId = '943c03d8-674c-4c08-bc61-f31a7aad75a0'
+    const cdnHost = process.env.BUNNY_CDN_HOSTNAME || 'vz-f8687f99-06b.b-cdn.net'
+    const streamUrl = `https://${cdnHost}/${videoId}/play_720p.mp4`
     res.json({ streamUrl })
   } catch (err) { next(err) }
 })
