@@ -1,22 +1,23 @@
-// Vercel serverless entry point — wraps the Express app
-// Strips the /api prefix that the frontend/Vite proxy adds,
-// then delegates to the Express app with a cached DB connection.
+/**
+ * Vercel Serverless Entry Point (ESM)
+ *
+ * Routes registered in app.js already include the /api prefix
+ * (e.g. /api/auth, /api/rob, /api/chapters …), so requests
+ * arriving from the Vercel router as /api/... are handled directly
+ * by Express — no prefix-stripping needed.
+ */
 
-require('dotenv').config();
-const connectDB = require('../src/config/db');
-const app = require('../src/app');
+import 'dotenv/config'
+import { connectDB } from '../src/config/db.js'
+import { createApp } from '../src/app.js'
 
-let dbConnected = false;
+// Cache across warm-start invocations
+let handler = null
 
-module.exports = async (req, res) => {
-  if (!dbConnected) {
-    await connectDB();
-    dbConnected = true;
+export default async (req, res) => {
+  if (!handler) {
+    await connectDB()
+    handler = createApp()
   }
-
-  // Frontend baseURL is /api, so requests arrive as /api/auth/... etc.
-  // Express routes are defined without the /api prefix, so strip it here.
-  req.url = req.url.replace(/^\/api/, '') || '/';
-
-  return app(req, res);
-};
+  return handler(req, res)
+}

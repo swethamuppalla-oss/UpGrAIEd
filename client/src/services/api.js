@@ -1,8 +1,9 @@
 import axios from 'axios'
 
-const API = import.meta.env.VITE_API_URL;
+// Empty string = same-origin (works on Vercel where client & API share a domain).
+// Set VITE_API_URL in Vercel env vars only if the API is hosted separately.
+const API = import.meta.env.VITE_API_URL ?? ''
 
-console.log("API URL:", API); // debug
 
 const api = axios.create({
   baseURL: API,
