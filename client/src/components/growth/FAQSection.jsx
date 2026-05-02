@@ -1,20 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BloomCharacter from '../Bloom/BloomCharacter';
-
-const FAQS = [
-  { q: 'Is UpgrAIed safe for children?',                  a: 'Absolutely. Every module is designed for ages 8–14 with age-appropriate content, guided AI usage, and zero access to unfiltered internet. Bloom only responds within curated, safe learning contexts. Parents also have full visibility through their dashboard.' },
-  { q: 'Do kids need any coding or tech knowledge?',       a: 'Zero prerequisites. UpgrAIed starts from absolute basics and builds up. Children who have never touched a computer can start, and children who are already curious about tech will be challenged and engaged at their level.' },
-  { q: 'Will my child use AI responsibly?',                a: "Yes — that's the whole point. We teach children that AI is a tool, not a replacement for thinking. Every mission builds the child's own reasoning skills, using AI as a supporting guide, not a shortcut." },
-  { q: 'How much screen time does this involve?',          a: 'We recommend 30–45 minutes per session, 3–4 times a week. Sessions are designed to be focused and purposeful — not endless scrolling. The structured format means children log off feeling accomplished.' },
-  { q: 'Can parents track progress?',                      a: "Yes — the parent dashboard is a core feature, not an afterthought. You'll see completed missions, earned badges, quiz scores, time spent, and module progress in real time. Champion plan members receive weekly automated reports." },
-  { q: "What if my child doesn't like it?",                a: "We offer a free demo session before any commitment. Try it first, see how your child engages with Bloom and the missions, and then decide. We're confident you'll see the spark in the first session." },
-  { q: 'Is this available for children outside India?',    a: 'Yes! UpgrAIed is built for global Indian families and international parents looking for premium AI education. Available worldwide with pricing in both INR and USD.' },
-  { q: 'What makes UpgrAIed different from other edtech?', a: "UpgrAIed is not a course library. It's a structured learning system with a personality-driven AI companion (Bloom), gamified missions, real skill outcomes, and parent intelligence built in. We're building the first premium AI education experience for children, not just more video content." },
-];
+import { getContent } from '../../services/contentService';
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(null);
-  const openFaq = FAQS[openIndex];
+  const [faqs, setFaqs] = useState([]);
+
+  useEffect(() => {
+    getContent('faq').then(setFaqs);
+  }, []);
+
+  const openFaq = faqs[openIndex];
 
   return (
     <section className="pg-section" style={{ background: '#0A1F12' }}>
@@ -40,7 +36,7 @@ export default function FAQSection() {
 
           {/* FAQ list */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {FAQS.map((faq, i) => (
+            {faqs.map((faq, i) => (
               <div
                 key={i}
                 className={`pg-faq-item${openIndex === i ? ' open' : ''}`}
@@ -54,7 +50,7 @@ export default function FAQSection() {
                   }}
                 >
                   <span style={{ color: '#F0FFF4', fontSize: 15, fontWeight: 600, lineHeight: 1.5 }}>
-                    {faq.q}
+                    {faq.question}
                   </span>
                   <span style={{
                     color: '#6EDC5F', fontSize: 22, flexShrink: 0,
@@ -64,7 +60,7 @@ export default function FAQSection() {
                   }}>+</span>
                 </button>
                 {openIndex === i && (
-                  <div className="pg-faq-answer">{faq.a}</div>
+                  <div className="pg-faq-answer">{faq.answer}</div>
                 )}
               </div>
             ))}

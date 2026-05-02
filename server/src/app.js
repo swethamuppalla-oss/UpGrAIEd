@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 
 import { errorHandler } from './middleware/errorHandler.js'
 import { requireAuth } from './middleware/auth.js'
@@ -19,6 +20,7 @@ import configRouter    from './routes/config.js'
 import uploadRouter    from './routes/upload.js'
 import chapterRouter   from './routes/chapters.js'
 import bloomRouter     from './routes/bloomRoutes.js'
+import contentRouter   from './routes/content.js'
 
 /**
  * Creates and returns a fully-configured Express app.
@@ -27,6 +29,12 @@ import bloomRouter     from './routes/bloomRoutes.js'
  */
 export function createApp() {
   const app = express()
+
+  // ── Security headers ─────────────────────────────────────────────────────────
+  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
+
+  // ── Health check ─────────────────────────────────────────────────────────────
+  app.get('/health', (_req, res) => res.json({ ok: true, ts: Date.now() }))
 
   // ── CORS ────────────────────────────────────────────────────────────────────
   const allowedOrigins = [
@@ -56,6 +64,7 @@ export function createApp() {
   app.use('/api/auth',    authRouter)
   app.use('/api/reserve', reservationRouter)
   app.use('/api/config',  configRouter)     // public reads; writes are guarded inside
+  app.use('/api/content', contentRouter)   // dynamic content for growth pages
 
   // ── Protected routes ─────────────────────────────────────────────────────────
   app.use('/api/student',  requireAuth, studentRouter)

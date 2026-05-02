@@ -9,6 +9,15 @@ Videos/
 
 .vercel
 
+# Firebase
+serviceAccountKey.json
+
+# Env files (never commit secrets)
+server/.env
+client/.env
+client/.env.*
+!client/.env.example
+
 # Temp / Scratch files
 fake_temp
 fix*.js

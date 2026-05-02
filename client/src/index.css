@@ -37,6 +37,11 @@
 
   /* Shadows */
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+
+  /* Brand colors — overridden at runtime by admin theme config */
+  --brand-primary:   #6EDC5F;
+  --brand-accent:    #63C7FF;
+  --brand-highlight: #FFD95A;
 }
 
 /* ============================================================
@@ -66,6 +71,33 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   overflow: hidden;
+}
+
+/* ── Micro-interaction utilities ──────────────────────────────────────────── */
+.bloom-btn-scale {
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+.bloom-btn-scale:hover:not(:disabled) {
+  transform: scale(1.04) !important;
+}
+.bloom-btn-scale:active:not(:disabled) {
+  transform: scale(0.97) !important;
+}
+
+.bloom-fade-in {
+  animation: bloom-rise 0.35s ease both;
+}
+
+/* ── Mobile: full-width CTAs under 640 px ─────────────────────────────────── */
+@media (max-width: 640px) {
+  .hero-actions {
+    flex-direction: column !important;
+  }
+  .hero-actions button,
+  .hero-actions a {
+    width: 100% !important;
+    justify-content: center;
+  }
 }
 
 .ui-button-primary {

@@ -1,52 +1,86 @@
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
+import { randomUUID } from 'crypto';
+import { bucket } from '../firebase.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
+import { Media } from '../models/Media.js';
 
 const router = Router();
 
-const uploadDir = 'uploads';
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_SIZE },
 });
 
-const upload = multer({ storage: storage });
+// Inline multer error handling so size/unexpected errors return clean JSON
+function parseUpload(req, res, next) {
+  upload.single('file')(req, res, (err) => {
+    if (err?.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'File too large (max 5 MB)' });
+    }
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    next();
+  });
+}
 
-import { Media } from '../models/Media.js';
-
-router.post('/', requireAuth, requireRole('admin'), upload.single('file'), async (req, res) => {
+router.post('/', requireAuth, requireRole('admin'), parseUpload, async (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ message: 'No file uploaded' });
+    return res.status(400).json({ error: 'No file uploaded' });
   }
-  // Store the path with /uploads/ so it matches the static route
-  const fileUrl = `/uploads/${req.file.filename}`;
-  
+
+  if (!ALLOWED_TYPES.includes(req.file.mimetype)) {
+    return res.status(400).json({ error: 'Invalid file type. Allowed: JPEG, PNG, WebP, GIF' });
+  }
+
   try {
-    const type = req.file.mimetype.startsWith('video') ? 'video' : req.file.mimetype.startsWith('audio') ? 'audio' : 'image';
-    const media = await Media.create({
-      url: fileUrl,
-      type: type,
+    const ext = path.extname(req.file.originalname).toLowerCase();
+    const filename = `uploads/images/${randomUUID()}${ext}`;
+    const blob = bucket.file(filename);
+
+    const blobStream = blob.createWriteStream({
       metadata: {
-        originalname: req.file.originalname,
-        size: req.file.size,
-        mimetype: req.file.mimetype
+        contentType: req.file.mimetype,
+        metadata: {
+          uploadedBy: req.user?.id || 'admin',
+          originalname: req.file.originalname,
+        },
+      },
+    });
+
+    blobStream.on('error', (err) => {
+      res.status(500).json({ error: err.message });
+    });
+
+    blobStream.on('finish', async () => {
+      await blob.makePublic(); // can switch to signed URLs later if access control needed
+      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+
+      try {
+        const media = await Media.create({
+          url: publicUrl,
+          type: 'image',
+          metadata: {
+            originalname: req.file.originalname,
+            size: req.file.size,
+            mimetype: req.file.mimetype,
+          },
+        });
+        res.json({ success: true, url: publicUrl, filename: blob.name, media });
+      } catch (dbErr) {
+        console.error('Error saving media record:', dbErr);
+        res.json({ success: true, url: publicUrl, filename: blob.name });
       }
     });
-    res.json({ url: fileUrl, media });
-  } catch (error) {
-    console.error('Error saving media record:', error);
-    res.status(500).json({ message: 'Failed to save media record' });
+
+    blobStream.end(req.file.buffer);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

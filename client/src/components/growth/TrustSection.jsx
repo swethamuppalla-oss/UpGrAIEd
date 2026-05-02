@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import BloomCharacter from '../Bloom/BloomCharacter';
+import { getContent } from '../../services/contentService';
 
 const TRUST_POINTS = [
   { icon: '🛡️', title: 'Age-Appropriate Learning',     desc: 'Every piece of content is curated for ages 8–14. No inappropriate AI outputs, ever.', iconClass: '' },
@@ -11,13 +12,19 @@ const TRUST_POINTS = [
 ];
 
 const STATS = [
-  { value: '8–14', label: 'Target Age Group', icon: '👧', delay: 0 },
-  { value: '95%',  label: 'Parent Satisfaction', icon: '⭐', delay: 0.1 },
-  { value: '12+',  label: 'Interactive Modules', icon: '📦', delay: 0.2 },
-  { value: '0',    label: 'Coding Knowledge Required', icon: '✅', delay: 0.3 },
+  { value: '1,000+', label: 'Learners Enrolled', icon: '👧', delay: 0 },
+  { value: '95%',    label: 'Parent Satisfaction', icon: '⭐', delay: 0.1 },
+  { value: '3x',     label: 'Faster Understanding', icon: '🚀', delay: 0.2 },
+  { value: '0',      label: 'Coding Knowledge Required', icon: '✅', delay: 0.3 },
 ];
 
 export default function TrustSection() {
+  const [content, setContent] = useState(null);
+
+  useEffect(() => {
+    getContent('trust').then(setContent);
+  }, []);
+
   return (
     <section className="pg-section pg-section-alt">
       {/* Ambient orbs */}
@@ -29,11 +36,11 @@ export default function TrustSection() {
         <div style={{ textAlign: 'center', marginBottom: 64 }}>
           <div className="pg-badge pg-badge-sky">FOR PARENTS</div>
           <h2 className="pg-h2">
-            Give your child more than{' '}
-            <span className="bloom-text-sky">just answers.</span>
+            {content?.title ?? "Give your child more than"}{' '}
+            <span className="bloom-text-sky">{content?.titleHighlight ?? "just answers."}</span>
           </h2>
           <p className="pg-sub" style={{ maxWidth: 480, margin: '0 auto' }}>
-            Our system helps them understand concepts, think independently, and build confidence — across any subject.
+            {content?.description ?? "Our system helps them understand concepts, think independently, and build confidence — across any subject."}
           </p>
         </div>
 

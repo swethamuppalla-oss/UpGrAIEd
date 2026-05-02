@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getContent } from '../services/contentService';
 import GrowthNavbar from '../components/growth/GrowthNavbar';
 import ParentBenefits from '../components/growth/ParentBenefits';
 import TrustSection from '../components/growth/TrustSection';
@@ -43,6 +44,11 @@ const COMPARISONS = [
 export default function WhyUpgraied() {
   const navigate = useNavigate();
   const curriculumModules = useConfigValue('curriculum.modules', DEFAULT_CURRICULUM.modules);
+  const [heroContent, setHeroContent] = useState(null);
+
+  useEffect(() => {
+    getContent('whyUpgraied').then(setHeroContent);
+  }, []);
 
   return (
     <div style={{ background: '#0A1F12', minHeight: '100vh' }}>
@@ -61,13 +67,11 @@ export default function WhyUpgraied() {
           </div>
           <div className="pg-badge">WHY UPGRAIED</div>
           <h1 className="pg-h1" style={{ marginBottom: 20 }}>
-            Not another learning system.{' '}
-            <span className="bloom-text-green">A transformation system.</span>
+            {heroContent?.title ?? "Not another learning system."}{' '}
+            <span className="bloom-text-green">{heroContent?.titleHighlight ?? "A transformation system."}</span>
           </h1>
           <p className="pg-sub" style={{ maxWidth: 560, margin: '0 auto 40px' }}>
-            UpgrAIed is built on one belief: children who learn to think with AI
-            will outperform every peer who doesn't. We give them the tools, structure,
-            and companionship to make that happen.
+            {heroContent?.subtitle ?? "UpgrAIed is built on one belief: children who learn to think with AI will outperform every peer who doesn't. We give them the tools, structure, and companionship to make that happen."}
           </p>
           <button className="bloom-btn-primary" style={{ fontSize: 16, padding: '15px 36px' }} onClick={() => navigate('/book-demo')}>
             Book Free Demo →

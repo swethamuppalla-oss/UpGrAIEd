@@ -41,6 +41,19 @@ export const DEFAULT_PRICING = {
   plans: [],
 }
 
+export const DEFAULT_THEME = {
+  primaryColor:   '#6EDC5F',  // Bloom green
+  accentColor:    '#63C7FF',  // sky blue
+  highlightColor: '#FFD95A',  // yellow
+}
+
+export const DEFAULT_FEATURES = {
+  bookDemo:        true,
+  pricing:         true,
+  aiLearningTool:  true,
+  studyExplainer:  false,
+}
+
 export const DEFAULT_CURRICULUM = {
   modules: [
     { module: '01', title: 'What is AI?',      desc: 'Understanding AI in everyday life. How it works, where it lives.', icon: '🧠', emotion: 'curious' },
