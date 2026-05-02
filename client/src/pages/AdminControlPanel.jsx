@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useConfigState } from '../hooks/useConfigValue';
 import { getConfigByKey, uploadMedia } from '../services/api';
 import { useToast } from '../components/ui/Toast';
+import { trackEvent } from '../utils/analytics';
 
 // ── Tab definitions ───────────────────────────────────────────────────────────
 const TABS = [
@@ -26,6 +27,8 @@ const TABS = [
   { id: 'curriculum', label: '📚 Curriculum',  json: true },
   { id: 'pricing',    label: '💰 Pricing',     json: true },
   { id: 'bloom',      label: '🤖 Bloom AI',    json: true },
+  { id: 'theme',      label: '🎨 Brand Theme', json: true },
+  { id: 'features',   label: '🚩 Features',    json: true },
   { id: 'media',      label: '🖼️ Media',       media: true },
 ];
 
@@ -49,6 +52,24 @@ function setNested(obj, path, value) {
 function safeJsonParse(str) {
   try { return { data: JSON.parse(str), error: null } }
   catch (e) { return { data: null, error: e.message } }
+}
+
+const HEX_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/
+
+function validateTabConfig(tabId, data) {
+  if (tabId === 'theme') {
+    const required = ['primaryColor', 'accentColor', 'highlightColor']
+    for (const key of required) {
+      if (!data[key]) return `Missing required field: ${key}`
+      if (!HEX_RE.test(data[key])) return `${key} must be a valid hex color (e.g. #6EDC5F)`
+    }
+  }
+  if (tabId === 'features') {
+    for (const [key, val] of Object.entries(data)) {
+      if (typeof val !== 'boolean') return `features.${key} must be true or false`
+    }
+  }
+  return null
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -107,9 +128,15 @@ export default function AdminControlPanel() {
       showToast('Fix JSON errors before saving', 'error')
       return
     }
+    const validationError = validateTabConfig(activeTab, formData)
+    if (validationError) {
+      showToast(validationError, 'error')
+      return
+    }
     setSaving(true)
     try {
       await updateConfig(activeTab, formData)
+      trackEvent('admin_update', { tab: activeTab })
       showToast(`${tab?.label} saved successfully`, 'success')
     } catch {
       showToast('Save failed — please try again', 'error')
@@ -181,7 +208,9 @@ export default function AdminControlPanel() {
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: '#F0FFF4' }}>{tab?.label}</h1>
             <p style={{ color: 'rgba(168,245,162,0.5)', fontSize: 13, margin: '4px 0 0' }}>
-              {tab?.json ? 'Edit raw JSON — changes are live after save.'
+              {tab?.id === 'theme'    ? 'Set brand colors (primaryColor, accentColor, highlightColor). Hex values.'
+                : tab?.id === 'features' ? 'Toggle features on/off (true/false). Changes take effect on next page load.'
+                : tab?.json  ? 'Edit raw JSON — changes are live after save.'
                 : tab?.media ? 'Upload static assets for use across the platform.'
                 : 'Update individual fields — leave blank to use built-in defaults.'}
             </p>

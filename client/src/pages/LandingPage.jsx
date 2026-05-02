@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { trackEvent, EVENTS } from '../utils/analytics';
 import GrowthNavbar from '../components/growth/GrowthNavbar';
 import HeroSection from '../components/growth/HeroSection';
 import ParentBenefits from '../components/growth/ParentBenefits';
@@ -7,6 +8,19 @@ import TrustSection from '../components/growth/TrustSection';
 import FAQSection from '../components/growth/FAQSection';
 import StickyCTA from '../components/growth/StickyCTA';
 import { useConfig } from '../context/ConfigContext';
+
+const DEMO_RESPONSE = `🌿 Photosynthesis is how plants make their own food using sunlight!
+
+Here's the simple breakdown:
+• 🌞 Leaves absorb sunlight as an energy source
+• 💧 Roots soak up water from the soil
+• 🌬️ Leaves take in CO₂ from the air
+
+The plant combines all three → creates sugar (its food) + releases oxygen into the air. That oxygen is what we breathe!
+
+💡 Quick way to remember: plants are tiny solar-powered food factories.
+
+Want to go deeper? Try explaining it back in your own words — that's how you know you really understand it!`;
 
 const HOW_IT_WORKS_STEPS = [
   { icon: '📄', title: 'Upload your school pages', desc: 'Any subject, any syllabus.' },
@@ -19,6 +33,10 @@ export default function LandingPage() {
   const config = useConfig();
   const [email, setEmail] = useState('');
   const [emailSent, setEmailSent] = useState(false);
+
+  useEffect(() => {
+    trackEvent(EVENTS.LANDING_VIEW);
+  }, []);
 
   function handleEmailSubmit(e) {
     e.preventDefault();
@@ -33,6 +51,9 @@ export default function LandingPage() {
 
       {/* HERO */}
       <HeroSection />
+
+      {/* LIVE DEMO — show value before login */}
+      <DemoBlock />
 
       {/* NOT A COURSE */}
       <section style={{ padding: '0 32px 32px' }}>
@@ -318,6 +339,167 @@ export default function LandingPage() {
       <GrowthFooter />
       <StickyCTA />
     </div>
+  );
+}
+
+function DemoBlock() {
+  const navigate = useNavigate();
+  const [question, setQuestion] = useState('Explain photosynthesis to a 10-year-old');
+  const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [tried, setTried] = useState(false);
+
+  function handleTry() {
+    if (!question.trim() || loading) return;
+    if (!tried) trackEvent(EVENTS.AI_FIRST_USE);
+    setLoading(true);
+    setTried(true);
+    setResponse('');
+    setTimeout(() => {
+      setResponse(DEMO_RESPONSE);
+      setLoading(false);
+      trackEvent(EVENTS.FIRST_SUCCESS);
+    }, 1300);
+  }
+
+  return (
+    <section style={{ padding: '0 32px 80px' }}>
+      <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+        {/* Label above card */}
+        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            padding: '4px 14px', borderRadius: '50px',
+            background: 'rgba(110,220,95,0.08)', border: '1px solid rgba(110,220,95,0.2)',
+            color: '#6EDC5F', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em',
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#6EDC5F', display: 'inline-block', boxShadow: '0 0 6px #6EDC5F' }} />
+            TRY BLOOM AI — NO LOGIN NEEDED
+          </span>
+        </div>
+
+        <div style={{
+          background: 'rgba(12,28,19,0.95)',
+          border: '1px solid rgba(110,220,95,0.22)',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+        }}>
+          {/* Window chrome */}
+          <div style={{
+            padding: '12px 20px',
+            background: 'rgba(110,220,95,0.06)',
+            borderBottom: '1px solid rgba(110,220,95,0.1)',
+            display: 'flex', alignItems: 'center', gap: '8px',
+          }}>
+            {['#FF5F57','#FFBD2E','#28C840'].map((c, i) => (
+              <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: c, opacity: 0.7 }} />
+            ))}
+            <span style={{ color: 'rgba(168,245,162,0.4)', fontSize: '11px', marginLeft: '8px', fontFamily: 'monospace' }}>
+              bloom-ai · live preview
+            </span>
+          </div>
+
+          {/* Input row */}
+          <div style={{ padding: '20px 20px 0' }}>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <input
+                value={question}
+                onChange={e => setQuestion(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleTry()}
+                placeholder="Ask anything… e.g. Explain photosynthesis"
+                style={{
+                  flex: 1, padding: '12px 16px', borderRadius: '12px',
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(110,220,95,0.2)',
+                  color: '#F0FFF4', fontSize: '14px', outline: 'none',
+                  transition: 'border-color 0.2s',
+                  minWidth: 0,
+                }}
+                onFocus={e => e.target.style.borderColor = 'rgba(110,220,95,0.5)'}
+                onBlur={e => e.target.style.borderColor = 'rgba(110,220,95,0.2)'}
+              />
+              <button
+                onClick={handleTry}
+                disabled={loading}
+                className="bloom-btn-scale"
+                style={{
+                  padding: '12px 20px', borderRadius: '12px',
+                  background: loading ? 'rgba(110,220,95,0.35)' : '#6EDC5F',
+                  color: '#0A1F12', fontWeight: 700, fontSize: '14px',
+                  border: 'none', cursor: loading ? 'default' : 'pointer',
+                  transition: 'all 0.2s', whiteSpace: 'nowrap', flexShrink: 0,
+                }}
+              >
+                {loading ? '...' : 'Try Now →'}
+              </button>
+            </div>
+          </div>
+
+          {/* Response area */}
+          <div style={{ padding: '16px 20px 20px', minHeight: tried ? '180px' : '72px', display: 'flex', alignItems: tried ? 'flex-start' : 'center' }}>
+            {!tried && (
+              <p style={{ color: 'rgba(168,245,162,0.3)', fontSize: '13px', margin: 0 }}>
+                Hit "Try Now" to see Bloom explain anything, instantly — no account needed.
+              </p>
+            )}
+            {loading && (
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center', padding: '8px 0' }}>
+                {[0, 0.15, 0.3].map((delay, i) => (
+                  <div key={i} style={{
+                    width: '8px', height: '8px', borderRadius: '50%', background: '#6EDC5F',
+                    animation: `bloom-pulse-glow 0.8s ease-in-out ${delay}s infinite`,
+                  }} />
+                ))}
+                <span style={{ color: 'rgba(168,245,162,0.45)', fontSize: '12px', marginLeft: '8px' }}>
+                  Bloom is thinking…
+                </span>
+              </div>
+            )}
+            {!loading && response && (
+              <div style={{ animation: 'bloom-rise 0.4s ease both', width: '100%' }}>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                  <div style={{
+                    width: '32px', height: '32px', borderRadius: '10px', flexShrink: 0,
+                    background: 'rgba(110,220,95,0.12)', border: '1px solid rgba(110,220,95,0.2)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px',
+                    marginTop: '2px',
+                  }}>🌿</div>
+                  <p style={{
+                    color: '#A8F5A2', fontSize: '14px', lineHeight: '1.75',
+                    whiteSpace: 'pre-wrap', margin: 0, flex: 1,
+                  }}>
+                    {response}
+                  </p>
+                </div>
+                {/* Post-demo conversion nudge */}
+                <div style={{
+                  marginTop: '16px', padding: '12px 16px', borderRadius: '12px',
+                  background: 'rgba(110,220,95,0.07)', border: '1px solid rgba(110,220,95,0.18)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  flexWrap: 'wrap', gap: '12px',
+                }}>
+                  <span style={{ color: 'rgba(168,245,162,0.75)', fontSize: '13px' }}>
+                    ✨ Like this? Get a full personalised learning plan for your child.
+                  </span>
+                  <button
+                    onClick={() => navigate('/login?role=student')}
+                    className="bloom-btn-scale"
+                    style={{
+                      padding: '8px 18px', borderRadius: '8px',
+                      background: '#6EDC5F', color: '#0A1F12',
+                      border: 'none', fontSize: '13px', fontWeight: 700,
+                      cursor: 'pointer', whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Get Started Free →
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 

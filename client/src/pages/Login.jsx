@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { trackEvent, identifyUser, EVENTS } from '../utils/analytics'
 
 const API = import.meta.env.VITE_API_URL || ''
 
@@ -125,6 +126,8 @@ export default function Login() {
       if (!res.ok) throw new Error(data?.message || 'Demo login failed')
       
       login(data.user, data.token)
+      trackEvent(EVENTS.LOGIN_SUCCESS, { method: 'demo', role: role.id })
+      identifyUser(data.user?._id || data.user?.id)
       navigate(ROLE_ROUTES[role.id], { replace: true })
     } catch (err) {
       console.error('Demo login error:', err)
@@ -151,6 +154,8 @@ export default function Login() {
       const data = await res.json()
       if (!res.ok) throw new Error(data?.error?.message || data?.message || 'Login failed')
       login(data.user, data.token)
+      trackEvent(EVENTS.LOGIN_SUCCESS, { method: 'email', role: data.user.role })
+      identifyUser(data.user?._id || data.user?.id)
       navigate(ROLE_ROUTES[data.user.role] || '/login', { replace: true })
     } catch (err) {
       setFormError(err.message)

@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import BloomCharacter from '../Bloom/BloomCharacter';
 import { useConfig } from '../../context/ConfigContext';
+import { trackEvent, EVENTS } from '../../utils/analytics';
 
 export default function HeroSection() {
   const navigate = useNavigate();
@@ -93,18 +94,18 @@ export default function HeroSection() {
 
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '48px' }} className="hero-actions">
             <button
-              onClick={() => navigate('/login?role=student')}
-              className="bloom-btn-primary btn-primary"
+              onClick={() => { trackEvent(EVENTS.CTA_CLICK, { location: 'hero' }); navigate('/login?role=student'); }}
+              className="bloom-btn-primary btn-primary bloom-btn-scale"
               style={{ fontSize: '16px', padding: '15px 32px' }}
             >
-              Start Learning
+              Start Learning Free
             </button>
             <button
-              onClick={() => navigate('/login?role=parent')}
-              className="bloom-btn-ghost btn-secondary"
+              onClick={() => navigate('/why')}
+              className="bloom-btn-ghost btn-secondary bloom-btn-scale"
               style={{ fontSize: '16px', padding: '15px 32px' }}
             >
-              For Parents
+              See How It Works
             </button>
           </div>
 
@@ -130,7 +131,7 @@ export default function HeroSection() {
                 ))}
               </div>
               <p style={{ color: 'rgba(168,245,162,0.6)', fontSize: '12px' }}>
-                500+ parents in early access
+                1,000+ learners in early access
               </p>
             </div>
           </div>

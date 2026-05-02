@@ -7,6 +7,7 @@ import { ConfigProvider } from './context/ConfigContext'
 import { StudentProgressProvider } from './context/StudentProgressContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import { applyTheme, getAutoTheme } from "./theme/themeUtils";
+import { trackEvent } from './utils/analytics';
 
 // ── Eagerly loaded (small / critical path) ────────────────────────────────────
 import Login from './pages/Login'
@@ -26,8 +27,9 @@ const ParentDashboard    = lazy(() => import('./pages/ParentDashboard'))
 const WeekPlanView       = lazy(() => import('./pages/WeekPlanView'))
 const PaymentPage        = lazy(() => import('./pages/PaymentPage'))
 const AdminDashboard     = lazy(() => import('./pages/AdminDashboard'))
-const AdminControlPanel  = lazy(() => import('./pages/AdminControlPanel'))
-const CreatorDashboard   = lazy(() => import('./pages/CreatorDashboard'))
+const AdminControlPanel     = lazy(() => import('./pages/AdminControlPanel'))
+const AdminContentEditor    = lazy(() => import('./pages/AdminContentEditor'))
+const CreatorDashboard      = lazy(() => import('./pages/CreatorDashboard'))
 
 function PageSpinner() {
   return (
@@ -61,6 +63,8 @@ export default function App() {
       const autoTheme = getAutoTheme();
       applyTheme(autoTheme);
     }
+
+    trackEvent('page_view', { page: window.location.pathname });
   }, []);
 
   return (
@@ -102,6 +106,7 @@ export default function App() {
                     <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
                       <Route path="/dashboard/admin" element={<AdminDashboard />} />
                       <Route path="/admin-control"   element={<AdminControlPanel />} />
+                      <Route path="/admin/content"   element={<AdminContentEditor />} />
                     </Route>
 
                     {/* Creator */}
