@@ -6,7 +6,7 @@ import Sidebar from '../components/layout/Sidebar'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import RobCharacter from '../components/ROB/RobCharacter'
 import ChapterUpload from '../components/chapter/ChapterUpload'
-import { getChildInfo, getChildActivity, getParentBilling } from '../services/api'
+import { getChildInfo, getChildActivity, getParentBilling } from '../services'
 import { useConfig } from '../context/ConfigContext'
 
 const NAV_ITEMS = [

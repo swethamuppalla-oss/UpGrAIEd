@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BloomCharacter from '../Bloom/BloomCharacter'
 import WeekPlanPreview from './WeekPlanPreview'
-import { uploadChapterPhotos, getChapterStatus } from '../../services/api'
+import { uploadChapterPhotos, getChapterStatus } from '../../services'
 import { useToast } from '../ui/Toast'
 
 export default function ChapterUpload() {

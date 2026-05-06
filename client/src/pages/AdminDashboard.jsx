@@ -4,16 +4,20 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/ui/Toast'
 import Sidebar from '../components/layout/Sidebar'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
-import { 
-  getAdminStats, getReservations, approveReservation, 
-  getAdminPayments, getAdminUsers, blockUser, unblockUser 
-} from '../services/api'
+import {
+  getAdminStats, getReservations, approveReservation,
+  getAdminPayments, getAdminUsers, blockUser, unblockUser,
+  createUser, getUsers
+} from '../services'
 
 const NAV_ITEMS = [
   { id: 'overview',     icon: '📊', label: 'Overview' },
   { id: 'reservations', icon: '📝', label: 'Reservations' },
   { id: 'payments',     icon: '💳', label: 'Payments' },
-  { id: 'users',        icon: '👥', label: 'Users' }
+  { id: 'users',        icon: '👥', label: 'Users' },
+  { id: 'divider-website', divider: true, label: 'Website' },
+  { id: 'content',      icon: '📝', label: 'Content Editor',  path: '/admin/content' },
+  { id: 'ui-config',    icon: '🎨', label: 'UI Configurator', path: '/admin/ui' },
 ]
 
 function getInitials(name = '') {
@@ -23,6 +27,14 @@ function getInitials(name = '') {
 function formatRevenue(val) {
   if (val >= 100000) return '₹' + (val / 100000).toFixed(1) + 'L'
   return '₹' + Number(val).toLocaleString('en-IN')
+}
+
+function normalizeUser(u) {
+  return {
+    ...u,
+    email: u.email || u.phone || '',
+    isBlocked: typeof u.isBlocked === 'boolean' ? u.isBlocked : u.isActive === false,
+  }
 }
 
 export default function AdminDashboard() {
@@ -55,7 +67,7 @@ export default function AdminDashboard() {
           setPayments(Array.isArray(data) ? data : [])
         } else if (activeTab === 'users') {
           const data = await getAdminUsers().catch(() => [])
-          setUsers(Array.isArray(data) ? data : [])
+          setUsers(Array.isArray(data) ? data.map(normalizeUser) : [])
         }
       } catch (err) {
         showToast('Error loading ' + activeTab, 'error')
@@ -88,6 +100,22 @@ export default function AdminDashboard() {
       setUsers(prev => prev.map(u => u._id === uId ? { ...u, isBlocked: !currentlyBlocked } : u))
     } catch {
       showToast('Failed to update user status', 'error')
+    }
+  }
+
+  const reloadUsers = async () => {
+    const data = await getUsers().catch(() => getAdminUsers().catch(() => []))
+    setUsers(Array.isArray(data) ? data.map(normalizeUser) : [])
+  }
+
+  const handleCreateUser = async (form) => {
+    try {
+      await createUser(form)
+      showToast('User created', 'success')
+      await reloadUsers()
+    } catch (err) {
+      showToast(err.message || 'Failed to create user', 'error')
+      throw err
     }
   }
 
@@ -200,6 +228,7 @@ export default function AdminDashboard() {
     })
     return (
       <div>
+        <CreateUserForm onCreate={handleCreateUser} />
         <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
           <input 
             type="text" className="input-field" placeholder="Search users by name or email..." 
@@ -211,6 +240,7 @@ export default function AdminDashboard() {
             <option value="student">Student</option>
             <option value="parent">Parent</option>
             <option value="creator">Creator</option>
+            <option value="admin">Admin</option>
           </select>
         </div>
         <div className="table-wrapper">
@@ -272,5 +302,83 @@ export default function AdminDashboard() {
         {activeTab === 'users' && renderUsers()}
       </main>
     </div>
+  )
+}
+
+function CreateUserForm({ onCreate }) {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    role: 'student',
+    parentId: '',
+  })
+  const [saving, setSaving] = useState(false)
+
+  const update = (key, value) => setForm(prev => ({ ...prev, [key]: value }))
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setSaving(true)
+    try {
+      await onCreate(form)
+      setForm({ name: '', email: '', role: 'student', parentId: '' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="card"
+      style={{
+        marginBottom: 18,
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+        gap: 12,
+        alignItems: 'end',
+      }}
+    >
+      <div>
+        <h3 style={{ margin: '0 0 10px', fontSize: 16 }}>Create User</h3>
+        <input
+          className="input-field"
+          placeholder="Name"
+          value={form.name}
+          onChange={(e) => update('name', e.target.value)}
+          required
+        />
+      </div>
+
+      <input
+        className="input-field"
+        type="email"
+        placeholder="Email"
+        value={form.email}
+        onChange={(e) => update('email', e.target.value)}
+        required
+      />
+
+      <select className="input-field" value={form.role} onChange={(e) => update('role', e.target.value)}>
+        <option value="student">Student</option>
+        <option value="parent">Parent</option>
+        <option value="creator">Creator</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      {form.role === 'student' && (
+        <input
+          className="input-field"
+          placeholder="Parent ID"
+          value={form.parentId}
+          onChange={(e) => update('parentId', e.target.value)}
+          required
+        />
+      )}
+
+      <button className="btn-primary" type="submit" disabled={saving}>
+        {saving ? 'Creating...' : 'Create'}
+      </button>
+    </form>
   )
 }

@@ -11,7 +11,8 @@ export const requireAuth = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    const user = await User.findById(decoded.sub || decoded.id)
+    const userId = decoded.userId || decoded.sub || decoded.id
+    const user = await User.findById(userId)
 
     if (!user) {
       return res.status(401).json({ message: 'User not found' })
@@ -21,10 +22,14 @@ export const requireAuth = async (req, res, next) => {
       return res.status(403).json({ message: 'Account is blocked' })
     }
 
+    req.auth = { userId: String(user._id), role: user.role }
     req.user = user
     next()
   } catch (error) {
-    res.status(401).json({ message: 'Token is invalid or expired' })
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired', code: 'TOKEN_EXPIRED' })
+    }
+    res.status(401).json({ message: 'Token is invalid or expired', code: 'TOKEN_INVALID' })
   }
 }
 

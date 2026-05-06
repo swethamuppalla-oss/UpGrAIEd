@@ -1,0 +1,489 @@
+// Phase 4.0 — Student Dashboard dark theme
+// BEM prefix: sd-
+
+// ── Tokens ────────────────────────────────────────────────
+$sd-card:         #131B2E;
+$sd-raised:       #192236;
+$sd-border:       rgba(255, 255, 255, 0.07);
+$sd-border-hi:    rgba(255, 255, 255, 0.13);
+$sd-green:        #6EDC5F;
+$sd-sky:          #63C7FF;
+$sd-yellow:       #FFD95A;
+$sd-coral:        #FF8A65;
+$sd-purple:       #A78BFA;
+$sd-text:         #EDF2FF;
+$sd-muted:        #8896B0;
+$sd-dim:          #596480;
+
+// ── Wrapper ────────────────────────────────────────────────
+.sd {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 720px;
+  padding-bottom: 48px;
+  animation: bloom-fade-in 0.35s ease-out;
+}
+
+// ── Base card ──────────────────────────────────────────────
+.sd-card {
+  background: $sd-card;
+  border: 1px solid $sd-border;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+// ── Section label ──────────────────────────────────────────
+.sd-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: $sd-muted;
+  margin-bottom: 12px;
+}
+
+// ═══════════════════════════════════════════════════════════
+// 1. HEADER
+// ═══════════════════════════════════════════════════════════
+.sd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  &__left {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__greeting {
+    font-size: 12px;
+    font-weight: 600;
+    color: $sd-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0;
+  }
+
+  &__name {
+    font-size: 28px;
+    font-weight: 800;
+    color: $sd-text;
+    font-family: 'Clash Display', Inter, sans-serif;
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  &__meta {
+    font-size: 12px;
+    color: $sd-muted;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__streak {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255, 217, 90, 0.1);
+    border: 1px solid rgba(255, 217, 90, 0.22);
+
+    span:last-child {
+      font-size: 13px;
+      font-weight: 700;
+      color: $sd-yellow;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 2. CONTINUE LEARNING CARD
+// ═══════════════════════════════════════════════════════════
+.sd-continue {
+  position: relative;
+  overflow: hidden;
+  background: $sd-raised;
+  border: 1px solid rgba(110, 220, 95, 0.18);
+  border-radius: 20px;
+  padding: 20px;
+
+  &__glow {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(110, 220, 95, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  &__eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: $sd-green;
+    margin-bottom: 6px;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 700;
+    color: $sd-text;
+    margin: 0 0 18px;
+    line-height: 1.4;
+  }
+
+  &__progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+
+    span:first-child {
+      font-size: 12px;
+      font-weight: 600;
+      color: $sd-muted;
+    }
+
+    span:last-child {
+      font-size: 12px;
+      font-weight: 700;
+      color: $sd-green;
+    }
+  }
+
+  &__bar {
+    height: 8px;
+    background: #1f2937;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 18px;
+
+    div {
+      height: 100%;
+      background: #f59e0b;
+      border-radius: 6px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 24px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, $sd-green, $sd-sky);
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0A1F12;
+    font-family: inherit;
+    box-shadow: 0 4px 24px rgba(110, 220, 95, 0.28);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(110, 220, 95, 0.42);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 3. PROGRESS SNAPSHOT
+// ═══════════════════════════════════════════════════════════
+.sd-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 10px;
+
+  &__card {
+    background: $sd-card;
+    border: 1px solid $sd-border;
+    border-radius: 16px;
+    padding: 16px 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: border-color 0.2s;
+
+    &:hover {
+      border-color: $sd-border-hi;
+    }
+  }
+
+  &__icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  &__value {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    font-family: 'Clash Display', Inter, sans-serif;
+  }
+
+  &__label {
+    font-size: 10px;
+    font-weight: 600;
+    color: $sd-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 4. WEAK AREAS
+// ═══════════════════════════════════════════════════════════
+.sd-weak {
+  background: $sd-card;
+  border: 1px solid $sd-border;
+  border-radius: 20px;
+  padding: 20px;
+
+  &__empty {
+    color: $sd-muted;
+    font-size: 13px;
+    margin: 0;
+  }
+
+  &__all-clear {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: $sd-green;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(255, 138, 101, 0.05);
+    border: 1px solid rgba(255, 138, 101, 0.15);
+  }
+
+  &__item-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+
+  &__item-body {
+    flex: 1;
+    min-width: 0;
+
+    strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: $sd-text;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    span {
+      font-size: 11px;
+      color: $sd-muted;
+    }
+  }
+
+  &__practice-btn {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 99px;
+    border: 1px solid rgba(255, 138, 101, 0.3);
+    background: rgba(255, 138, 101, 0.08);
+    cursor: pointer;
+    font-family: inherit;
+    color: #e5703a;
+    transition: background 0.15s, border-color 0.15s;
+
+    &:hover {
+      background: rgba(255, 138, 101, 0.18);
+      border-color: rgba(255, 138, 101, 0.45);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 5. QUICK ACTIONS
+// ═══════════════════════════════════════════════════════════
+.sd-actions {
+  background: $sd-card;
+  border: 1px solid $sd-border;
+  border-radius: 20px;
+  padding: 20px;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  &__btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 16px 8px;
+    border-radius: 14px;
+    background: $sd-raised;
+    border: 1px solid $sd-border;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: center;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: $sd-border-hi;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &--quiz:hover  { border-color: rgba(167, 139, 250, 0.4); }
+    &--drill:hover { border-color: rgba(99, 199, 255, 0.4);  }
+    &--revisit:hover { border-color: rgba(110, 220, 95, 0.4); }
+  }
+
+  &__icon {
+    font-size: 26px;
+    line-height: 1;
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 700;
+    color: $sd-text;
+  }
+
+  &__sub {
+    font-size: 10px;
+    color: $sd-muted;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 6. BLOOM STATUS CARD
+// ═══════════════════════════════════════════════════════════
+.sd-bloom {
+  background: $sd-card;
+  border: 1px solid $sd-border;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: $sd-green;
+    margin-bottom: 5px;
+  }
+
+  &__message {
+    font-size: 14px;
+    color: $sd-text;
+    line-height: 1.55;
+    margin: 0 0 8px;
+  }
+
+  &__meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 11px;
+    font-weight: 600;
+    color: $sd-muted;
+
+    span + span::before {
+      content: '·';
+      margin-right: 6px;
+    }
+  }
+}
+
+// ── Focus Areas ────────────────────────────────────────────
+.dashboard-section {
+  margin-top: 20px;
+
+  h2 {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: $sd-muted;
+    margin: 0 0 12px;
+  }
+}
+
+.weak-card {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 14px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.weak-title {
+  font-weight: 600;
+  color: #f97316;
+}
+
+.weak-date {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+.empty {
+  font-size: 13px;
+  color: $sd-muted;
+}

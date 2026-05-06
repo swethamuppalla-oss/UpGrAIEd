@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import BloomCharacter from '../Bloom/BloomCharacter'
-import { submitWeeklyExam } from '../../services/api'
+import { submitWeeklyExam } from '../../services'
 import { useToast } from '../ui/Toast'
 
 export default function ExamPlayer({ planId, dayData, chapterTitle, onComplete }) {

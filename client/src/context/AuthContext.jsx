@@ -1,43 +1,39 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import {
+  clearSession,
+  demoLogin as demoLoginService,
+  getStoredSession,
+  logout as logoutService,
+} from '../services/authService'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
   const [token, setToken] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token')
-    const storedRole = localStorage.getItem('role')
-    const storedUser = localStorage.getItem('user')
-    if (storedToken && storedRole) {
-      setToken(storedToken)
-      setUser(storedUser
-        ? JSON.parse(storedUser)
-        : { role: storedRole })
+    const session = getStoredSession()
+    if (session) {
+      setToken(session.token)
     }
     setIsLoading(false)
   }, [])
 
-  const login = (userData, jwtToken) => {
-    setUser(userData)
-    setToken(jwtToken)
-    localStorage.setItem('token', jwtToken)
-    localStorage.setItem('role', userData.role)
-    localStorage.setItem('user', JSON.stringify(userData))
+  const login = async () => {
+    const newToken = await demoLoginService()
+    setToken(newToken)
   }
 
-  const logout = () => {
-    setUser(null)
+  const logout = async () => {
+    await logoutService()
     setToken(null)
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
-    localStorage.removeItem('user')
   }
+
+  const isAuthenticated = !!token
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user: null, token, isAuthenticated, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

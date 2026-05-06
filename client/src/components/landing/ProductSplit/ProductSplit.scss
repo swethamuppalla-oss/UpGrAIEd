@@ -1,0 +1,242 @@
+@use '../../../design-system/styles/variables' as *;
+@use '../../../design-system/styles/mixins' as *;
+@use '../_animations.scss';
+
+.split {
+  background: $color-surface-subtle;
+  padding-block: $space-24;
+
+  @include respond-to(md) { padding-block: $space-16; }
+}
+
+.split__inner {
+  @include container;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-16;
+  align-items: center;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr;
+    gap: $space-12;
+  }
+}
+
+// ── Left: copy ────────────────────────────────────────────
+
+.split__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.split__eyebrow {
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $color-accent-dark;
+  margin-bottom: $space-4;
+}
+
+.split__headline {
+  font-family: $font-family;
+  font-size: clamp(30px, 3.5vw, 46px);
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  letter-spacing: -0.025em;
+  color: $color-text-primary;
+  margin: 0 0 $space-6;
+}
+
+.split__body {
+  font-family: $font-family;
+  font-size: $font-size-lg;
+  line-height: $line-height-normal;
+  color: $color-text-secondary;
+  max-width: 420px;
+  margin: 0 0 $space-8;
+}
+
+// ── Feature list ──────────────────────────────────────────
+
+.split__features {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  margin-bottom: $space-10;
+  list-style: none;
+  padding: 0;
+  margin-top: 0;
+}
+
+.split__feature {
+  @include flex-start;
+  gap: $space-4;
+}
+
+.split__feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: $radius-md;
+  background: rgba(245, 158, 11, 0.10);
+  border: 1px solid rgba(245, 158, 11, 0.20);
+  @include flex-center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.split__feature-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.split__feature-title {
+  font-family: $font-family;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.split__feature-desc {
+  font-family: $font-family;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-snug;
+}
+
+.split__link {
+  @include flex-start;
+  @include focus-ring($color-accent);
+  gap: $space-2;
+  font-family: $font-family;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  text-decoration: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  transition: gap $transition-fast, color $transition-fast;
+
+  &:hover {
+    color: $color-accent-dark;
+    gap: $space-3;
+  }
+}
+
+// ── Right: product mockup ──────────────────────────────────
+
+.split__visual {
+  position: relative;
+
+  @include respond-to(lg) {
+    order: -1;
+  }
+}
+
+.split__mockup {
+  background: $color-primary;
+  border-radius: $radius-xl;
+  padding: $space-6;
+  box-shadow: $shadow-xl;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: $radius-full;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+.split__mockup-header {
+  @include flex-between;
+  margin-bottom: $space-6;
+  padding-bottom: $space-4;
+  border-bottom: 1px solid rgba(248, 246, 242, 0.08);
+}
+
+.split__mockup-title {
+  font-family: $font-family;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: rgba(248, 246, 242, 0.55);
+}
+
+.split__mockup-badge {
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $color-success;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  padding: 3px 10px;
+  border-radius: $radius-full;
+}
+
+.split__day-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.split__day {
+  @include flex-between;
+  padding: $space-3 $space-4;
+  border-radius: $radius-md;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background $transition-fast, border-color $transition-fast;
+
+  &--active {
+    background: rgba(245, 158, 11, 0.10);
+    border-color: rgba(245, 158, 11, 0.22);
+  }
+
+  &--done {
+    opacity: 0.55;
+  }
+}
+
+.split__day-info {
+  @include flex-start;
+  gap: $space-3;
+}
+
+.split__day-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: $radius-full;
+  background: rgba(248, 246, 242, 0.20);
+  flex-shrink: 0;
+
+  .split__day--active & { background: $color-accent; }
+  .split__day--done &   { background: $color-success; }
+}
+
+.split__day-label {
+  font-family: $font-family;
+  font-size: $font-size-sm;
+  color: rgba(248, 246, 242, 0.65);
+
+  .split__day--active & { color: $color-text-inverse; font-weight: $font-weight-medium; }
+}
+
+.split__day-status {
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  color: rgba(248, 246, 242, 0.30);
+
+  .split__day--active & { color: $color-accent; }
+  .split__day--done &   { color: $color-success; }
+}

@@ -10,8 +10,8 @@ const SIZES = {
   hero:   { w: 240, h: 288 },
 }
 
-// Emotion → face config
-const EMOTIONS = {
+// Emotion → face config — exported so Bloom.jsx can share it
+export const EMOTIONS = {
   happy: {
     eyeL: { cx: 78, cy: 100, rx: 10, ry: 11 },
     eyeR: { cx: 122, cy: 100, rx: 10, ry: 11 },

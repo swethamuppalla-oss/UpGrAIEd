@@ -24,3 +24,14 @@ fix*.js
 fix.py
 temp_phase3/
 temp_stubs.js
+
+# Codebase export artifacts
+export.js
+generate_parts.js
+part*.txt
+structured_codebase_export.md
+trace.js
+client/NUL
+
+# Uploaded media (runtime files, not source)
+server/uploads/

@@ -58,7 +58,7 @@ router.get('/users', async (req, res, next) => {
     res.json(users.map(u => ({
       _id: u._id,
       name: u.name,
-      email: u.phone,
+      email: u.email || u.phone,
       role: u.role,
       isBlocked: !u.isActive,
       createdAt: u.createdAt,

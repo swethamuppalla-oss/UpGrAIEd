@@ -1,0 +1,39 @@
+@use 'variables' as *;
+
+// ============================================================
+// Design System — Global Stylesheet
+// Import once at app root. Do NOT import inside CSS modules.
+// ============================================================
+
+// CSS custom properties exposed for interop with legacy styles
+:root {
+  --ds-primary:          #{$color-primary};
+  --ds-primary-light:    #{$color-primary-light};
+  --ds-secondary:        #{$color-secondary};
+  --ds-accent:           #{$color-accent};
+  --ds-accent-dark:      #{$color-accent-dark};
+  --ds-success:          #{$color-success};
+  --ds-error:            #{$color-error};
+
+  --ds-text-primary:     #{$color-text-primary};
+  --ds-text-secondary:   #{$color-text-secondary};
+  --ds-text-inverse:     #{$color-text-inverse};
+
+  --ds-surface:          #{$color-surface};
+  --ds-surface-subtle:   #{$color-surface-subtle};
+  --ds-surface-dark:     #{$color-surface-dark};
+  --ds-border:           #{$color-border};
+
+  --ds-font:             #{$font-family};
+
+  --ds-radius-sm:        #{$radius-sm};
+  --ds-radius-md:        #{$radius-md};
+  --ds-radius-lg:        #{$radius-lg};
+  --ds-radius-xl:        #{$radius-xl};
+
+  --ds-shadow-sm:        #{$shadow-sm};
+  --ds-shadow-md:        #{$shadow-md};
+  --ds-shadow-lg:        #{$shadow-lg};
+
+  --ds-transition-base:  #{$transition-base};
+}

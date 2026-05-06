@@ -1,36 +1,41 @@
 import { Router } from 'express';
-import { db } from '../firebase.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
+import { ContentSection } from '../models/ContentSection.js';
 
 const router = Router();
 
-// GET /api/content/:section
+// GET /api/content/:section — public
 router.get('/:section', async (req, res) => {
-  const { section } = req.params;
   try {
-    const doc = await db.collection('content').doc(section).get();
-    if (!doc.exists) {
-      return res.status(404).json({ error: 'Section not found' });
-    }
-    const data = doc.data();
-    // faq is stored as { items: [...] } in Firestore — return the array directly
-    res.json(section === 'faq' ? (data.items ?? []) : data);
+    const doc = await ContentSection.findOne({ section: req.params.section }).lean();
+    if (!doc) return res.status(404).json({ error: 'Section not found' });
+    res.json({ section: doc.section, ...doc.content });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// PUT /api/content/:section  (admin only)
-router.put('/:section', requireAuth, requireRole('admin'), async (req, res) => {
-  const { section } = req.params;
-  const newData = req.body;
+// GET /api/content — list all sections (admin)
+router.get('/', requireAuth, requireRole('admin'), async (req, res) => {
   try {
-    // faq arrives as an array — wrap it for Firestore (docs must be objects)
-    const stored = section === 'faq' && Array.isArray(newData)
-      ? { items: newData }
-      : newData;
-    await db.collection('content').doc(section).set(stored);
-    res.json({ success: true, message: `${section} updated in Firestore` });
+    const docs = await ContentSection.find().lean();
+    res.json(docs.map(d => ({ section: d.section, ...d.content })));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/content/:section — upsert (admin only)
+router.put('/:section', requireAuth, requireRole('admin'), async (req, res) => {
+  try {
+    const { section } = req.params;
+    const { section: _omit, ...payload } = req.body; // strip `section` from body if present
+    const doc = await ContentSection.findOneAndUpdate(
+      { section },
+      { $set: { content: payload } },
+      { upsert: true, new: true }
+    ).lean();
+    res.json({ section: doc.section, ...doc.content });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

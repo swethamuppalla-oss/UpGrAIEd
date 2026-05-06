@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
-import { getConfig, upsertConfig as apiUpsert } from '../services/api'
+import { getUIConfig, updateUIConfig } from '../services'
 import { DEFAULT_THEME } from '../config/defaults'
 
 // ── Cache helpers ─────────────────────────────────────────────────────────────
@@ -52,7 +52,7 @@ export function ConfigProvider({ children }) {
     if (!force && fetchedRef.current) return
     setLoading(true)
     try {
-      const data = await getConfig()
+      const data = await getUIConfig()
       setConfig(data)
       writeCache(data)
       fetchedRef.current = true
@@ -106,7 +106,7 @@ export function ConfigProvider({ children }) {
       writeCache(next)
       return next
     })
-    await apiUpsert(key, value)
+    await updateUIConfig({ [key]: value })
   }, [])
 
   /**

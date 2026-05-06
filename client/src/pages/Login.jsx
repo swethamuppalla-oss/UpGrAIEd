@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { demoLogin as demoLoginRequest, login as loginRequest } from '../services/authService'
 import { trackEvent, identifyUser, EVENTS } from '../utils/analytics'
-
-const API = import.meta.env.VITE_API_URL || ''
 
 /* ─── Route map ─────────────────────────────────────────────── */
 const ROLE_ROUTES = {
@@ -117,14 +116,7 @@ export default function Login() {
     setLoadingRole(role.id)
 
     try {
-      const res = await fetch(`${API}/api/auth/demo-login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: role.id })
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data?.message || 'Demo login failed')
-      
+      const data = await demoLoginRequest(role.id)
       login(data.user, data.token)
       trackEvent(EVENTS.LOGIN_SUCCESS, { method: 'demo', role: role.id })
       identifyUser(data.user?._id || data.user?.id)
@@ -146,13 +138,8 @@ export default function Login() {
     }
     setFormLoading(true)
     try {
-      const res = await fetch(`${API}/api/auth/login`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email, password }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data?.error?.message || data?.message || 'Login failed')
+      const data = await loginRequest(email, password)
+      if (import.meta.env.DEV) console.log('TOKEN:', data.token?.slice(0, 20) + '…')
       login(data.user, data.token)
       trackEvent(EVENTS.LOGIN_SUCCESS, { method: 'email', role: data.user.role })
       identifyUser(data.user?._id || data.user?.id)

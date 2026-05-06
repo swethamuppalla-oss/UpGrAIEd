@@ -13,7 +13,7 @@ export default function ParentBenefits() {
   const navigate = useNavigate();
 
   return (
-    <section className="pg-section" style={{ background: '#0D2318' }}>
+    <section className="pg-section" style={{ background: '#FFFFFF' }}>
       {/* Ambient orbs */}
       <div className="pg-orb" style={{ top: '-10%', left: '-8%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(110,220,95,0.09), transparent 70%)', filter: 'blur(60px)' }} />
       <div className="pg-orb" style={{ bottom: '-5%', right: '-5%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(99,199,255,0.07), transparent 70%)', filter: 'blur(50px)', animationDelay: '6s', animationDuration: '22s' }} />
@@ -73,8 +73,8 @@ function BenefitCard({ icon, title, desc, accent, iconClass, delay }) {
       <div className={`pg-icon ${iconClass}`} style={{ marginBottom: 18, background: hov ? `${accent}22` : undefined, borderColor: hov ? `${accent}44` : undefined }}>
         {icon}
       </div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#F0FFF4', marginBottom: 10, letterSpacing: '-0.01em' }}>{title}</h3>
-      <p style={{ color: 'rgba(168,245,162,0.68)', fontSize: 14, lineHeight: 1.65 }}>{desc}</p>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0A1F12', marginBottom: 10, letterSpacing: '-0.01em' }}>{title}</h3>
+      <p style={{ color: '#4B6B57', fontSize: 14, lineHeight: 1.65 }}>{desc}</p>
     </div>
   );
 }

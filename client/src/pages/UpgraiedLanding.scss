@@ -1,0 +1,81 @@
+@use '../design-system/styles/variables' as *;
+@use '../design-system/styles/mixins' as *;
+
+.upgraied-landing {
+  font-family: $font-family;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+// ── Admin bar ─────────────────────────────────────────────
+
+.admin-bar {
+  @include flex-between;
+  position: fixed;
+  bottom: $space-5;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: $space-3 $space-5;
+  border-radius: $radius-full;
+  background: $color-primary;
+  border: 1px solid rgba(248, 246, 242, 0.12);
+  box-shadow: $shadow-xl;
+  gap: $space-4;
+  white-space: nowrap;
+  transition: border-color $transition-fast;
+
+  &--active {
+    border-color: rgba(245, 158, 11, 0.40);
+    box-shadow: $shadow-xl, 0 0 0 1px rgba(245, 158, 11, 0.15);
+  }
+}
+
+.admin-bar__label {
+  font-family: $font-family;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: rgba(248, 246, 242, 0.60);
+
+  .admin-bar--active & {
+    color: $color-accent-light;
+  }
+}
+
+.admin-bar__btn {
+  height: 30px;
+  padding: 0 $space-4;
+  border-radius: $radius-full;
+  border: 1px solid rgba(248, 246, 242, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(248, 246, 242, 0.75);
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: background $transition-fast, border-color $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: $color-accent;
+    border-color: $color-accent;
+    color: $color-primary;
+  }
+
+  .admin-bar--active & {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.30);
+    color: $color-accent-light;
+
+    &:hover {
+      background: $color-error;
+      border-color: $color-error;
+      color: #fff;
+    }
+  }
+}

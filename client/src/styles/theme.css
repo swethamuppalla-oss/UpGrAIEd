@@ -1,0 +1,236 @@
+/* ================================================================
+   THEME — centralized design tokens
+   Additive layer on top of bloom.css / index.css
+   ================================================================ */
+
+:root {
+  --color-primary:          #6EDC5F;
+  --color-secondary:        #63C7FF;
+  --color-accent:           #FFD95A;
+
+  --color-bg:               #FFFFFF;
+  --color-surface:          #F8FAF8;
+
+  --color-text-primary:     #0D2318;
+  --color-text-secondary:   rgba(13, 35, 24, 0.65);
+
+  --radius-card:            16px;
+  --shadow-card:            0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Generic card utility ─────────────────────────────────────── */
+.card {
+  background: var(--color-bg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.10);
+}
+
+/* ── Admin surface ────────────────────────────────────────────── */
+.admin-surface {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.admin-surface h1,
+.admin-surface h2,
+.admin-surface h3 {
+  color: var(--color-text-primary);
+}
+
+.admin-surface p,
+.admin-surface label {
+  color: var(--color-text-secondary);
+}
+
+/* ── Admin input ──────────────────────────────────────────────── */
+.admin-input {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid rgba(110, 220, 95, 0.25);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(110, 220, 95, 0.14);
+}
+
+.admin-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+/* ── Admin select ─────────────────────────────────────────────── */
+.admin-select {
+  background: var(--color-surface);
+  border: 1px solid rgba(110, 220, 95, 0.25);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+
+.admin-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(110, 220, 95, 0.14);
+}
+
+/* ── Admin action buttons ─────────────────────────────────────── */
+.admin-btn {
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(110, 220, 95, 0.3);
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+
+.admin-btn-ghost {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.admin-btn-ghost:hover {
+  background: rgba(110, 220, 95, 0.1);
+  border-color: rgba(110, 220, 95, 0.5);
+}
+
+.admin-btn-primary {
+  background: var(--color-primary);
+  color: #0D2010;
+  border-color: transparent;
+}
+
+.admin-btn-primary:hover {
+  background: #5BC84E;
+  box-shadow: 0 4px 16px rgba(110, 220, 95, 0.4);
+}
+
+/* ── Status feedback ──────────────────────────────────────────── */
+.admin-status {
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.admin-status-ok {
+  background: rgba(110, 220, 95, 0.1);
+  color: #2A7A20;
+  border: 1px solid rgba(110, 220, 95, 0.25);
+}
+
+.admin-status-err {
+  background: rgba(239, 68, 68, 0.08);
+  color: #DC2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ── BloomGrid image tile ─────────────────────────────────────── */
+.bloom-grid-tile {
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  transition: transform 0.28s cubic-bezier(0.34, 1.2, 0.64, 1),
+              box-shadow 0.28s ease;
+}
+
+.bloom-grid-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.bloom-grid-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.bloom-grid-tile:hover img {
+  transform: scale(1.04);
+}
+
+/* Reusable media uploader */
+.media-uploader {
+  display: grid;
+  gap: 14px;
+  max-width: 520px;
+  background: var(--color-surface);
+  border: 1px solid rgba(13, 35, 24, 0.08);
+}
+
+.media-uploader:hover {
+  transform: none;
+}
+
+.media-uploader__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: #0D2010;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.media-uploader__button input {
+  display: none;
+}
+
+.media-uploader__error {
+  margin: 0;
+  color: #DC2626;
+  font-size: 13px;
+}
+
+.media-uploader__preview {
+  display: grid;
+  gap: 10px;
+}
+
+.media-uploader__preview img,
+.media-uploader__preview video {
+  width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(13, 35, 24, 0.08);
+}
+
+.media-uploader__preview input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(13, 35, 24, 0.12);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-text-primary);
+  padding: 10px 12px;
+  font-family: monospace;
+  font-size: 12px;
+}

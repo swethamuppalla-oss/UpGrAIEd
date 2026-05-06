@@ -6,7 +6,7 @@ import { useToast } from '../components/ui/Toast'
 import BloomCharacter from '../components/Bloom/BloomCharacter'
 import BloomParticles from '../components/Bloom/BloomParticles'
 import { ROB_BADGES, robLessons } from '../data/robLessons'
-import { getROBQuiz } from '../services/api'
+import { getROBQuiz } from '../services'
 import '../styles/bloom.css'
 
 const NAV = [

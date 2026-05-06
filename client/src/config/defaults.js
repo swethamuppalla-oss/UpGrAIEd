@@ -54,6 +54,13 @@ export const DEFAULT_FEATURES = {
   studyExplainer:  false,
 }
 
+export const BLOOM_GRID = [
+  '/images/bloom1.png',
+  '/images/bloom2.png',
+  '/images/bloom3.png',
+  '/images/bloom4.png',
+];
+
 export const DEFAULT_CURRICULUM = {
   modules: [
     { module: '01', title: 'What is AI?',      desc: 'Understanding AI in everyday life. How it works, where it lives.', icon: '🧠', emotion: 'curious' },

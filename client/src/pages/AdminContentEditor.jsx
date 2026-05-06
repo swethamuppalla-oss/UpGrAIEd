@@ -1,156 +1,143 @@
 import { useState } from 'react'
-import api, { uploadMedia } from '../services/api'
+import MediaUploader from '../components/common/MediaUploader'
+import { getContent, updateContent } from '../services'
 
-const API = import.meta.env.VITE_API_URL || ''
-
-const SECTIONS = ['whyUpgraied', 'faq', 'trust']
+const SECTIONS = ['hero', 'faq', 'trust', 'pricing', 'whyUpgraied']
 
 export default function AdminContentEditor() {
-  const [section, setSection]     = useState('whyUpgraied')
-  const [jsonData, setJsonData]   = useState('')
-  const [status, setStatus]       = useState('')
-  const [uploading, setUploading]       = useState(false)
-  const [uploadStatus, setUploadStatus] = useState('')
-  const [uploadedUrl, setUploadedUrl]   = useState('')
+  const [section, setSection] = useState('hero')
+  const [jsonData, setJsonData] = useState('')
+  const [status, setStatus] = useState(null)
+  const [uploadStatus, setUploadStatus] = useState(null)
+  const [uploadedUrl, setUploadedUrl] = useState('')
 
   const handleLoad = async () => {
-    setStatus('')
+    setStatus(null)
     try {
-      const res = await fetch(`${API}/api/content/${section}`)
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json()
+      const data = await getContent(section)
       setJsonData(JSON.stringify(data, null, 2))
-      setStatus('Loaded.')
+      setStatus({ msg: 'Loaded.', ok: true })
     } catch (err) {
-      setStatus(`Failed to load: ${err.message}`)
+      setStatus({ msg: `Failed to load: ${err.message}`, ok: false })
     }
   }
 
   const handleUpdate = async () => {
-    setStatus('')
+    setStatus(null)
     let parsed
     try {
       parsed = JSON.parse(jsonData)
     } catch {
-      setStatus('Invalid JSON — fix syntax errors before saving.')
+      setStatus({ msg: 'Invalid JSON. Fix syntax errors before saving.', ok: false })
       return
     }
-    try {
-      const res = await api.put(`/api/content/${section}`, parsed)
-      setStatus(res.data?.message || 'Updated.')
-    } catch (err) {
-      setStatus(err?.response?.data?.error || err?.response?.data?.message || 'Update failed.')
-    }
-  }
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploading(true)
-    setUploadStatus('')
-    setUploadedUrl('')
     try {
-      const data = await uploadMedia(file)
-      setUploadedUrl(data.url)
-      setUploadStatus('Uploaded.')
+      const data = await updateContent(section, parsed)
+      setStatus({ msg: data?.message || 'Saved successfully.', ok: true })
     } catch (err) {
-      const msg = err?.response?.data?.error || 'Upload failed.'
-      setUploadStatus(msg)
-    } finally {
-      setUploading(false)
-      e.target.value = ''
+      setStatus({ msg: err.message || 'Save failed.', ok: false })
     }
   }
 
   return (
-    <div style={{
-      minHeight: '100vh', background: '#0A1F12', color: '#F0FFF4',
-      fontFamily: "'Inter', sans-serif", padding: '40px 32px',
-    }}>
-      <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Content Editor</h1>
-      <p style={{ color: 'rgba(168,245,162,0.55)', marginBottom: 32, fontSize: 14 }}>
-        Edit growth page content. Changes are live immediately (in-memory until DB is wired).
-      </p>
+    <div className="admin-surface" style={{ padding: '40px 32px', maxWidth: 1200, margin: '0 auto' }}>
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 6 }}>Content Editor</h1>
+        <p style={{ fontSize: 14 }}>
+          Edit page content by section. Changes go live immediately once saved.
+        </p>
+      </div>
 
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 20 }}>
+      <div style={{
+        display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap',
+        marginBottom: 16,
+        padding: '16px 20px',
+        background: 'var(--color-surface)',
+        borderRadius: 12,
+        border: '1px solid rgba(13,35,24,0.08)',
+      }}>
         <select
+          className="admin-select"
           value={section}
-          onChange={e => setSection(e.target.value)}
-          style={{
-            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(110,220,95,0.25)',
-            color: '#F0FFF4', borderRadius: 8, padding: '8px 12px', fontSize: 14,
+          onChange={e => {
+            setSection(e.target.value)
+            setStatus(null)
+            setJsonData('')
+            setUploadStatus(null)
+            setUploadedUrl('')
           }}
         >
           {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
-        <button onClick={handleLoad} style={btnStyle('#1C3726')}>Load</button>
-        <button onClick={handleUpdate} style={btnStyle('#6EDC5F', '#0A1F12')}>Update</button>
-        {status && <span style={{ fontSize: 13, color: 'rgba(168,245,162,0.7)' }}>{status}</span>}
+
+        <button className="admin-btn admin-btn-ghost" onClick={handleLoad}>Load</button>
+        <button className="admin-btn admin-btn-primary" onClick={handleUpdate}>Save</button>
+
+        {status && (
+          <span className={`admin-status ${status.ok ? 'admin-status-ok' : 'admin-status-err'}`}>
+            {status.msg}
+          </span>
+        )}
       </div>
 
       <textarea
+        className="admin-input"
         value={jsonData}
         onChange={e => setJsonData(e.target.value)}
-        rows={20}
+        rows={22}
         style={{
-          width: '100%', maxWidth: 720, display: 'block',
-          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(110,220,95,0.2)',
-          color: '#F0FFF4', borderRadius: 10, padding: 16,
-          fontFamily: 'monospace', fontSize: 13, lineHeight: 1.6, resize: 'vertical',
+          fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+          fontSize: 13,
+          lineHeight: 1.65,
+          resize: 'vertical',
         }}
-        placeholder='Click "Load" to fetch current content, then edit and click "Update"'
+        placeholder={`Click "Load" to fetch the current "${section}" content, then edit and click "Save"`}
       />
 
-      <div style={{ marginTop: 48 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Upload Image</h2>
-        <p style={{ color: 'rgba(168,245,162,0.55)', fontSize: 13, marginBottom: 16 }}>
-          Upload an image to Firebase Storage and copy the URL into your content JSON.
+      <div style={{
+        marginTop: 40,
+        padding: '24px 28px',
+        background: 'var(--color-surface)',
+        borderRadius: 16,
+        border: '1px solid rgba(13,35,24,0.08)',
+      }}>
+        <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 6 }}>Upload Image</h2>
+        <p style={{ fontSize: 13, marginBottom: 20 }}>
+          Upload an image and paste the returned URL into your content JSON.
         </p>
-        <input
-          type="file"
+
+        <MediaUploader
+          section={section}
           accept="image/jpeg,image/png,image/webp,image/gif"
-          disabled={uploading}
-          onChange={handleImageUpload}
-          style={{ color: '#F0FFF4', opacity: uploading ? 0.5 : 1 }}
+          onUpload={(data) => {
+            setUploadedUrl(data.url)
+            setUploadStatus({ msg: 'Uploaded successfully.', ok: true })
+          }}
         />
-        {uploading && (
-          <span style={{ marginLeft: 12, fontSize: 13, color: 'rgba(168,245,162,0.7)' }}>Uploading...</span>
+
+        {uploadStatus && (
+          <span className={`admin-status ${uploadStatus.ok ? 'admin-status-ok' : 'admin-status-err'}`} style={{ marginTop: 14 }}>
+            {uploadStatus.msg}
+          </span>
         )}
-        {!uploading && uploadStatus && (
-          <span style={{
-            marginLeft: 12, fontSize: 13,
-            color: uploadStatus.startsWith('Upload') && uploadStatus !== 'Uploaded.'
-              ? '#FF8A65' : 'rgba(168,245,162,0.7)',
-          }}>{uploadStatus}</span>
-        )}
+
         {uploadedUrl && (
-          <div style={{ marginTop: 12 }}>
+          <div style={{ marginTop: 20 }}>
             <input
+              className="admin-input"
               readOnly
               value={uploadedUrl}
-              onClick={e => e.target.select()}
-              style={{
-                width: '100%', maxWidth: 720, display: 'block',
-                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(110,220,95,0.3)',
-                color: '#A8F5A2', borderRadius: 8, padding: '8px 12px',
-                fontFamily: 'monospace', fontSize: 12,
+              onClick={e => {
+                e.target.select()
+                navigator.clipboard?.writeText(uploadedUrl)
               }}
-            />
-            <img
-              src={uploadedUrl}
-              alt="uploaded"
-              style={{ marginTop: 12, maxWidth: 320, borderRadius: 8, border: '1px solid rgba(110,220,95,0.2)' }}
+              title="Click to copy"
+              style={{ fontFamily: 'monospace', fontSize: 12, cursor: 'pointer' }}
             />
           </div>
         )}
       </div>
     </div>
   )
-}
-
-function btnStyle(bg, color = '#F0FFF4') {
-  return {
-    background: bg, color, border: '1px solid rgba(110,220,95,0.3)',
-    borderRadius: 8, padding: '8px 18px', cursor: 'pointer', fontSize: 14, fontWeight: 600,
-  }
 }

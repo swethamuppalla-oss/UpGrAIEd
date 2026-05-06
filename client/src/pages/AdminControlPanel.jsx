@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useConfigState } from '../hooks/useConfigValue';
-import { getConfigByKey, uploadMedia } from '../services/api';
+import { getConfigByKey, uploadMedia } from '../services'
 import { useToast } from '../components/ui/Toast';
 import { trackEvent } from '../utils/analytics';
 
@@ -151,9 +151,8 @@ export default function AdminControlPanel() {
     setUploadProgress(0)
     setUploadedUrl(null)
     try {
-      const form = new FormData()
-      form.append('file', file)
-      const res = await uploadMedia(form, (pct) => setUploadProgress(pct))
+      const res = await uploadMedia(file, 'media')
+      setUploadProgress(100)
       setUploadedUrl(res.url)
       showToast('File uploaded', 'success')
     } catch {
@@ -172,17 +171,17 @@ export default function AdminControlPanel() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#0A1F12', color: '#F0FFF4', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-bg)', color: 'var(--color-text-primary)', fontFamily: 'Inter, sans-serif' }}>
       {/* Sidebar */}
       <aside style={{
-        width: 220, background: 'rgba(22,43,31,0.95)',
-        borderRight: '1px solid rgba(110,220,95,0.14)',
+        width: 220, background: 'var(--color-surface)',
+        borderRight: '1px solid rgba(13,35,24,0.08)',
         padding: '24px 16px', flexShrink: 0,
         display: 'flex', flexDirection: 'column', gap: 4,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, padding: '0 8px' }}>
           <span style={{ fontSize: 24 }}>🌿</span>
-          <span style={{ fontWeight: 800, fontSize: 15, color: '#A8F5A2' }}>CMS Control</span>
+          <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--color-text-primary)' }}>CMS Control</span>
         </div>
         {TABS.map(t => (
           <button
@@ -191,23 +190,37 @@ export default function AdminControlPanel() {
             style={{
               width: '100%', textAlign: 'left', padding: '10px 14px',
               borderRadius: 10, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600,
-              background: activeTab === t.id ? 'rgba(110,220,95,0.18)' : 'transparent',
-              color: activeTab === t.id ? '#A8F5A2' : 'rgba(168,245,162,0.55)',
-              borderLeft: activeTab === t.id ? '3px solid #6EDC5F' : '3px solid transparent',
+              background: activeTab === t.id ? 'rgba(110,220,95,0.16)' : 'transparent',
+              color: activeTab === t.id ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+              borderLeft: activeTab === t.id ? '3px solid var(--color-primary)' : '3px solid transparent',
               transition: 'all 0.18s',
             }}
           >
             {t.label}
           </button>
         ))}
+
+        <div style={{ marginTop: 'auto', paddingTop: 24 }}>
+          <a
+            href="/admin/ui"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 7, padding: '10px 14px',
+              borderRadius: 10, textDecoration: 'none', fontSize: 13, fontWeight: 700,
+              background: 'rgba(99,199,255,0.08)', border: '1px solid rgba(99,199,255,0.18)',
+              color: 'rgba(99,199,255,0.75)',
+            }}
+          >
+            ✨ Visual Editor
+          </a>
+        </div>
       </aside>
 
       {/* Main panel */}
-      <main style={{ flex: 1, padding: '40px 48px', maxWidth: 880 }}>
+      <main style={{ flex: 1, padding: '40px 48px', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: '#F0FFF4' }}>{tab?.label}</h1>
-            <p style={{ color: 'rgba(168,245,162,0.5)', fontSize: 13, margin: '4px 0 0' }}>
+            <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: 'var(--color-text-primary)' }}>{tab?.label}</h1>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: 13, margin: '4px 0 0' }}>
               {tab?.id === 'theme'    ? 'Set brand colors (primaryColor, accentColor, highlightColor). Hex values.'
                 : tab?.id === 'features' ? 'Toggle features on/off (true/false). Changes take effect on next page load.'
                 : tab?.json  ? 'Edit raw JSON — changes are live after save.'

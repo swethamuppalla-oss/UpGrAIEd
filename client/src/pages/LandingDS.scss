@@ -1,0 +1,13 @@
+@use '../design-system/styles/variables' as *;
+
+.lp-ds {
+  font-family: $font-family;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}

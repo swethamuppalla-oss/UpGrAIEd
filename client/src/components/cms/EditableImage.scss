@@ -1,0 +1,117 @@
+@use '../../design-system/styles/variables' as *;
+
+// ============================================================
+// EditableImage — inline CMS wrapper
+// ============================================================
+
+.ei {
+  display: block;
+  position: relative;
+  cursor: default;
+}
+
+// ── View mode ─────────────────────────────────────────────
+
+.ei__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+// ── Edit mode ─────────────────────────────────────────────
+
+.ei--editable {
+  cursor: pointer;
+
+  &:hover .ei__overlay,
+  &:focus-within .ei__overlay {
+    opacity: 1;
+  }
+
+  // amber dashed border in edit mode
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px dashed rgba(245, 158, 11, 0.45);
+    border-radius: inherit;
+    pointer-events: none;
+    transition: border-color $transition-fast;
+  }
+
+  &:hover::after {
+    border-color: $color-accent;
+  }
+}
+
+// Hover overlay
+.ei__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  background: rgba(7, 21, 42, 0.68);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity $transition-base;
+  pointer-events: none;
+}
+
+.ei__overlay-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.ei__overlay-label {
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $color-accent-light;
+}
+
+.ei__overlay-sub {
+  font-family: $font-family;
+  font-size: 10px;
+  color: rgba(248, 246, 242, 0.45);
+}
+
+// ── Uploading state ───────────────────────────────────────
+
+.ei--uploading {
+  cursor: not-allowed;
+  pointer-events: none;
+
+  .ei__overlay {
+    opacity: 1;
+  }
+}
+
+.ei__spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(245, 158, 11, 0.25);
+  border-top-color: $color-accent;
+  border-radius: $radius-full;
+  animation: ei-spin 0.7s linear infinite;
+}
+
+@keyframes ei-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Hidden file input ─────────────────────────────────────
+
+.ei__file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}

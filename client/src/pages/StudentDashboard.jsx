@@ -1,20 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../components/layout/Sidebar'
-import StreakCard from '../components/progress/StreakCard'
 import UnlockCard from '../components/progress/UnlockCard'
-import RobComebackCard from '../components/progress/RobComebackCard'
 import { useStudentProgress } from '../context/StudentProgressContext'
-import RobCharacter from '../components/ROB/RobCharacter'
 import RobFloating from '../components/ROB/RobFloating'
 import RobLesson from '../components/ROB/RobLesson'
 import RobLessonModal from '../components/ROB/RobLessonModal'
-import RobGreetingCard from '../components/ROB/RobGreetingCard'
 import RobOnboardingModal from '../components/ROB/RobOnboardingModal'
 import RobQuizPanel from '../components/ROB/RobQuizPanel'
 import RobGamePanel from '../components/ROB/RobGamePanel'
 import TodayLesson from '../components/chapter/TodayLesson'
-import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import { useAuth } from '../context/AuthContext'
 import { useROB } from '../context/RobContext'
 import { useToast } from '../components/ui/Toast'
@@ -24,8 +19,14 @@ import {
   getStudentLevels,
   getStudentProgress,
   getStudentStats,
-} from '../services/api'
+} from '../services'
+import { getStudentDashboard } from '../services/dashboardService'
 import { useConfig } from '../context/ConfigContext'
+import { getBloomMessage } from '../utils/getBloomMessage'
+import { getBloomState } from '../utils/getBloomState'
+import { getBloomVariant } from '../utils/getBloomVariant'
+import Dashboard from '../components/dashboard/Dashboard'
+import '../styles/student-dashboard.scss'
 
 const NAV_ITEMS = [
   { id: 'today', icon: '🎯', label: "Today's Lesson" },
@@ -34,6 +35,14 @@ const NAV_ITEMS = [
   { id: 'progress', icon: '📈', label: 'Progress' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
 ]
+
+const fallbackData = {
+  name: 'Student',
+  grade: 6,
+  progress: 50,
+  accuracy: 70,
+  weakAreas: [],
+}
 
 function getInitials(name = '') {
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('') || 'S'
@@ -51,12 +60,13 @@ export default function StudentDashboard() {
     badges,
     lessonsCompleted,
     xpToday,
+    accuracy,
     addBadge,
     completeLesson,
   } = useROB()
   const navigate = useNavigate()
   const { showToast } = useToast()
-  const { progress, isCompleted, isUnlocked, isInactive } = useStudentProgress()
+  const { progress, isCompleted, isUnlocked, isInactive, MODULE_MAP } = useStudentProgress()
   const quizPanelRef = useRef(null)
   const gamePanelRef = useRef(null)
   const config = useConfig()
@@ -65,6 +75,7 @@ export default function StudentDashboard() {
 
   const [activeTab, setActiveTab] = useState('today')
   const [loading, setLoading] = useState(true)
+  const [studentData, setStudentData] = useState(null)
   const [progressData, setProgressData] = useState(null)
   const [statsData, setStatsData] = useState(null)
   const [levelsData, setLevelsData] = useState([])
@@ -73,20 +84,39 @@ export default function StudentDashboard() {
   const [activeLesson, setActiveLesson] = useState(null)
 
   useEffect(() => {
-    Promise.all([
-      getStudentProgress().catch(() => null),
-      getStudentStats().catch(() => null),
-      getStudentLevels().catch(() => []),
-      getCurriculum().catch(() => []),
-    ])
-      .then(([progress, stats, levels, nextCurriculum]) => {
+    async function fetchData() {
+      try {
+        const data = await getStudentDashboard()
+        setStudentData(data)
+        setProgressData(data?.progressData ?? data?.progress ?? null)
+        setStatsData(data?.statsData ?? data?.stats ?? data ?? null)
+        setLevelsData(data?.levelsData ?? data?.levels ?? [])
+        setCurriculum(data?.curriculum ?? [])
+      } catch (err) {
+        console.error(err)
+        const [progress, stats, levels, nextCurriculum] = await Promise.all([
+          getStudentProgress().catch(() => null),
+          getStudentStats().catch(() => null),
+          getStudentLevels().catch(() => []),
+          getCurriculum().catch(() => []),
+        ])
+        setStudentData({
+          ...fallbackData,
+          progressData: progress,
+          statsData: stats ?? fallbackData,
+          levelsData: levels,
+          curriculum: nextCurriculum,
+        })
         setProgressData(progress)
-        setStatsData(stats)
+        setStatsData(stats ?? fallbackData)
         setLevelsData(levels)
         setCurriculum(nextCurriculum)
-      })
-      .catch(err => console.error('Failed to fetch data', err))
-      .finally(() => setLoading(false))
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
   }, [user?._id])
 
   useEffect(() => {
@@ -151,106 +181,70 @@ export default function StudentDashboard() {
   const scrollToQuiz = () => quizPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   const scrollToGame = () => gamePanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
-  if (loading) return <LoadingSkeleton rows={5} />
+  if (loading) return <div>Loading...</div>
+  if (!studentData) return <div>Error loading data</div>
 
   // ── Render Helpers ──────────────────────────────────────────────────────────
 
-  const renderHomeTab = () => (
-    <div className="dashboard-container">
-      <div className="dashboard-header">
-        <div>
-          <button type="button" className="ui-button secondary" onClick={() => navigate('/')} style={{ marginBottom: 10, fontSize: 12, padding: '6px 12px' }}>
-            ← Home
-          </button>
-          <h1 className="ui-title" style={{ fontSize: 22 }}>
-            {config?.ui?.text?.student_dashboard_title || `Welcome Back 🌱`}
-          </h1>
-          <p className="ui-text">Your learning journey today, {firstName}</p>
-        </div>
-        {todayLesson && (
-          <button type="button" className="btn-primary" onClick={() => setActiveLesson(todayLesson)}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 999, fontSize: 14 }}>
-            <span>🌱</span>
-            <span>Today's Bloom Lesson</span>
-          </button>
-        )}
-      </div>
+  const renderHomeTab = () => {
+    const variant         = getBloomVariant(statsData?.grade)
+    const totalModules    = Object.keys(MODULE_MAP).length
+    const localDone       = progress.completedModules.length
+    const displayDone     = statsData?.completed ?? localDone
+    const displayAccuracy = statsData?.accuracy  ?? (accuracy > 0 ? accuracy : null)
+    const displayTime     = statsData?.timeSpent ?? null
+    const displayProgress = statsData?.progress  ?? (totalModules > 0 ? Math.round((localDone / totalModules) * 100) : 0)
 
-      <div className="dashboard-grid">
-        <div className="ui-card">
-          <div className="ui-title">Progress</div>
-          <div className="progress-bar" style={{ marginBottom: 8 }}>
-            <div className="progress-fill" style={{ width: `${Math.round((progress.completedModules.length / 4) * 100)}%` }} />
-          </div>
-          <p className="ui-text">{progress.completedModules.length} / 4 modules completed</p>
-        </div>
+    const weakAreas = (Array.isArray(statsData?.weakAreas) ? statsData.weakAreas : null)
+      ?? Object.entries(MODULE_MAP)
+        .filter(([k]) => !progress.completedModules.includes(k) && !progress.unlockedModules.includes(k))
+        .map(([, m]) => m.title)
 
-        <div className="ui-card">
-          <div className="ui-title">Rewards</div>
-          <p style={{ fontWeight: 700, marginBottom: 6, color: 'var(--text-inverse)', fontSize: 14 }}>⭐ Level {robLevel} · {robXP} XP</p>
-          <p className="ui-text">🏆 Badges earned: {badges.length}</p>
-        </div>
+    const studentData = {
+      grade: statsData?.grade,
+      accuracy: displayAccuracy,
+      progress: displayProgress,
+      weakAreas,
+    }
+    const bloomVariant = getBloomState(studentData)
+    const bloomDisplayVariant = { ...variant, id: bloomVariant }
+    const bloomEmotion = streak >= 5 ? 'celebrating' : streak >= 2 ? 'excited' : displayDone > 0 ? 'happy' : variant.bloomEmotion
+    const bloomMessage = getBloomMessage(studentData)
 
-        <div className="ui-card">
-          <div className="ui-title">Upcoming</div>
-          <p className="ui-text" style={{ marginBottom: 4 }}>📅 Saturday — Weekly Check</p>
-          <p className="ui-text">🔥 {streak} day streak active</p>
-        </div>
+    const stats = [
+      { label: 'Accuracy',      value: displayAccuracy != null ? `${displayAccuracy}%` : '—', icon: '🎯', color: '#6EDC5F' },
+      { label: 'Concepts Done', value: displayDone,                                            icon: '📚', color: '#63C7FF' },
+      { label: 'Time Spent',    value: displayTime,                                            icon: '⏱️', color: '#A78BFA', hidden: !displayTime },
+      { label: 'XP Today',      value: `+${xpToday}`,                                         icon: '⚡', color: '#FFD95A' },
+    ].filter(s => !s.hidden).slice(0, variant.statsCount)
 
-        <div className="ui-card">
-          <div className="ui-title">Bloom Says 🌱</div>
-          <p className="ui-text">Let's complete today's learning and earn your reward!</p>
-        </div>
-      </div>
-
-      <div className="dashboard-grid">
-        <div className="ui-card">
-          <div className="ui-title">Today's Learning</div>
-          <ul className="ui-text" style={{ paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {[
-              { key: 'L1M1', icon: '🤖', title: 'AI Basics' },
-              { key: 'L1M2', icon: '💬', title: 'Prompting Skills' },
-              { key: 'L1M3', icon: '📚', title: 'AI as Tutor' },
-            ].map(mod => (
-              <li key={mod.key} style={{ color: isCompleted(mod.key) ? 'var(--accent-green)' : 'var(--text-secondary)', listStyle: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
-                {isCompleted(mod.key) ? '✅' : mod.icon} {mod.title}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="ui-card">
-          <div className="ui-title">This Week</div>
-          <p className="ui-text">Next: Apply → Analyze → Create</p>
-        </div>
-
-        <div className="ui-card">
-          <div className="ui-title">After School Plan</div>
-          <ul className="ui-text" style={{ paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <li>5:00 PM — AI Basics</li>
-            <li>5:30 PM — Prompting Skills</li>
-            <li>6:00 PM — Break</li>
-            <li>6:30 PM — Creative AI</li>
-          </ul>
-        </div>
-      </div>
-
-      <RobGreetingCard
-        onContinueMission={() => navigate(`/player/${activeCurriculumModule?._id || ''}`)}
-        onScrollToQuiz={scrollToQuiz}
-        onScrollToGame={scrollToGame}
+    return (
+      <Dashboard
+        firstName={config?.ui?.text?.student_dashboard_title ? '' : firstName}
         streak={streak}
-        badges={badges}
+        grade={statsData?.grade}
+        concept={statsData?.currentConcept || activeCurriculumModule?.title || activeCurriculumModule?.name || 'Your next lesson is ready!'}
+        progress={displayProgress}
+        stats={stats}
+        weakAreas={weakAreas}
+        conceptsDone={displayDone}
+        bloomEmotion={bloomEmotion}
+        bloomMessage={bloomMessage}
+        bloomVariant={bloomDisplayVariant}
+        robLevel={robLevel}
+        robXP={robXP}
+        badges={badges.length}
+        onResume={() => setActiveTab('today')}
+        onPractice={() => navigate('/student/practice')}
+        onQuiz={scrollToQuiz}
+        onDrill={scrollToGame}
+        onRevisit={() => navigate(`/player/${activeCurriculumModule?._id || ''}`)}
+        quizPanelRef={quizPanelRef}
+        gamePanelRef={gamePanelRef}
+        moduleId={activeCurriculumModule?._id}
       />
-
-      <StreakCard streakDays={progress.streakDays} lastStreakDate={progress.lastStreakDate} />
-      
-      <section className="dashboard-grid student-quiz-game-grid">
-        <div ref={quizPanelRef}><RobQuizPanel currentModuleId={activeCurriculumModule?._id} /></div>
-        <div ref={gamePanelRef}><RobGamePanel /></div>
-      </section>
-    </div>
-  )
+    )
+  }
 
   const renderCoursesTab = () => (
     <div className="dashboard-container">

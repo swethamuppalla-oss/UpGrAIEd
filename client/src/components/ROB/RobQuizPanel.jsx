@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useROB } from '../../context/RobContext'
-import { getROBQuiz } from '../../services/api'
+import { getROBQuiz } from '../../services'
 import RobCharacter from './RobCharacter'
 
 export default function RobQuizPanel({ currentModuleId }) {

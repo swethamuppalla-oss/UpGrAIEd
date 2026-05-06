@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 
 import { useToast } from '../context/ToastContext'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
-import { getCurriculum, getStreamUrl, postProgress } from '../services/api'
+import { getCurriculum, getStreamUrl, postProgress } from '../services'
 
 export default function VideoPlayer() {
   const { moduleId }     = useParams()

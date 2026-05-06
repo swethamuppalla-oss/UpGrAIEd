@@ -12,24 +12,24 @@
   --bloom-sky:     #63C7FF;
   --bloom-yellow:  #FFD95A;
   --bloom-coral:   #FF8A65;
-  --bloom-bg:      #10231A;
-  --bloom-bg2:     #0D1F16;
-  --bloom-surface: #162B1F;
-  --bloom-card:    #1C3328;
-  --bloom-border:  rgba(110, 220, 95, 0.18);
-  --bloom-glow-g:  rgba(110, 220, 95, 0.45);
-  --bloom-glow-s:  rgba(99, 199, 255, 0.35);
-  --bloom-glow-y:  rgba(255, 217, 90, 0.4);
-  --bloom-text:    #E8FAE6;
-  --bloom-muted:   rgba(168, 245, 162, 0.55);
+  --bloom-bg:      #FFFFFF;
+  --bloom-bg2:     #F7FFF8;
+  --bloom-surface: #F0FFF4;
+  --bloom-card:    #F7FFF8;
+  --bloom-border:  rgba(110, 220, 95, 0.2);
+  --bloom-glow-g:  rgba(110, 220, 95, 0.3);
+  --bloom-glow-s:  rgba(99, 199, 255, 0.2);
+  --bloom-glow-y:  rgba(255, 217, 90, 0.25);
+  --bloom-text:    #0A1F12;
+  --bloom-muted:   #4B6B57;
 
   /* Gradients (reusable) */
-  --bloom-grad-hero:    linear-gradient(135deg, #10231A 0%, #0D2B1A 50%, #102320 100%);
+  --bloom-grad-hero:    linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 50%, #F7FFF8 100%);
   --bloom-grad-green:   linear-gradient(135deg, #6EDC5F, #A8F5A2);
   --bloom-grad-sky:     linear-gradient(135deg, #63C7FF, #A8F5A2);
   --bloom-grad-warm:    linear-gradient(135deg, #FFD95A, #FF8A65);
-  --bloom-grad-card:    linear-gradient(145deg, #1C3328, #162B1F);
-  --bloom-grad-glow:    radial-gradient(ellipse at center, rgba(110,220,95,0.2) 0%, transparent 70%);
+  --bloom-grad-card:    linear-gradient(145deg, #F0FFF4, #F7FFF8);
+  --bloom-grad-glow:    radial-gradient(ellipse at center, rgba(110,220,95,0.1) 0%, transparent 70%);
 
   /* Spacing */
   --bloom-r-sm:  10px;
@@ -39,9 +39,9 @@
   --bloom-r-2xl: 48px;
 
   /* Shadows */
-  --bloom-shadow-card: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(110,220,95,0.1);
-  --bloom-shadow-glow: 0 0 40px rgba(110,220,95,0.25), 0 8px 32px rgba(0,0,0,0.5);
-  --bloom-shadow-sky:  0 0 30px rgba(99,199,255,0.2), 0 8px 24px rgba(0,0,0,0.4);
+  --bloom-shadow-card: 0 4px 24px rgba(10,31,18,0.08), 0 0 0 1px rgba(110,220,95,0.12);
+  --bloom-shadow-glow: 0 0 40px rgba(110,220,95,0.18), 0 8px 32px rgba(10,31,18,0.08);
+  --bloom-shadow-sky:  0 0 30px rgba(99,199,255,0.15), 0 8px 24px rgba(10,31,18,0.06);
 }
 
 /* ── Animations ─────────────────────────────────────────────────── */
@@ -105,7 +105,7 @@
 
 /* ── Base Reset for Bloom pages ──────────────────────────────────── */
 .bloom-page {
-  background: var(--bloom-bg);
+  background: #FFFFFF;
   color: var(--bloom-text);
   min-height: 100vh;
   font-family: 'Nunito', 'Inter', -apple-system, sans-serif;
@@ -164,8 +164,8 @@
 .bloom-card-glow:hover::before { opacity: 1; }
 
 .bloom-hero-card {
-  background: linear-gradient(135deg, #1C3328 0%, #0F2A1E 50%, #162B1F 100%);
-  border: 1px solid rgba(110,220,95,0.25);
+  background: linear-gradient(135deg, #F0FFF4 0%, #F7FFF8 50%, #FFFFFF 100%);
+  border: 1px solid rgba(110,220,95,0.2);
   border-radius: var(--bloom-r-2xl);
   box-shadow: var(--bloom-shadow-glow);
   overflow: hidden;
@@ -372,8 +372,8 @@
   top: 0; left: 0; right: 0;
   z-index: 100;
   backdrop-filter: blur(20px);
-  background: rgba(13,31,22,0.85);
-  border-bottom: 1px solid rgba(110,220,95,0.12);
+  background: rgba(255,255,255,0.92);
+  border-bottom: 1px solid rgba(110,220,95,0.15);
   padding: 0 32px;
   height: 68px;
   display: flex;
@@ -394,8 +394,8 @@
   position: fixed;
   top: 0; left: 0; bottom: 0;
   width: 72px;
-  background: rgba(13,31,22,0.95);
-  border-right: 1px solid rgba(110,220,95,0.1);
+  background: rgba(255,255,255,0.95);
+  border-right: 1px solid rgba(110,220,95,0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -415,7 +415,7 @@
   transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
   border: none;
   background: transparent;
-  color: var(--bloom-muted);
+  color: #4B6B57;
   position: relative;
 }
 .bloom-sidebar-item:hover,
@@ -601,15 +601,15 @@
 
 /* ── Marketing page tokens ───────────────────────────────────────── */
 :root {
-  --pg-bg:          #0A1F12;
-  --pg-bg2:         #0D2318;
-  --pg-card:        rgba(22,43,31,0.85);
-  --pg-card-hover:  rgba(28,55,38,0.95);
-  --pg-border:      rgba(110,220,95,0.14);
-  --pg-border-h:    rgba(110,220,95,0.38);
-  --pg-text:        #F0FFF4;
-  --pg-sub:         rgba(168,245,162,0.72);
-  --pg-muted:       rgba(168,245,162,0.45);
+  --pg-bg:          #FFFFFF;
+  --pg-bg2:         #F7FFF8;
+  --pg-card:        rgba(247,255,248,0.85);
+  --pg-card-hover:  rgba(240,255,242,0.95);
+  --pg-border:      rgba(110,220,95,0.18);
+  --pg-border-h:    rgba(110,220,95,0.42);
+  --pg-text:        #0A1F12;
+  --pg-sub:         #4B6B57;
+  --pg-muted:       rgba(10,31,18,0.45);
 }
 
 /* ── Animated gradient background ───────────────────────────────── */
@@ -647,9 +647,9 @@
   overflow: hidden;
 }
 .pg-section-alt {
-  background: linear-gradient(160deg, rgba(110,220,95,0.04) 0%, rgba(99,199,255,0.03) 100%);
-  border-top: 1px solid rgba(110,220,95,0.08);
-  border-bottom: 1px solid rgba(110,220,95,0.08);
+  background: linear-gradient(160deg, #F7FFF8 0%, #F0FFF4 100%);
+  border-top: 1px solid rgba(110,220,95,0.12);
+  border-bottom: 1px solid rgba(110,220,95,0.12);
 }
 .pg-container { max-width: 1200px; margin: 0 auto; }
 .pg-container-sm { max-width: 800px; margin: 0 auto; }
@@ -700,9 +700,9 @@
   transform: translateY(-6px);
   background: var(--pg-card-hover);
   border-color: var(--pg-border-h);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5),
+  box-shadow: 0 16px 48px rgba(10,31,18,0.08),
               0 0 0 1px rgba(110,220,95,0.12),
-              0 0 40px rgba(110,220,95,0.12);
+              0 0 40px rgba(110,220,95,0.1);
 }
 
 /* ── Stat counter card ───────────────────────────────────────────── */
@@ -716,7 +716,7 @@
 .pg-stat-card:hover {
   transform: translateY(-4px);
   border-color: rgba(110,220,95,0.35);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(110,220,95,0.1);
+  box-shadow: 0 12px 40px rgba(10,31,18,0.08), 0 0 30px rgba(110,220,95,0.1);
 }
 .pg-stat-value {
   font-size: 38px; font-weight: 900; letter-spacing: -0.03em;
@@ -750,18 +750,19 @@
 /* ── FAQ accordion ───────────────────────────────────────────────── */
 .pg-faq-item {
   border-radius: 16px;
-  background: rgba(22,43,31,0.7);
-  border: 1px solid rgba(110,220,95,0.12);
+  background: rgba(247,255,248,0.85);
+  border: 1px solid rgba(110,220,95,0.15);
   overflow: hidden;
   transition: border-color 0.25s ease, background 0.25s ease;
+  box-shadow: 0 2px 8px rgba(10,31,18,0.04);
 }
 .pg-faq-item.open {
-  border-color: rgba(110,220,95,0.32);
-  background: rgba(28,55,38,0.9);
+  border-color: rgba(110,220,95,0.35);
+  background: rgba(240,255,242,0.95);
 }
 .pg-faq-answer {
   padding: 0 24px 22px;
-  border-top: 1px solid rgba(110,220,95,0.1);
+  border-top: 1px solid rgba(110,220,95,0.12);
   padding-top: 16px;
   animation: bloom-faq-open 0.22s ease both;
   color: var(--pg-sub); font-size: 14px; line-height: 1.75;
@@ -782,7 +783,7 @@
   background: radial-gradient(ellipse at top left, rgba(110,220,95,0.08), transparent 60%);
   opacity: 0; transition: opacity 0.3s;
 }
-.pg-module-card:hover { transform: translateY(-6px); border-color: var(--pg-border-h); box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 30px rgba(110,220,95,0.1); }
+.pg-module-card:hover { transform: translateY(-6px); border-color: var(--pg-border-h); box-shadow: 0 16px 48px rgba(10,31,18,0.08), 0 0 30px rgba(110,220,95,0.1); }
 .pg-module-card:hover::before { opacity: 1; }
 .pg-module-num {
   font-size: 10px; font-weight: 900; letter-spacing: 0.14em;
@@ -797,14 +798,14 @@
   display: flex; flex-direction: column;
 }
 .pg-price-card.featured {
-  background: linear-gradient(145deg, rgba(28,55,38,0.95), rgba(22,43,31,0.95));
+  background: linear-gradient(145deg, #F0FFF4, #F7FFF8);
   border-color: rgba(110,220,95,0.4);
-  box-shadow: 0 0 0 1px rgba(110,220,95,0.15), 0 20px 60px rgba(0,0,0,0.5), 0 0 60px rgba(110,220,95,0.12);
+  box-shadow: 0 0 0 1px rgba(110,220,95,0.15), 0 20px 60px rgba(10,31,18,0.1), 0 0 60px rgba(110,220,95,0.1);
 }
 .pg-price-card:hover:not(.featured) {
   transform: translateY(-6px);
   border-color: var(--pg-border-h);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 30px rgba(110,220,95,0.1);
+  box-shadow: 0 16px 48px rgba(10,31,18,0.08), 0 0 30px rgba(110,220,95,0.1);
 }
 .pg-price-card.featured:hover { transform: translateY(-4px); }
 .pg-price-amount {

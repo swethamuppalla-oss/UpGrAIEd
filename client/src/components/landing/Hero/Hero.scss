@@ -1,0 +1,354 @@
+@use '../../../design-system/styles/variables' as *;
+@use '../../../design-system/styles/mixins' as *;
+@use '../_animations.scss';
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(145deg, #0B1F3A 0%, #07152A 55%, #0E1E38 100%);
+  padding-block: $space-32;
+
+  @include respond-to(md) {
+    padding-block: $space-20;
+    min-height: auto;
+  }
+}
+
+// ── Ambient orbs ──────────────────────────────────────────
+
+.hero__orb {
+  position: absolute;
+  border-radius: $radius-full;
+  pointer-events: none;
+  filter: blur(80px);
+
+  &--amber {
+    width: 560px;
+    height: 560px;
+    top: -120px;
+    right: -80px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.14) 0%, transparent 70%);
+    animation: orb-drift 14s ease-in-out infinite;
+  }
+
+  &--navy {
+    width: 400px;
+    height: 400px;
+    bottom: -60px;
+    left: -60px;
+    background: radial-gradient(circle, rgba(22, 45, 82, 0.8) 0%, transparent 70%);
+    animation: orb-drift 18s ease-in-out infinite reverse;
+  }
+
+  &--accent {
+    width: 200px;
+    height: 200px;
+    top: 40%;
+    left: 38%;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.06) 0%, transparent 70%);
+    animation: orb-drift 22s ease-in-out infinite 4s;
+  }
+}
+
+// Subtle grain overlay
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.028;
+  pointer-events: none;
+  z-index: 0;
+}
+
+// ── Inner layout ─────────────────────────────────────────
+
+.hero__inner {
+  @include container;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-16;
+  align-items: center;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr;
+    gap: $space-12;
+  }
+}
+
+// ── Left: copy ────────────────────────────────────────────
+
+.hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.hero__badge {
+  @include flex-start;
+  gap: $space-2;
+  padding: 6px 14px 6px 10px;
+  border-radius: $radius-full;
+  border: 1px solid rgba(245, 158, 11, 0.30);
+  background: rgba(245, 158, 11, 0.08);
+  margin-bottom: $space-6;
+  animation: badge-pulse 3s ease-in-out infinite;
+
+  span:first-child {
+    width: 7px;
+    height: 7px;
+    border-radius: $radius-full;
+    background: $color-accent;
+    flex-shrink: 0;
+  }
+
+  span:last-child {
+    font-family: $font-family;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: $color-accent-light;
+  }
+}
+
+.hero__headline {
+  font-family: $font-family;
+  font-size: clamp(38px, 5vw, 64px);
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  letter-spacing: -0.03em;
+  color: $color-text-inverse;
+  margin: 0 0 $space-6;
+
+  em {
+    font-style: normal;
+    color: $color-accent;
+  }
+}
+
+.hero__subtext {
+  font-family: $font-family;
+  font-size: $font-size-lg;
+  line-height: $line-height-normal;
+  color: rgba(248, 246, 242, 0.60);
+  max-width: 440px;
+  margin: 0 0 $space-10;
+}
+
+.hero__actions {
+  display: flex;
+  gap: $space-4;
+  flex-wrap: wrap;
+  margin-bottom: $space-12;
+}
+
+.hero__cta-primary {
+  height: 52px;
+  padding: 0 $space-8;
+  border-radius: $radius-md;
+  border: none;
+  background: $color-accent;
+  color: $color-primary;
+  font-family: $font-family;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.35);
+
+  &:hover {
+    background: $color-accent-light;
+    box-shadow: 0 8px 32px rgba(245, 158, 11, 0.50);
+    transform: translateY(-2px);
+  }
+
+  &:active { transform: scale(0.97); }
+}
+
+.hero__cta-ghost {
+  height: 52px;
+  padding: 0 $space-6;
+  border-radius: $radius-md;
+  border: 1px solid rgba(248, 246, 242, 0.18);
+  background: transparent;
+  color: rgba(248, 246, 242, 0.75);
+  font-family: $font-family;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: border-color $transition-fast, color $transition-fast, background $transition-fast;
+
+  &:hover {
+    border-color: rgba(248, 246, 242, 0.40);
+    color: $color-text-inverse;
+    background: rgba(248, 246, 242, 0.06);
+  }
+}
+
+.hero__social-proof {
+  @include flex-start;
+  gap: $space-4;
+}
+
+.hero__avatars {
+  display: flex;
+
+  .hero__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: $radius-full;
+    border: 2px solid $color-primary;
+    background: $color-primary-light;
+    @include flex-center;
+    font-size: 14px;
+
+    & + .hero__avatar { margin-left: -10px; }
+  }
+}
+
+.hero__proof-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hero__stars {
+  display: flex;
+  gap: 1px;
+  color: $color-accent;
+  font-size: 11px;
+}
+
+.hero__proof-label {
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  color: rgba(248, 246, 242, 0.45);
+}
+
+// ── Right: visual ─────────────────────────────────────────
+
+.hero__visual {
+  position: relative;
+
+  @include respond-to(lg) {
+    display: none;
+  }
+}
+
+.hero__card-stack {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-width: 440px;
+  margin-inline: auto;
+}
+
+.hero__card {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: $radius-xl;
+  backdrop-filter: blur(12px);
+  padding: $space-6;
+  transition: transform $transition-slow;
+
+  &--main {
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  &--float-a {
+    width: 200px;
+    bottom: -20px;
+    left: -32px;
+    padding: $space-4;
+    background: rgba(245, 158, 11, 0.10);
+    border-color: rgba(245, 158, 11, 0.25);
+    animation: orb-drift 10s ease-in-out infinite;
+  }
+
+  &--float-b {
+    width: 160px;
+    top: -16px;
+    right: -24px;
+    padding: $space-4;
+    background: rgba(34, 197, 94, 0.08);
+    border-color: rgba(34, 197, 94, 0.20);
+    animation: orb-drift 13s ease-in-out infinite reverse 2s;
+  }
+}
+
+.hero__card-label {
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(248, 246, 242, 0.40);
+  margin-bottom: $space-3;
+}
+
+.hero__card-title {
+  font-family: $font-family;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-inverse;
+  line-height: $line-height-snug;
+  margin-bottom: $space-4;
+}
+
+.hero__card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.hero__chip {
+  padding: 4px 10px;
+  border-radius: $radius-full;
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  background: rgba(248, 246, 242, 0.08);
+  color: rgba(248, 246, 242, 0.55);
+  border: 1px solid rgba(248, 246, 242, 0.10);
+}
+
+.hero__card-stat {
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  color: rgba(248, 246, 242, 0.50);
+
+  strong {
+    display: block;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-accent;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+}
+
+.hero__card-tag {
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-success;
+}
+
+.hero__card-sub {
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  color: rgba(248, 246, 242, 0.45);
+  margin-top: 2px;
+}

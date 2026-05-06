@@ -7,7 +7,7 @@ import {
   getCreatorVideos,
   publishROBModule,
   trainROBConcept,
-} from '../../services/api'
+} from '../../services'
 import RobCharacter from './RobCharacter'
 
 const trainerTabs = [

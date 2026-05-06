@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { completeDayLesson } from '../../services/api'
+import { completeDayLesson } from '../../services'
 import BloomCharacter from '../Bloom/BloomCharacter'
 import { useToast } from '../ui/Toast'
 

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import BloomCharacter from '../Bloom/BloomCharacter';
-import { getContent } from '../../services/contentService';
+import { getContent } from '../../services'
 
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState(null);
   const [faqs, setFaqs] = useState([]);
 
   useEffect(() => {
-    getContent('faq').then(setFaqs);
+    getContent('faq').then(data => setFaqs(data?.questions ?? []));
   }, []);
 
   const openFaq = faqs[openIndex];
 
   return (
-    <section className="pg-section" style={{ background: '#0A1F12' }}>
+    <section className="pg-section" style={{ background: '#F7FFF8' }}>
       <div className="pg-orb" style={{ top: '20%', left: '-5%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(110,220,95,0.07), transparent 70%)', filter: 'blur(50px)' }} />
       <div className="pg-container-sm">
         {/* Header */}
@@ -49,7 +49,7 @@ export default function FAQSection() {
                     background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: 16,
                   }}
                 >
-                  <span style={{ color: '#F0FFF4', fontSize: 15, fontWeight: 600, lineHeight: 1.5 }}>
+                  <span style={{ color: '#0A1F12', fontSize: 15, fontWeight: 600, lineHeight: 1.5 }}>
                     {faq.question}
                   </span>
                   <span style={{
@@ -68,10 +68,10 @@ export default function FAQSection() {
             {/* Bottom note */}
             <div style={{
               marginTop: 28, padding: '20px 24px', borderRadius: 16,
-              background: 'rgba(110,220,95,0.06)', border: '1px solid rgba(110,220,95,0.18)',
+              background: 'rgba(110,220,95,0.08)', border: '1px solid rgba(110,220,95,0.2)',
               textAlign: 'center',
             }}>
-              <p style={{ color: 'rgba(168,245,162,0.7)', fontSize: 15, margin: 0 }}>
+              <p style={{ color: '#4B6B57', fontSize: 15, margin: 0 }}>
                 Still have questions?{' '}
                 <a
                   href="mailto:hello@upgraied.com"

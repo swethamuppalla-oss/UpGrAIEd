@@ -10,6 +10,10 @@ const mediaSchema = new mongoose.Schema({
     enum: ['image', 'video', 'audio', 'document', 'other'],
     default: 'image'
   },
+  section: {
+    type: String,
+    default: 'general'
+  },
   tag: {
     type: String,
     default: ''

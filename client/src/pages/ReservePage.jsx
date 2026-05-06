@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '../context/ToastContext'
-import { createReservation } from '../services/api'
+import { createReservation } from '../services'
 
 export default function ReservePage() {
   const navigate = useNavigate()

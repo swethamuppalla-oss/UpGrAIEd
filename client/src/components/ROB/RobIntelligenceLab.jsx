@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getRobIntelligence, trainROBConcept } from '../../services/api'
+import { getRobIntelligence, trainROBConcept } from '../../services'
 import LoadingSkeleton from '../ui/LoadingSkeleton'
 import RobCharacter from './RobCharacter'
 

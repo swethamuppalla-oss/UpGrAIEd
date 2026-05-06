@@ -1,204 +1,94 @@
-import axios from 'axios'
+import axios from "axios";
 
-// Empty string = same-origin (works on Vercel where client & API share a domain).
-// Set VITE_API_URL in Vercel env vars only if the API is hosted separately.
-const API = import.meta.env.VITE_API_URL ?? ''
+const API = axios.create({
+  baseURL: "http://localhost:5175/api",
+});
 
+// 🔐 Attach token automatically
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
 
-const api = axios.create({
-  baseURL: API,
-  withCredentials: true,
-})
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return config
-})
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('role')
-      localStorage.removeItem('user')
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login'
-      }
-    }
-    return Promise.reject(error)
+  return config;
+});
+
+// ✅ DEFAULT EXPORT (for API.get style)
+export default API;
+
+// ✅ NAMED EXPORTS (for get(), post() style)
+export const get = (...args) => API.get(...args);
+export const post = (...args) => API.post(...args);
+export const put = (...args) => API.put(...args);
+export const del = (...args) => API.delete(...args);
+
+// ── Practice / AI functions (imported directly from services/api) ──────────
+
+export const generatePracticeQuestion = async (conceptId, mode = "normal") => {
+  try {
+    const res = await API.post("/practice/question", { conceptId, mode });
+    return res.data;
+  } catch {
+    return { id: null, question: "Loading question...", options: [], type: "mcq" };
   }
-)
+};
 
-// Auth
-export const sendOtp = (email) =>
-  api.post('/api/auth/send-otp', { email }).then(r => r.data)
-export const verifyOtp = (email, otp) =>
-  api.post('/api/auth/verify-otp', { email, otp }).then(r => r.data)
-export const adminLogin = (email, password) =>
-  api.post('/api/auth/admin-login', { email, password }).then(r => r.data)
-export const demoLogin = (role) =>
-  api.post('/api/auth/demo-login', { role }).then(r => r.data)
+export const evaluatePracticeAnswer = async (questionId, answer, mode = "normal") => {
+  try {
+    const res = await API.post("/practice/evaluate", { questionId, answer, mode });
+    return res.data;
+  } catch {
+    return { correct: false, feedback: "Could not evaluate answer.", score: 0 };
+  }
+};
 
-// Student
-export const getStudentProgress = () =>
-  api.get('/api/student/progress').then(r => r.data)
-export const getStudentStats = () =>
-  api.get('/api/student/stats').then(r => r.data)
-export const getStudentLevels = () =>
-  api.get('/api/student/levels').then(r => r.data)
-export const getCurriculum = () =>
-  api.get('/api/student/curriculum').then(r => r.data)
+export const generateQuestion = async (conceptId) => {
+  try {
+    const res = await API.post("/practice/question", { conceptId });
+    return res.data;
+  } catch {
+    return { id: null, question: "Loading question...", options: [], type: "mcq" };
+  }
+};
 
-// Real Progress Sync
-export const getProgressDashboard = () =>
-  api.get('/api/progress/dashboard').then(r => r.data)
-export const apiCompleteModule = (moduleId, xp, badge) =>
-  api.post('/api/progress/complete-module', { moduleId, xp, badge }).then(r => r.data)
-export const apiLoginCheck = () =>
-  api.post('/api/progress/login-check').then(r => r.data)
+export const evaluateAnswer = async (questionId, answer) => {
+  try {
+    const res = await API.post("/practice/evaluate", { questionId, answer });
+    return res.data;
+  } catch {
+    return { correct: false, feedback: "Could not evaluate answer.", score: 0 };
+  }
+};
 
-// Video
-export const getStreamUrl = (moduleId) =>
-  api.get(`/api/videos/${moduleId}/stream-url`).then(r => r.data)
-export const getModuleProgress = (moduleId) =>
-  api.get(`/api/videos/${moduleId}/my-progress`).then(r => r.data)
-export const postProgress = (moduleId, percent) =>
-  api.post(`/api/videos/${moduleId}/progress`, { percent }).then(r => r.data)
+export const evaluateLongAnswer = async (data) => {
+  try {
+    const res = await API.post("/practice/evaluate-long", data);
+    return res.data;
+  } catch {
+    return { score: 0, feedback: "Could not evaluate answer." };
+  }
+};
 
-// Parent
-export const getChildInfo = () =>
-  api.get('/api/parent/child').then(r => r.data)
-export const getChildActivity = () =>
-  api.get('/api/parent/activity').then(r => r.data)
-export const getParentBilling = () =>
-  api.get('/api/parent/billing').then(r => r.data)
-export const getPaymentStatus = () =>
-  api.get('/api/parent/payment-status').then(r => r.data)
+export const uploadImage = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await API.post("/practice/upload-image", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+  } catch {
+    return { url: null, text: "" };
+  }
+};
 
-// Admin
-export const getAdminStats = () =>
-  api.get('/api/admin/stats').then(r => r.data)
-export const getReservations = () =>
-  api.get('/api/admin/reservations').then(r => r.data)
-export const approveReservation = (id) =>
-  api.post(`/api/admin/approve/${id}`).then(r => r.data)
-export const getAdminPayments = () =>
-  api.get('/api/admin/payments').then(r => r.data)
-export const getAdminUsers = () =>
-  api.get('/api/admin/users').then(r => r.data)
-export const blockUser = (id) =>
-  api.post(`/api/admin/users/${id}/block`).then(r => r.data)
-export const unblockUser = (id) =>
-  api.post(`/api/admin/users/${id}/unblock`).then(r => r.data)
-
-// Creator
-export const getCreatorStats = () =>
-  api.get('/api/creator/stats').then(r => r.data)
-export const getCreatorVideos = () =>
-  api.get('/api/creator/videos').then(r => r.data)
-export const uploadVideo = (formData, onProgress) =>
-  api.post('/api/creator/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-    onUploadProgress: (e) => {
-      if (onProgress)
-        onProgress(Math.round((e.loaded * 100) / e.total))
-    }
-  }).then(r => r.data)
-
-// ROB Student
-export const getROBQuiz = (moduleId) =>
-  api.get(`/api/rob/quiz${moduleId ? `?moduleId=${moduleId}` : ''}`).then(r => r.data)
-export const chatWithROB = (question, moduleId) =>
-  api.post('/api/rob/chat', { question, moduleId }).then(r => r.data)
-export const saveROBXP = (xp, level, badges, extra = {}) =>
-  api.post('/api/rob/xp', { xp, level, badges, ...extra }).then(r => r.data)
-export const getROBProgress = () =>
-  api.get('/api/rob/progress').then(r => r.data)
-export const getROBKnowledge = (moduleId) =>
-  api.get(`/api/rob/knowledge/${moduleId}`).then(r => r.data)
-export const getRobCompanion = () =>
-  api.get('/api/rob/companion').then(r => r.data)
-export const saveRobCompanionState = (data) =>
-  api.post('/api/rob/companion', data).then(r => r.data)
-
-// ROB Creator
-export const trainROBConcept = (data) =>
-  api.post('/api/rob/train', data).then(r => r.data)
-export const getCreatorROBKnowledge = () =>
-  api.get('/api/rob/creator/knowledge').then(r => r.data)
-export const deleteROBKnowledge = (id) =>
-  api.delete(`/api/rob/knowledge/${id}`).then(r => r.data)
-export const publishROBModule = (moduleId) =>
-  api.post(`/api/rob/publish/${moduleId}`).then(r => r.data)
-export const getRobIntelligence = () =>
-  api.get('/api/rob/intelligence').then(r => r.data)
-
-// Reservation
-export const createReservation = (data) =>
-  api.post('/api/reserve', data).then(r => r.data)
-export const checkPhone = (phone) =>
-  api.get(`/api/reserve/check/${phone}`).then(r => r.data)
-
-// Payment
-export const createPaymentOrder = () =>
-  api.post('/api/payments/create-order').then(r => r.data)
-export const verifyPayment = (data) =>
-  api.post('/api/payments/verify', data).then(r => r.data)
-
-// Config
-export const getConfig = () =>
-  api.get('/api/config').then(r => r.data)
-export const getConfigByKey = (key) =>
-  api.get(`/api/config/${key}`).then(r => r.data)
-export const upsertConfig = (key, value) =>
-  api.put(`/api/config/${key}`, { value }).then(r => r.data)
-export const uploadMedia = (file) => {
-  const formData = new FormData()
-  formData.append('file', file)
-  return api.post('/api/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  }).then(res => res.data)
-}
-
-// ── Chapter & Week Plan ──
-export const uploadChapterPhotos = (formData) =>
-  api.post('/api/chapters/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }).then(r => r.data)
-
-export const getChapterStatus = (chapterId) =>
-  api.get(`/api/chapters/${chapterId}/status`)
-    .then(r => r.data)
-
-export const getMyChapters = () =>
-  api.get('/api/chapters').then(r => r.data)
-
-export const getWeekPlan = (planId) =>
-  api.get(`/api/chapters/weekplan/${planId}`)
-    .then(r => r.data)
-
-export const getCurrentWeekPlan = () =>
-  api.get('/api/chapters/weekplan/current')
-    .then(r => r.data)
-
-export const approveWeekPlan = (planId) =>
-  api.post(`/api/chapters/weekplan/${planId}/approve`)
-    .then(r => r.data)
-
-export const completeDayLesson = (planId, dayNumber, data) =>
-  api.post(
-    `/api/chapters/weekplan/${planId}/day/${dayNumber}/complete`,
-    data
-  ).then(r => r.data)
-
-export const submitWeeklyExam = (planId, answers, timeTakenMinutes) =>
-  api.post(`/api/chapters/weekplan/${planId}/exam/submit`, {
-    answers,
-    timeTakenMinutes
-  }).then(r => r.data)
-
-export default api
+export const submitWrittenAnswer = async (data) => {
+  try {
+    const res = await API.post("/practice/written-answer", data);
+    return res.data;
+  } catch {
+    return { success: false, feedback: "Could not submit answer." };
+  }
+};

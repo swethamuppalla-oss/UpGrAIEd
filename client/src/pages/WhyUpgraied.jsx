@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getContent } from '../services/contentService';
+import { getContent } from '../services'
 import GrowthNavbar from '../components/growth/GrowthNavbar';
 import ParentBenefits from '../components/growth/ParentBenefits';
 import TrustSection from '../components/growth/TrustSection';

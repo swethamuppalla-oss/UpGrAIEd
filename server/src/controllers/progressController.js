@@ -1,4 +1,5 @@
 import { StudentProgress, NEXT_MODULE_MAP } from '../models/StudentProgress.js'
+import { getStudentWeakAreas } from '../services/weakAreaAggregator.js'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -36,7 +37,11 @@ export async function getMyProgress(req, res, next) {
 // GET /api/progress/dashboard
 export async function getDashboard(req, res, next) {
   try {
-    const doc = await getOrCreate(userId(req))
+    const uid = userId(req)
+    const [doc, weakAreas] = await Promise.all([
+      getOrCreate(uid),
+      getStudentWeakAreas(uid),
+    ])
 
     const nextModule = doc.completedModules.length > 0
       ? (NEXT_MODULE_MAP[doc.completedModules[doc.completedModules.length - 1]] || null)
@@ -54,6 +59,7 @@ export async function getDashboard(req, res, next) {
         completedModules: doc.completedModules,
         unlockedModules:  doc.unlockedModules,
         lastCompletedAt:  doc.lastCompletedAt,
+        weakAreas,
       },
     })
   } catch (err) { next(err) }

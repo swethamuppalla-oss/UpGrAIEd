@@ -14,6 +14,88 @@ function normalizeModuleList(list, fallback = []) {
   return [...new Set(source.map(normalizeModuleKey))]
 }
 
+const DASHBOARD_MODULES = [
+  { _id: 'L1M1', title: 'ROB Saves Your Day with AI' },
+  { _id: 'L1M2', title: 'Better Questions, Better Answers' },
+  { _id: 'L1M3', title: 'ROB Becomes Your Tutor' },
+  { _id: 'L1M4', title: "Catch ROB's Wrong Facts" },
+  { _id: 'L2M1', title: 'Applied Prompting Kickoff' },
+]
+
+router.get('/dashboard', async (req, res, next) => {
+  try {
+    const progress = await StudentProgress.findOne({ userId: req.user._id.toString() })
+    const completed = normalizeModuleList(progress?.completedModules)
+    const unlocked = normalizeModuleList(progress?.unlockedModules, ['L1M1'])
+    const activeModule = DASHBOARD_MODULES.find((mod) => unlocked.includes(mod._id) && !completed.includes(mod._id))
+      || DASHBOARD_MODULES.find((mod) => !completed.includes(mod._id))
+      || DASHBOARD_MODULES[DASHBOARD_MODULES.length - 1]
+
+    const questionsAnswered = req.user.robProgress?.questionsAnswered || 0
+    const correctAnswers = req.user.robProgress?.correctAnswers || 0
+    const accuracy = questionsAnswered > 0 ? Math.round((correctAnswers / questionsAnswered) * 100) : 70
+    const overallPercent = Math.round((completed.length / DASHBOARD_MODULES.length) * 100)
+
+    const curriculum = [
+      {
+        _id: 'lvl1',
+        name: 'Level 1 - AI Foundations',
+        status: completed.length >= 4 ? 'completed' : 'active',
+        modules: DASHBOARD_MODULES.slice(0, 4).map((mod) => {
+          const isDone = completed.includes(mod._id)
+          const isLocked = !unlocked.includes(mod._id) && !isDone
+          return { ...mod, status: isDone ? 'completed' : isLocked ? 'locked' : 'active', percent: isDone ? 100 : 0 }
+        }),
+      },
+      {
+        _id: 'lvl2',
+        name: 'Level 2 - Applied Prompting',
+        status: unlocked.includes('L2M1') || completed.includes('L2M1') ? 'active' : 'locked',
+        modules: DASHBOARD_MODULES.slice(4).map((mod) => {
+          const isDone = completed.includes(mod._id)
+          const isLocked = !unlocked.includes(mod._id) && !isDone
+          return { ...mod, status: isDone ? 'completed' : isLocked ? 'locked' : 'active', percent: isDone ? 100 : 0 }
+        }),
+      },
+    ]
+
+    const dashboardSummary = {
+      name: req.user.name || 'Student',
+      grade: req.user.grade ?? 8,
+      currentConcept: activeModule.title,
+      progress: overallPercent,
+      accuracy,
+      timeSpent: progress?.timeSpent || '0h 00m',
+      completed: completed.length,
+      weakAreas: req.user.robProgress?.weakTopics || [],
+    }
+
+    res.json({
+      ...dashboardSummary,
+      accuracy,
+      progress: overallPercent,
+      stats: {
+        ...dashboardSummary,
+        grade: dashboardSummary.grade,
+        accuracy,
+        progress: overallPercent,
+        modulesCompleted: completed.length,
+        streak: progress?.streakDays || req.user.loginStreak || 0,
+      },
+      progressData: {
+        currentModule: { ...activeModule, percent: completed.includes(activeModule._id) ? 100 : 0 },
+        overallPercent,
+      },
+      levels: [
+        { id: '1', name: 'Level 1 - AI Foundations', status: completed.length >= 4 ? 'completed' : 'active' },
+        { id: '2', name: 'Level 2 - Applied Prompting', status: unlocked.includes('L2M1') ? 'active' : 'locked' },
+        { id: '3', name: 'Level 3 - Guided Learning', status: 'locked' },
+      ],
+      curriculum,
+    })
+  } catch (err) { next(err) }
+})
+
 router.get('/stats', async (_req, res, next) => {
   try {
     res.json({ currentLevel: 1, modulesCompleted: 0, streak: 0, hoursLearned: 0 })

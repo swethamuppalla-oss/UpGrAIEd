@@ -1,0 +1,190 @@
+@use '../../../design-system/styles/variables' as *;
+@use '../../../design-system/styles/mixins' as *;
+@use '../../landing/_animations.scss';
+
+.bloom {
+  background: $color-primary;
+  padding-block: $space-24;
+  position: relative;
+  overflow: hidden;
+
+  @include respond-to(md) { padding-block: $space-16; }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 500px;
+    height: 500px;
+    border-radius: $radius-full;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.07) 0%, transparent 65%);
+    pointer-events: none;
+    filter: blur(60px);
+  }
+}
+
+.bloom__inner {
+  @include container;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: $space-16;
+  align-items: center;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr;
+    gap: $space-10;
+  }
+}
+
+// ── Copy ──────────────────────────────────────────────────
+
+.bloom__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.bloom__eyebrow {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 158, 11, 0.65);
+  margin-bottom: $space-4;
+}
+
+.bloom__headline {
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: $font-weight-bold;
+  letter-spacing: -0.025em;
+  line-height: $line-height-snug;
+  color: $color-text-inverse;
+  margin: 0 0 $space-5;
+
+  em {
+    font-style: normal;
+    color: $color-accent;
+  }
+}
+
+.bloom__body {
+  font-size: $font-size-lg;
+  line-height: $line-height-normal;
+  color: rgba(248, 246, 242, 0.48);
+  max-width: 400px;
+  margin: 0 0 $space-10;
+}
+
+.bloom__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+  width: 100%;
+  max-width: 360px;
+}
+
+.bloom__stat {
+  padding: $space-4;
+  border-radius: $radius-lg;
+  border: 1px solid rgba(248, 246, 242, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  transition: border-color $transition-base, background $transition-base;
+
+  &:hover {
+    border-color: rgba(245, 158, 11, 0.20);
+    background: rgba(245, 158, 11, 0.04);
+  }
+}
+
+.bloom__stat-value {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-inverse;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.bloom__stat-label {
+  font-size: $font-size-xs;
+  color: rgba(248, 246, 242, 0.38);
+}
+
+// ── Feature cards ─────────────────────────────────────────
+
+.bloom__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+
+  @include respond-to(sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bloom__card {
+  padding: $space-6;
+  border-radius: $radius-xl;
+  border: 1px solid rgba(248, 246, 242, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  transition: background $transition-base, border-color $transition-base, transform $transition-base;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(248, 246, 242, 0.13);
+    transform: translateY(-4px);
+  }
+}
+
+.bloom__card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-lg;
+  @include flex-center;
+  font-size: 20px;
+  flex-shrink: 0;
+
+  &--amber  { background: rgba(245, 158, 11, 0.14); border: 1px solid rgba(245, 158, 11, 0.22); }
+  &--green  { background: rgba(34, 197, 94, 0.12);  border: 1px solid rgba(34, 197, 94, 0.20); }
+  &--blue   { background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.20); }
+  &--purple { background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.20); }
+}
+
+.bloom__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  flex: 1;
+}
+
+.bloom__card-title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-inverse;
+  letter-spacing: -0.01em;
+}
+
+.bloom__card-desc {
+  font-size: $font-size-sm;
+  line-height: $line-height-snug;
+  color: rgba(248, 246, 242, 0.42);
+}
+
+.bloom__card-tag {
+  align-self: flex-start;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  padding: 3px 10px;
+  border-radius: $radius-full;
+
+  &--amber  { background: rgba(245, 158, 11, 0.14); color: $color-accent-light; border: 1px solid rgba(245, 158, 11, 0.22); }
+  &--green  { background: rgba(34, 197, 94, 0.12);  color: $color-success-light; border: 1px solid rgba(34, 197, 94, 0.20); }
+  &--blue   { background: rgba(59, 130, 246, 0.12); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.20); }
+  &--purple { background: rgba(139, 92, 246, 0.12); color: #C4B5FD; border: 1px solid rgba(139, 92, 246, 0.20); }
+}

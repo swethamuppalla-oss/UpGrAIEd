@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
-import { getPaymentStatus, createPaymentOrder, verifyPayment } from '../services/api'
+import { getPaymentStatus, createPaymentOrder, verifyPayment } from '../services'
 
 export default function PaymentPage() {
   const { user }         = useAuth()

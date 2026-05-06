@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useAuth } from './AuthContext'
-import { getProgressDashboard, apiCompleteModule } from '../services/api'
+import { getProgressDashboard, apiCompleteModule } from '../services'
 
 const STORAGE_KEY = 'upgraied_student_progress'
 

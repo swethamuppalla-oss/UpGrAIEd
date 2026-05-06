@@ -1,0 +1,373 @@
+@use '../../../design-system/styles/variables' as *;
+@use '../../../design-system/styles/mixins' as *;
+@use '../../landing/_animations.scss';
+
+.u-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(155deg, #07152A 0%, #0B1F3A 45%, #0D2040 100%);
+  padding-block: $space-32;
+
+  @include respond-to(md) {
+    padding-block: $space-20;
+    min-height: auto;
+  }
+}
+
+// ── Orbs ──────────────────────────────────────────────────
+
+.u-hero__orb {
+  position: absolute;
+  border-radius: $radius-full;
+  pointer-events: none;
+  filter: blur(90px);
+
+  &--a {
+    width: 640px;
+    height: 640px;
+    top: -180px;
+    right: -100px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.11) 0%, transparent 65%);
+    animation: orb-drift 16s ease-in-out infinite;
+  }
+
+  &--b {
+    width: 480px;
+    height: 480px;
+    bottom: -100px;
+    left: -80px;
+    background: radial-gradient(circle, rgba(22, 45, 82, 0.9) 0%, transparent 70%);
+    animation: orb-drift 20s ease-in-out infinite reverse;
+  }
+
+  &--c {
+    width: 260px;
+    height: 260px;
+    top: 50%;
+    left: 36%;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.05) 0%, transparent 70%);
+    animation: orb-drift 26s ease-in-out infinite 5s;
+  }
+}
+
+.u-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 0;
+}
+
+// ── Layout ────────────────────────────────────────────────
+
+.u-hero__inner {
+  @include container;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: $space-16;
+  align-items: center;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr;
+    gap: $space-12;
+  }
+}
+
+// ── Copy ──────────────────────────────────────────────────
+
+.u-hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.u-hero__badge {
+  @include flex-start;
+  gap: $space-2;
+  padding: 5px 14px 5px 9px;
+  border-radius: $radius-full;
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  background: rgba(245, 158, 11, 0.07);
+  margin-bottom: $space-6;
+
+  &-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: $radius-full;
+    background: $color-accent;
+    animation: badge-pulse 3s ease-in-out infinite;
+  }
+
+  &-text {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: $color-accent-light;
+  }
+}
+
+.u-hero__headline {
+  font-size: clamp(36px, 5vw, 66px);
+  font-weight: $font-weight-bold;
+  line-height: $line-height-tight;
+  letter-spacing: -0.03em;
+  color: $color-text-inverse;
+  margin: 0 0 $space-6;
+
+  em {
+    font-style: normal;
+    color: $color-accent;
+  }
+}
+
+.u-hero__subtext {
+  font-size: $font-size-lg;
+  line-height: $line-height-normal;
+  color: rgba(248, 246, 242, 0.55);
+  max-width: 420px;
+  margin: 0 0 $space-10;
+}
+
+.u-hero__actions {
+  display: flex;
+  gap: $space-4;
+  flex-wrap: wrap;
+  margin-bottom: $space-10;
+}
+
+.u-hero__btn {
+  height: 50px;
+  padding: 0 $space-8;
+  border-radius: $radius-md;
+  font-family: $font-family;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: background $transition-fast, box-shadow $transition-fast, transform $transition-fast, color $transition-fast;
+  letter-spacing: -0.01em;
+
+  &:active { transform: scale(0.97); }
+
+  &--primary {
+    border: none;
+    background: $color-accent;
+    color: $color-primary;
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.32);
+
+    &:hover {
+      background: $color-accent-light;
+      box-shadow: 0 8px 30px rgba(245, 158, 11, 0.48);
+      transform: translateY(-2px);
+    }
+  }
+
+  &--ghost {
+    border: 1px solid rgba(248, 246, 242, 0.16);
+    background: transparent;
+    color: rgba(248, 246, 242, 0.70);
+
+    &:hover {
+      border-color: rgba(248, 246, 242, 0.36);
+      color: $color-text-inverse;
+      background: rgba(248, 246, 242, 0.05);
+    }
+  }
+}
+
+.u-hero__meta {
+  @include flex-start;
+  gap: $space-6;
+  flex-wrap: wrap;
+}
+
+.u-hero__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-inverse;
+    letter-spacing: -0.03em;
+  }
+
+  span {
+    font-size: $font-size-xs;
+    color: rgba(248, 246, 242, 0.40);
+    letter-spacing: 0.02em;
+  }
+}
+
+.u-hero__meta-divider {
+  width: 1px;
+  height: 32px;
+  background: rgba(248, 246, 242, 0.10);
+}
+
+// ── Visual ────────────────────────────────────────────────
+
+.u-hero__visual {
+  position: relative;
+
+  @include respond-to(lg) { display: none; }
+}
+
+.u-hero__screen {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius-xl;
+  padding: $space-5;
+  backdrop-filter: blur(16px);
+}
+
+.u-hero__screen-bar {
+  @include flex-start;
+  gap: $space-2;
+  margin-bottom: $space-5;
+  padding-bottom: $space-4;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  span {
+    width: 10px;
+    height: 10px;
+    border-radius: $radius-full;
+
+    &:nth-child(1) { background: rgba(239, 68, 68, 0.5); }
+    &:nth-child(2) { background: rgba(245, 158, 11, 0.5); }
+    &:nth-child(3) { background: rgba(34, 197, 94, 0.5); }
+  }
+}
+
+.u-hero__screen-title {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(248, 246, 242, 0.35);
+  margin-bottom: $space-4;
+}
+
+.u-hero__lesson-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius-lg;
+  padding: $space-4;
+  margin-bottom: $space-3;
+  transition: background $transition-fast;
+
+  &:hover { background: rgba(255, 255, 255, 0.08); }
+
+  &--active {
+    border-color: rgba(245, 158, 11, 0.30);
+    background: rgba(245, 158, 11, 0.07);
+  }
+}
+
+.u-hero__lesson-top {
+  @include flex-between;
+  margin-bottom: $space-3;
+}
+
+.u-hero__lesson-name {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-inverse;
+}
+
+.u-hero__lesson-badge {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  padding: 2px 8px;
+  border-radius: $radius-full;
+  background: rgba(245, 158, 11, 0.14);
+  color: $color-accent-light;
+  border: 1px solid rgba(245, 158, 11, 0.22);
+}
+
+.u-hero__progress-bar {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: $radius-full;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: $color-accent;
+    border-radius: $radius-full;
+  }
+}
+
+.u-hero__screen-footer {
+  @include flex-between;
+  margin-top: $space-4;
+  padding-top: $space-4;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.u-hero__xp {
+  @include flex-start;
+  gap: $space-2;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $color-accent;
+}
+
+.u-hero__streak {
+  @include flex-start;
+  gap: $space-2;
+  font-size: $font-size-xs;
+  color: rgba(248, 246, 242, 0.45);
+}
+
+// floating chips
+.u-hero__chip {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: $radius-lg;
+  padding: $space-3 $space-4;
+  backdrop-filter: blur(12px);
+
+  &--a {
+    bottom: -20px;
+    left: -36px;
+    animation: orb-drift 11s ease-in-out infinite;
+  }
+
+  &--b {
+    top: -16px;
+    right: -28px;
+    animation: orb-drift 14s ease-in-out infinite reverse 2s;
+  }
+}
+
+// hero image (when set via CMS)
+.u-hero__hero-img {
+  width: 100%;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-xl;
+  object-fit: cover;
+  aspect-ratio: 4 / 3;
+}
+
+.u-hero__chip-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $color-success;
+}
+
+.u-hero__chip-sub {
+  font-size: $font-size-xs;
+  color: rgba(248, 246, 242, 0.40);
+  margin-top: 1px;
+}

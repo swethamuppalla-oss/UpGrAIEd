@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import BloomCharacter from '../Bloom/BloomCharacter'
-import { completeDayLesson } from '../../services/api'
+import { completeDayLesson } from '../../services'
 import { useToast } from '../ui/Toast'
 import { useConfig } from '../../context/ConfigContext'
 import ThinkingBlock from './ThinkingBlock'

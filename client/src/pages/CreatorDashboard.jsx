@@ -4,7 +4,7 @@ import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import RobIntelligenceLab from '../components/ROB/RobIntelligenceLab'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/ui/Toast'
-import { getCreatorStats, getCreatorVideos, uploadVideo } from '../services/api'
+import { getCreatorStats, getCreatorVideos, uploadVideo } from '../services'
 
 const NAV_ITEMS = [
   { id: 'overview', icon: '📊', label: 'Overview' },

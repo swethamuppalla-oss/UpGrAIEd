@@ -1,0 +1,430 @@
+@use '../../../design-system/styles/variables' as *;
+@use '../../../design-system/styles/mixins' as *;
+@use '../../landing/_animations.scss';
+
+.dash-preview {
+  background: $color-surface-subtle;
+  padding-block: $space-24;
+  overflow: hidden;
+
+  @include respond-to(md) { padding-block: $space-16; }
+}
+
+.dash-preview__inner {
+  @include container($max-width-wide);
+}
+
+// ── Header ────────────────────────────────────────────────
+
+.dash-preview__header {
+  @include container;
+  text-align: center;
+  margin-bottom: $space-12;
+}
+
+.dash-preview__eyebrow {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $color-accent-dark;
+  margin-bottom: $space-4;
+}
+
+.dash-preview__headline {
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: $font-weight-bold;
+  letter-spacing: -0.025em;
+  line-height: $line-height-tight;
+  color: $color-text-primary;
+  margin: 0 auto $space-5;
+  max-width: 520px;
+}
+
+.dash-preview__subtext {
+  font-size: $font-size-lg;
+  line-height: $line-height-normal;
+  color: $color-text-secondary;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+// ── Browser shell ─────────────────────────────────────────
+
+.dash-preview__browser {
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow: $shadow-xl, 0 0 0 1px rgba(11, 31, 58, 0.08);
+  background: $color-primary;
+}
+
+.dash-preview__browser-bar {
+  @include flex-start;
+  gap: $space-3;
+  padding: $space-4 $space-5;
+  background: $color-primary-dark;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dash-preview__browser-dots {
+  @include flex-start;
+  gap: $space-2;
+
+  span {
+    width: 10px;
+    height: 10px;
+    border-radius: $radius-full;
+
+    &:nth-child(1) { background: rgba(239, 68, 68, 0.45); }
+    &:nth-child(2) { background: rgba(245, 158, 11, 0.45); }
+    &:nth-child(3) { background: rgba(34, 197, 94, 0.45); }
+  }
+}
+
+.dash-preview__browser-url {
+  flex: 1;
+  height: 26px;
+  border-radius: $radius-md;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  @include flex-center;
+  font-size: $font-size-xs;
+  color: rgba(248, 246, 242, 0.25);
+  letter-spacing: 0.01em;
+  margin-inline: $space-4;
+}
+
+// ── Dashboard layout ──────────────────────────────────────
+
+.dash-preview__ui {
+  display: grid;
+  grid-template-columns: 220px 1fr 260px;
+  min-height: 520px;
+
+  @include respond-to(xl)  { grid-template-columns: 200px 1fr; }
+  @include respond-to(lg)  { grid-template-columns: 1fr; }
+}
+
+// ── Sidebar ───────────────────────────────────────────────
+
+.dash-sidebar {
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+
+  @include respond-to(lg) { display: none; }
+}
+
+.dash-sidebar__logo {
+  @include flex-start;
+  gap: $space-2;
+  padding: $space-3 $space-3;
+  margin-bottom: $space-4;
+
+  span:first-child {
+    font-size: 18px;
+  }
+
+  span:last-child {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    color: $color-text-inverse;
+    letter-spacing: -0.01em;
+  }
+}
+
+.dash-sidebar__item {
+  @include flex-start;
+  gap: $space-3;
+  padding: $space-3 $space-3;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  color: rgba(248, 246, 242, 0.42);
+  cursor: pointer;
+  transition: background $transition-fast, color $transition-fast;
+
+  span:first-child { font-size: 15px; }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(248, 246, 242, 0.70);
+  }
+
+  &--active {
+    background: rgba(245, 158, 11, 0.12);
+    color: $color-accent-light;
+    border: 1px solid rgba(245, 158, 11, 0.18);
+
+    &:hover {
+      background: rgba(245, 158, 11, 0.16);
+      color: $color-accent-light;
+    }
+  }
+}
+
+.dash-sidebar__section {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(248, 246, 242, 0.22);
+  padding: $space-4 $space-3 $space-2;
+}
+
+// ── Main content ──────────────────────────────────────────
+
+.dash-main {
+  padding: $space-6;
+  overflow: hidden;
+
+  @include respond-to(lg) {
+    padding: $space-5;
+  }
+}
+
+.dash-main__greeting {
+  @include flex-between;
+  margin-bottom: $space-6;
+
+  @include respond-to(sm) { flex-direction: column; align-items: flex-start; gap: $space-3; }
+}
+
+.dash-main__greeting-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-text-inverse;
+    letter-spacing: -0.01em;
+  }
+
+  span {
+    font-size: $font-size-sm;
+    color: rgba(248, 246, 242, 0.38);
+  }
+}
+
+.dash-main__upload-btn {
+  height: 36px;
+  padding: 0 $space-5;
+  border-radius: $radius-md;
+  border: none;
+  background: $color-accent;
+  color: $color-primary;
+  font-family: $font-family;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+// stat row
+.dash-main__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-3;
+  margin-bottom: $space-6;
+
+  @include respond-to(sm) { grid-template-columns: 1fr 1fr; }
+}
+
+.dash-main__stat {
+  padding: $space-4;
+  border-radius: $radius-lg;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  &-value {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-inverse;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  &-label {
+    font-size: $font-size-xs;
+    color: rgba(248, 246, 242, 0.35);
+  }
+}
+
+// lesson list
+.dash-main__section-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(248, 246, 242, 0.30);
+  margin-bottom: $space-3;
+}
+
+.dash-main__lessons {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.dash-main__lesson {
+  @include flex-between;
+  padding: $space-4;
+  border-radius: $radius-lg;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background $transition-fast;
+
+  &:hover { background: rgba(255, 255, 255, 0.06); }
+
+  &--active {
+    background: rgba(245, 158, 11, 0.07);
+    border-color: rgba(245, 158, 11, 0.18);
+  }
+}
+
+.dash-main__lesson-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  strong {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-inverse;
+  }
+
+  span {
+    font-size: $font-size-xs;
+    color: rgba(248, 246, 242, 0.35);
+  }
+}
+
+.dash-main__lesson-right {
+  @include flex-start;
+  gap: $space-4;
+  align-items: center;
+}
+
+.dash-main__lesson-bar {
+  width: 72px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: $radius-full;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: $color-accent;
+    border-radius: $radius-full;
+  }
+}
+
+.dash-main__lesson-pct {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: rgba(248, 246, 242, 0.40);
+  min-width: 28px;
+  text-align: right;
+}
+
+// ── Right panel ───────────────────────────────────────────
+
+.dash-panel {
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  padding: $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+
+  @include respond-to(xl) { display: none; }
+}
+
+.dash-panel__section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.dash-panel__label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(248, 246, 242, 0.28);
+}
+
+.dash-panel__rob-card {
+  padding: $space-4;
+  border-radius: $radius-lg;
+  background: rgba(245, 158, 11, 0.07);
+  border: 1px solid rgba(245, 158, 11, 0.16);
+
+  p:first-child {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-inverse;
+    margin-bottom: $space-2;
+    line-height: $line-height-snug;
+  }
+
+  p:last-child {
+    font-size: $font-size-xs;
+    color: $color-accent-light;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.dash-panel__upcoming {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.dash-panel__up-item {
+  @include flex-between;
+  padding: $space-3;
+  border-radius: $radius-md;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: $font-size-xs;
+
+  span:first-child { color: rgba(248, 246, 242, 0.55); }
+  span:last-child  { color: rgba(248, 246, 242, 0.28); }
+}
+
+.dash-panel__streak {
+  @include flex-between;
+  padding: $space-4;
+  border-radius: $radius-lg;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  .dash-panel__streak-count {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      color: $color-text-inverse;
+      letter-spacing: -0.02em;
+    }
+
+    span {
+      font-size: $font-size-xs;
+      color: rgba(248, 246, 242, 0.35);
+    }
+  }
+
+  .dash-panel__streak-icon {
+    font-size: 28px;
+  }
+}

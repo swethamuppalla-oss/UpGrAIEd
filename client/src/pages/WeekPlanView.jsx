@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getWeekPlan, approveWeekPlan } from '../services/api'
+import { getWeekPlan, approveWeekPlan } from '../services'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import BloomCharacter from '../components/Bloom/BloomCharacter'
 import { useToast } from '../components/ui/Toast'

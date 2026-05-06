@@ -1,0 +1,112 @@
+@use '../../design-system/styles/variables' as *;
+
+// ============================================================
+// EditableText — inline CMS wrapper
+// ============================================================
+
+.et {
+  display: inline;
+  position: relative;
+}
+
+// ── View mode ─────────────────────────────────────────────
+
+.et__view {
+  display: inline;
+}
+
+// Admin idle state — hover affordance before clicking to edit
+.editable-active {
+  border-bottom: 1px dashed #F59E0B;
+  cursor: text;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(245, 158, 11, 0.08);
+  }
+}
+
+// ── Edit mode wrapper ─────────────────────────────────────
+
+.et__edit-wrap {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+}
+
+// Shared input + textarea base — inherits all parent typography
+.et__input,
+.et__textarea {
+  // typography — inherit everything from the parent element
+  font-family:    inherit;
+  font-size:      inherit;
+  font-weight:    inherit;
+  font-style:     inherit;
+  line-height:    inherit;
+  letter-spacing: inherit;
+  color:          inherit;
+  text-align:     inherit;
+
+  // layout
+  display:    block;
+  width:      100%;
+  background: transparent;
+  outline:    none;
+  padding:    3px 6px;
+  margin:     -3px -6px; // compensate so position doesn't shift
+
+  // edit affordance
+  border:        none;
+  border-bottom: 2px dashed rgba(245, 158, 11, 0.55);
+  border-radius: 2px;
+  transition:    border-color $transition-fast, background $transition-fast;
+  cursor:        text;
+
+  &:hover {
+    border-bottom-color: rgba(245, 158, 11, 0.85);
+    background: rgba(245, 158, 11, 0.04);
+  }
+
+  &:focus {
+    border-bottom-color: $color-accent;
+    background: rgba(245, 158, 11, 0.06);
+    border-radius: $radius-sm;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.12);
+  }
+}
+
+.et__textarea {
+  resize: vertical;
+  min-height: 3em;
+}
+
+// ── Edit indicator ────────────────────────────────────────
+// Small "Edit" chip that appears top-right when admin mode is active
+
+.et__indicator {
+  position: absolute;
+  top: -22px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: $radius-full;
+  background: $color-accent;
+  color: $color-primary;
+  font-family: $font-family;
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity $transition-fast, transform $transition-fast;
+
+  .et__edit-wrap:focus-within & {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

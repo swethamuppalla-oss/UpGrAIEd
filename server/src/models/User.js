@@ -27,10 +27,31 @@ const userSchema = new mongoose.Schema(
       enum: ROLES,
       required: true,
     },
+    children: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    parentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
     // Reference to the single active session token
     activeSessionToken: {
       type: String,
       default: null,
+    },
+    activeRefreshTokenHash: {
+      type: String,
+      default: null,
+      select: false,
+    },
+    refreshTokenExpiresAt: {
+      type: Date,
+      default: null,
+      select: false,
     },
     isActive: {
       type: Boolean,

@@ -1,0 +1,244 @@
+@use '../../../design-system/styles/variables' as *;
+@use '../../../design-system/styles/mixins' as *;
+@use '../../landing/_animations.scss';
+
+.flow {
+  background: $color-surface;
+  padding-block: $space-24;
+
+  @include respond-to(md) { padding-block: $space-16; }
+}
+
+.flow__inner {
+  @include container;
+}
+
+// ── Header ────────────────────────────────────────────────
+
+.flow__header {
+  text-align: center;
+  margin-bottom: $space-16;
+
+  @include respond-to(md) { margin-bottom: $space-10; }
+}
+
+.flow__eyebrow {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $color-accent-dark;
+  margin-bottom: $space-4;
+}
+
+.flow__headline {
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: $font-weight-bold;
+  letter-spacing: -0.025em;
+  line-height: $line-height-tight;
+  color: $color-text-primary;
+  margin: 0 auto $space-5;
+  max-width: 560px;
+}
+
+.flow__subtext {
+  font-size: $font-size-lg;
+  line-height: $line-height-normal;
+  color: $color-text-secondary;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+// ── Steps track ───────────────────────────────────────────
+
+.flow__track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+
+  @include respond-to(lg) {
+    grid-template-columns: 1fr;
+    gap: $space-3;
+    max-width: 480px;
+    margin-inline: auto;
+  }
+
+  // horizontal connector
+  &::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: calc(10% + 28px);
+    right: calc(10% + 28px);
+    height: 1px;
+    background: linear-gradient(to right, transparent, $color-border, $color-border, transparent);
+    z-index: 0;
+
+    @include respond-to(lg) { display: none; }
+  }
+}
+
+// ── Step ──────────────────────────────────────────────────
+
+.flow__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 $space-4;
+  position: relative;
+  z-index: 1;
+  cursor: default;
+
+  @include respond-to(lg) {
+    flex-direction: row;
+    text-align: left;
+    padding: $space-4;
+    border-radius: $radius-lg;
+    gap: $space-4;
+    border: 1px solid $color-border;
+    background: $color-surface-subtle;
+    transition: border-color $transition-base, background $transition-base;
+
+    &:hover {
+      border-color: rgba(245, 158, 11, 0.25);
+      background: rgba(245, 158, 11, 0.03);
+    }
+  }
+}
+
+.flow__step-icon-wrap {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: $radius-xl;
+  background: $color-surface-subtle;
+  border: 1px solid $color-border;
+  @include flex-center;
+  font-size: 22px;
+  margin-bottom: $space-5;
+  flex-shrink: 0;
+  transition: background $transition-base, border-color $transition-base, transform $transition-spring;
+
+  .flow__step:hover & {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.28);
+    transform: translateY(-3px);
+  }
+
+  @include respond-to(lg) {
+    margin-bottom: 0;
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.flow__step-num {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  border-radius: $radius-full;
+  background: $color-primary;
+  @include flex-center;
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  color: $color-text-inverse;
+  border: 2px solid $color-surface;
+}
+
+.flow__step-body {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.flow__step-title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  letter-spacing: -0.01em;
+}
+
+.flow__step-desc {
+  font-size: $font-size-sm;
+  line-height: $line-height-snug;
+  color: $color-text-secondary;
+}
+
+// Active step highlight
+.flow__step--active {
+  .flow__step-icon-wrap {
+    background: rgba(245, 158, 11, 0.10);
+    border-color: rgba(245, 158, 11, 0.35);
+  }
+
+  .flow__step-num {
+    background: $color-accent;
+    color: $color-primary;
+  }
+
+  .flow__step-title {
+    color: $color-accent-dark;
+  }
+}
+
+// ── Bottom callout ────────────────────────────────────────
+
+.flow__callout {
+  @include flex-between;
+  margin-top: $space-12;
+  padding: $space-6 $space-8;
+  border-radius: $radius-xl;
+  background: $color-primary;
+  gap: $space-6;
+  flex-wrap: wrap;
+
+  @include respond-to(md) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: $space-6;
+  }
+}
+
+.flow__callout-text {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.flow__callout-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-inverse;
+  letter-spacing: -0.01em;
+}
+
+.flow__callout-sub {
+  font-size: $font-size-sm;
+  color: rgba(248, 246, 242, 0.45);
+}
+
+.flow__callout-btn {
+  flex-shrink: 0;
+  height: 44px;
+  padding: 0 $space-6;
+  border-radius: $radius-md;
+  border: none;
+  background: $color-accent;
+  color: $color-primary;
+  font-family: $font-family;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: background $transition-fast, box-shadow $transition-fast, transform $transition-fast;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.28);
+
+  &:hover {
+    background: $color-accent-light;
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.42);
+    transform: translateY(-1px);
+  }
+}

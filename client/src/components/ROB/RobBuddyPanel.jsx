@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useROB } from '../../context/RobContext'
-import { chatWithROB, getROBQuiz } from '../../services/api'
+import { chatWithROB, getROBQuiz } from '../../services'
 import { query as brainQuery, getQuickPrompts, getFallback } from '../../utils/RobBrain'
 import RobCharacter from './RobCharacter'
 

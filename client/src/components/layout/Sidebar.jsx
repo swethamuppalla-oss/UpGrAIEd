@@ -1,3 +1,5 @@
+import { Link, useLocation } from 'react-router-dom'
+
 export default function Sidebar({
   items,
   activeItem,
@@ -7,6 +9,8 @@ export default function Sidebar({
   userInitials,
   onSignOut
 }) {
+  const location = useLocation()
+
   return (
     <div className="dark-surface" style={{
       width: '240px',
@@ -47,39 +51,80 @@ export default function Sidebar({
         overflowY: 'auto'
       }}>
         {items.map((item) => {
-          const isActive = activeItem === item.id
+          if (item.divider) {
+            return (
+              <div key={item.id} style={{
+                padding: '12px 12px 4px',
+                fontSize: 10,
+                fontWeight: 700,
+                color: 'var(--text-muted)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                borderTop: '1px solid var(--border-color)',
+                marginTop: 8,
+              }}>
+                {item.label}
+              </div>
+            )
+          }
+
+          const isActive = item.path
+            ? location.pathname === item.path
+            : activeItem === item.id
+
+          const sharedStyle = {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '10px 12px',
+            borderRadius: '10px',
+            fontSize: '14px',
+            fontFamily: "'Satoshi', 'Inter', sans-serif",
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            width: '100%',
+            border: isActive ? '1px solid rgba(123,63,228,0.2)' : 'none',
+            background: isActive ? 'rgba(123,63,228,0.15)' : 'transparent',
+            color: isActive ? '#9B67F0' : 'var(--text-secondary)',
+            textAlign: 'left',
+            textDecoration: 'none',
+          }
+
+          const hoverOn = (e) => {
+            if (!isActive) {
+              e.currentTarget.style.background = 'var(--bg-soft)'
+              e.currentTarget.style.color = 'var(--text-inverse)'
+            }
+          }
+          const hoverOff = (e) => {
+            if (!isActive) {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = 'var(--text-secondary)'
+            }
+          }
+
+          if (item.path) {
+            return (
+              <Link
+                key={item.id}
+                to={item.path}
+                style={sharedStyle}
+                onMouseEnter={hoverOn}
+                onMouseLeave={hoverOff}
+              >
+                <span style={{ fontSize: '18px' }}>{item.icon}</span>
+                {item.label}
+              </Link>
+            )
+          }
+
           return (
             <button
               key={item.id}
               onClick={() => onItemClick(item.id)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '10px 12px',
-                borderRadius: '10px',
-                fontSize: '14px',
-                fontFamily: "'Satoshi', 'Inter', sans-serif",
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                width: '100%',
-                border: isActive ? '1px solid rgba(123,63,228,0.2)' : 'none',
-                background: isActive ? 'rgba(123,63,228,0.15)' : 'transparent',
-                color: isActive ? '#9B67F0' : 'var(--text-secondary)',
-                textAlign: 'left' // For the `<button>` baseline
-              }}
-              onMouseEnter={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.background = 'var(--bg-soft)'
-                  e.currentTarget.style.color = 'var(--text-inverse)'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.background = 'transparent'
-                  e.currentTarget.style.color = 'var(--text-secondary)'
-                }
-              }}
+              style={sharedStyle}
+              onMouseEnter={hoverOn}
+              onMouseLeave={hoverOff}
             >
               <span style={{ fontSize: '18px' }}>{item.icon}</span>
               {item.label}

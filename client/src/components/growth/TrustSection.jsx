@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import BloomCharacter from '../Bloom/BloomCharacter';
-import { getContent } from '../../services/contentService';
+import { getContent } from '../../services'
 
 const TRUST_POINTS = [
   { icon: '🛡️', title: 'Age-Appropriate Learning',     desc: 'Every piece of content is curated for ages 8–14. No inappropriate AI outputs, ever.', iconClass: '' },
@@ -90,8 +90,8 @@ function TrustCard({ icon, title, desc, iconClass }) {
         {icon}
       </div>
       <div>
-        <h4 style={{ fontSize: 15, fontWeight: 700, color: '#F0FFF4', marginBottom: 6 }}>{title}</h4>
-        <p style={{ color: 'rgba(168,245,162,0.65)', fontSize: 13, lineHeight: 1.65 }}>{desc}</p>
+        <h4 style={{ fontSize: 15, fontWeight: 700, color: '#0A1F12', marginBottom: 6 }}>{title}</h4>
+        <p style={{ color: '#4B6B57', fontSize: 13, lineHeight: 1.65 }}>{desc}</p>
       </div>
     </div>
   );

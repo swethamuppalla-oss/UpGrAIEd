@@ -1,0 +1,137 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.btn {
+  @include flex-center;
+  @include focus-ring($color-accent);
+
+  display: inline-flex;
+  gap: $space-2;
+  border: none;
+  border-radius: $radius-md;
+  font-family: $font-family;
+  font-weight: $font-weight-semibold;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background $transition-fast,
+    color $transition-fast,
+    box-shadow $transition-fast,
+    transform $transition-fast,
+    border-color $transition-fast;
+
+  &:active:not(:disabled) { transform: scale(0.97); }
+
+  &:disabled {
+    opacity: 0.44;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // ── Sizes ────────────────────────────────────────────────
+
+  &.sm {
+    height: 34px;
+    padding: 0 $space-4;
+    font-size: $font-size-sm;
+    border-radius: $radius-sm;
+  }
+
+  &.md {
+    height: 44px;
+    padding: 0 $space-6;
+    font-size: $font-size-md;
+  }
+
+  &.lg {
+    height: 54px;
+    padding: 0 $space-8;
+    font-size: $font-size-lg;
+    border-radius: $radius-lg;
+  }
+
+  // ── Variants ─────────────────────────────────────────────
+
+  &.primary {
+    background: $color-primary;
+    color: $color-text-inverse;
+    box-shadow: $shadow-sm;
+
+    &:hover:not(:disabled) {
+      background: $color-primary-light;
+      box-shadow: $shadow-md;
+      transform: translateY(-1px);
+    }
+  }
+
+  &.secondary {
+    background: $color-secondary;
+    color: $color-primary;
+    border: 1.5px solid $color-border-strong;
+    box-shadow: $shadow-sm;
+
+    &:hover:not(:disabled) {
+      background: $color-secondary-dark;
+      border-color: rgba(11, 31, 58, 0.35);
+      box-shadow: $shadow-md;
+      transform: translateY(-1px);
+    }
+  }
+
+  &.ghost {
+    background: transparent;
+    color: $color-primary;
+    border: 1.5px solid $color-border;
+
+    &:hover:not(:disabled) {
+      background: rgba(11, 31, 58, 0.05);
+      border-color: $color-border-strong;
+    }
+  }
+
+  &.accent {
+    background: $color-accent;
+    color: $color-primary;
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.30);
+
+    &:hover:not(:disabled) {
+      background: $color-accent-light;
+      box-shadow: 0 8px 28px rgba(245, 158, 11, 0.40);
+      transform: translateY(-2px);
+    }
+  }
+
+  // ── Modifiers ─────────────────────────────────────────────
+
+  &.full-width { width: 100%; }
+
+  &.loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: transparent;
+      border-radius: $radius-full;
+      animation: btn-spin 0.7s linear infinite;
+    }
+
+    &.accent::after {
+      border-color: rgba(11, 31, 58, 0.35);
+      border-top-color: transparent;
+    }
+  }
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}

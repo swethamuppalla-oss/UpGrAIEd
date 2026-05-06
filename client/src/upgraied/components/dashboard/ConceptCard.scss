@@ -1,0 +1,106 @@
+@use '../../../design-system/styles/variables' as *;
+@use '../../../design-system/styles/mixins' as *;
+
+.cc {
+  background: #0D1E35;
+  border: 1px solid rgba(248, 246, 242, 0.07);
+  border-radius: $radius-xl;
+  padding: $space-8;
+  @include hover-lift(-3px);
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $space-6;
+  }
+
+  &__tag {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $color-accent;
+    background: rgba(245, 158, 11, 0.10);
+    border: 1px solid rgba(245, 158, 11, 0.20);
+    padding: 3px 10px;
+    border-radius: $radius-full;
+  }
+
+  &__day {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    color: rgba(248, 246, 242, 0.38);
+  }
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: #F8F6F2;
+    letter-spacing: -0.02em;
+    line-height: $line-height-tight;
+    margin-bottom: $space-2;
+  }
+
+  &__chapter {
+    font-size: $font-size-sm;
+    color: rgba(248, 246, 242, 0.45);
+    margin-bottom: $space-8;
+  }
+
+  &__progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    margin-bottom: $space-8;
+  }
+
+  &__progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(248, 246, 242, 0.08);
+    border-radius: $radius-full;
+    overflow: hidden;
+  }
+
+  &__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, $color-accent-dark, $color-accent-light);
+    border-radius: $radius-full;
+    transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.40);
+  }
+
+  &__progress-pct {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    color: $color-accent;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  &__btn {
+    width: 100%;
+    padding: $space-4 $space-6;
+    background: $color-accent;
+    color: #07152A;
+    border: none;
+    border-radius: $radius-lg;
+    font-family: $font-family;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    cursor: pointer;
+    transition: background $transition-fast, transform $transition-fast, box-shadow $transition-fast;
+    letter-spacing: 0.01em;
+
+    &:hover {
+      background: $color-accent-light;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}

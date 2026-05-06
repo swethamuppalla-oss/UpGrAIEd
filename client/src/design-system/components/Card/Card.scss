@@ -1,0 +1,73 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.card {
+  background: $color-surface;
+  border-radius: $radius-lg;
+  border: 1px solid $color-border;
+  transition:
+    transform $transition-base,
+    box-shadow $transition-base,
+    border-color $transition-base;
+
+  // ── Padding ───────────────────────────────────────────────
+
+  &.sm { padding: $space-4; }
+  &.md { padding: $space-6; }
+  &.lg { padding: $space-10; }
+
+  // ── Variants ──────────────────────────────────────────────
+
+  &.default {
+    box-shadow: $shadow-sm;
+  }
+
+  &.elevated {
+    box-shadow: $shadow-md;
+    border-color: transparent;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: $shadow-hover;
+      border-color: rgba(245, 158, 11, 0.15);
+    }
+  }
+
+  &.flat {
+    box-shadow: none;
+    background: $color-surface-subtle;
+  }
+
+  &.dark {
+    background: $color-primary;
+    border-color: $color-primary-light;
+    box-shadow: $shadow-lg;
+    color: $color-text-inverse;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: $shadow-xl;
+    }
+  }
+
+  // ── Interactive ───────────────────────────────────────────
+
+  &.interactive {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: $shadow-hover;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-accent;
+      outline-offset: 3px;
+    }
+
+    &:active {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+  }
+}

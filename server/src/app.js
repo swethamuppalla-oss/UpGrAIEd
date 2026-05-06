@@ -21,6 +21,11 @@ import uploadRouter    from './routes/upload.js'
 import chapterRouter   from './routes/chapters.js'
 import bloomRouter     from './routes/bloomRoutes.js'
 import contentRouter   from './routes/content.js'
+import askRouter       from './routes/ask.js'
+import uiConfigRouter  from './routes/uiConfig.js'
+import usersRouter     from './routes/users.js'
+import practiceRouter    from './routes/practice.js'
+import submissionsRouter from './routes/submissions.js'
 
 /**
  * Creates and returns a fully-configured Express app.
@@ -39,6 +44,10 @@ export function createApp() {
   // ── CORS ────────────────────────────────────────────────────────────────────
   const allowedOrigins = [
     'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://localhost:5176',
+    'http://localhost:3000',
     'https://client-eight-eta-48.vercel.app',
     process.env.CLIENT_URL,
   ].filter(Boolean)
@@ -49,6 +58,8 @@ export function createApp() {
         // Allow server-to-server / curl / Postman (no origin)
         if (!origin) return callback(null, true)
         if (allowedOrigins.includes(origin)) return callback(null, true)
+        // Allow any localhost port (dev)
+        if (/^http:\/\/localhost:\d+$/.test(origin)) return callback(null, true)
         // Also allow any *.vercel.app preview deployment
         if (/\.vercel\.app$/.test(origin)) return callback(null, true)
         callback(new Error(`CORS: origin ${origin} not allowed`))
@@ -59,22 +70,45 @@ export function createApp() {
 
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
+  app.use((req, _res, next) => {
+    req.cookies = Object.fromEntries(
+      (req.headers.cookie || '')
+        .split(';')
+        .map(cookie => cookie.trim())
+        .filter(Boolean)
+        .map(cookie => {
+          const index = cookie.indexOf('=')
+          if (index === -1) return [cookie, '']
+          return [
+            decodeURIComponent(cookie.slice(0, index)),
+            decodeURIComponent(cookie.slice(index + 1)),
+          ]
+        })
+    )
+    next()
+  })
 
   // ── Public routes (no auth) ──────────────────────────────────────────────────
   app.use('/api/auth',    authRouter)
   app.use('/api/reserve', reservationRouter)
   app.use('/api/config',  configRouter)     // public reads; writes are guarded inside
   app.use('/api/content', contentRouter)   // dynamic content for growth pages
+  app.use('/api/ask',    askRouter)        // public quick-ask (rate limited)
+  app.use('/api/ui-config', uiConfigRouter) // UI section config (GET public, PUT admin)
 
   // ── Protected routes ─────────────────────────────────────────────────────────
+  app.use('/api/practice',     requireAuth, practiceRouter)
+  app.use('/api/submissions',  submissionsRouter)   // auth checked per-route inside
   app.use('/api/student',  requireAuth, studentRouter)
   app.use('/api/parent',   requireAuth, parentRouter)
+  app.use('/api/users',    requireAuth, usersRouter)
   app.use('/api/admin',    requireAuth, adminRouter)
   app.use('/api/creator',  requireAuth, creatorRouter)
   app.use('/api/videos',   requireAuth, videoRouter)
   app.use('/api/payments', requireAuth, paymentRouter)
   app.use('/api/progress', requireAuth, progressRouter)
   app.use('/api/upload',   requireAuth, uploadRouter)
+  app.use('/api/media',    requireAuth, uploadRouter)
   app.use('/api/chapters', chapterRouter)   // auth checked per-route inside
   app.use('/api/rob',      robRouter)        // auth checked per-route inside
   app.use('/api/bloom',    bloomRouter)

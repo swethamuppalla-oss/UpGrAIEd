@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getCurrentWeekPlan } from '../../services/api'
+import { getCurrentWeekPlan } from '../../services'
 import LoadingSkeleton from '../ui/LoadingSkeleton'
 import BloomCharacter from '../Bloom/BloomCharacter'
 import LessonPlayer from './LessonPlayer'

@@ -1,0 +1,83 @@
+@use '../../../design-system/styles/variables' as *;
+
+.dh {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-6;
+  padding: $space-8 0 $space-6;
+
+  &__greeting {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: rgba(248, 246, 242, 0.45);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: $space-1;
+  }
+
+  &__name {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: #F8F6F2;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: $space-2;
+  }
+
+  &__sub {
+    font-size: $font-size-sm;
+    color: rgba(248, 246, 242, 0.45);
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: $space-6;
+    flex-shrink: 0;
+  }
+
+  &__mascot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-2;
+  }
+
+
+  &__mascot-label {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    color: $color-accent;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  &__streak {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-1;
+    padding: $space-4;
+    background: rgba(249, 115, 22, 0.08);
+    border: 1px solid rgba(249, 115, 22, 0.20);
+    border-radius: $radius-lg;
+  }
+
+  &__streak-icon {
+    font-size: 22px;
+  }
+
+  &__streak-count {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: #FB923C;
+    line-height: 1;
+  }
+
+  &__streak-label {
+    font-size: $font-size-xs;
+    color: rgba(248, 246, 242, 0.40);
+    letter-spacing: 0.03em;
+  }
+}

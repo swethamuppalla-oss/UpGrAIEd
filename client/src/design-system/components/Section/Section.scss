@@ -1,0 +1,29 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.section {
+  width: 100%;
+  padding-block: $space-20;
+
+  @include respond-to(md) { padding-block: $space-12; }
+  @include respond-to(sm) { padding-block: $space-8; }
+
+  // ── Spacing ───────────────────────────────────────────────
+
+  &.spacing-sm { padding-block: $space-10; }
+  &.spacing-md { padding-block: $space-16; }
+  &.spacing-lg { padding-block: $space-24; }
+
+  // ── Variants ──────────────────────────────────────────────
+
+  &.light         { background: $color-surface;       color: $color-text-primary; }
+  &.subtle        { background: $color-surface-subtle; color: $color-text-primary; }
+  &.dark          { background: $color-primary;        color: $color-text-inverse; }
+  &.accent        { background: $color-accent;         color: $color-primary; }
+  &.primary-light { background: $color-primary-light;  color: $color-text-inverse; }
+}
+
+.section__inner         { @include container; }
+.section__inner--narrow { @include container($max-width-narrow); }
+.section__inner--wide   { @include container($max-width-wide); }
+.section__inner--full   { width: 100%; padding-inline: $space-6; }

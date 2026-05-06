@@ -4,18 +4,25 @@ import { AuthProvider } from './context/AuthContext'
 import { RobProvider } from './context/RobContext'
 import { ToastProvider } from './components/ui/Toast'
 import { ConfigProvider } from './context/ConfigContext'
+import { EditModeProvider } from './context/EditModeContext'
 import { StudentProgressProvider } from './context/StudentProgressContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
+import AdminLayout from './layouts/AdminLayout'
 import { applyTheme, getAutoTheme } from "./theme/themeUtils";
 import { trackEvent } from './utils/analytics';
 
 // ── Eagerly loaded (small / critical path) ────────────────────────────────────
+import Home from './pages/Home'
 import Login from './pages/Login'
+import ProductLayout from './layouts/ProductLayout'
 import ReservePage from './pages/ReservePage'
 import LandingPage from './pages/LandingPage'
 import WhyUpgraied from './pages/WhyUpgraied'
 import PricingPage from './pages/PricingPage'
+import WhyV2 from './v2/pages/WhyV2'
+import PricingV2 from './v2/pages/PricingV2'
 import BookDemoPage from './pages/BookDemoPage'
+import LandingPageV2 from './pages/LandingPageV2'
 
 // ── Lazily loaded (heavy / role-gated) ────────────────────────────────────────
 const StudentDashboard   = lazy(() => import('./pages/StudentDashboard'))
@@ -23,13 +30,22 @@ const BloomDashboard     = lazy(() => import('./pages/BloomDashboard'))
 const VideoPlayer        = lazy(() => import('./pages/VideoPlayer'))
 const LessonPage         = lazy(() => import('./pages/LessonPage'))
 const ModuleOnePage      = lazy(() => import('./pages/ModuleOnePage'))
+const Practice           = lazy(() => import('./components/practice/Practice'))
 const ParentDashboard    = lazy(() => import('./pages/ParentDashboard'))
 const WeekPlanView       = lazy(() => import('./pages/WeekPlanView'))
 const PaymentPage        = lazy(() => import('./pages/PaymentPage'))
-const AdminDashboard     = lazy(() => import('./pages/AdminDashboard'))
+const AdminDashboard        = lazy(() => import('./pages/AdminDashboard'))
 const AdminControlPanel     = lazy(() => import('./pages/AdminControlPanel'))
 const AdminContentEditor    = lazy(() => import('./pages/AdminContentEditor'))
+const AdminUIConfigurator   = lazy(() => import('./pages/AdminUIConfigurator'))
 const CreatorDashboard      = lazy(() => import('./pages/CreatorDashboard'))
+
+// ── Public landing ────────────────────────────────────────────────────────────
+const UpgraiedLanding  = lazy(() => import('./pages/UpgraiedLanding'))
+
+// ── Product routing ───────────────────────────────────────────────────────────
+const DashboardV2    = lazy(() => import('./pages/upgr-ed/dashboard/DashboardV2'))
+const UpgrEdLanding  = lazy(() => import('./pages/upgr-ed/UpgrEdLanding'))
 
 function PageSpinner() {
   return (
@@ -73,13 +89,26 @@ export default function App() {
         <StudentProgressProvider>
           <RobProvider>
             <ToastProvider>
+              <EditModeProvider>
               <BrowserRouter>
                 <Suspense fallback={<PageSpinner />}>
                   <Routes>
+                    {/* Product selector */}
+                    <Route path="/home" element={<Home />} />
+
+                    {/* UpGrAIEd — AI tutor */}
+                    <Route path="/upgraied/*" element={<ProductLayout><DashboardV2 /></ProductLayout>} />
+
+                    {/* UpGrEd — coming soon */}
+                    <Route path="/upgred/*" element={<ProductLayout><UpgrEdLanding /></ProductLayout>} />
+
                     {/* Public marketing */}
-                    <Route path="/"          element={<LandingPage />} />
-                    <Route path="/why"       element={<WhyUpgraied />} />
-                    <Route path="/pricing"   element={<PricingPage />} />
+                    <Route path="/"            element={<UpgraiedLanding />} />
+                    <Route path="/v2"          element={<LandingPageV2 />} />
+                    <Route path="/why"         element={<WhyUpgraied />} />
+                    <Route path="/pricing"     element={<PricingPage />} />
+                    <Route path="/why-v2"      element={<WhyV2 />} />
+                    <Route path="/pricing-v2"  element={<PricingV2 />} />
                     <Route path="/book-demo" element={<BookDemoPage />} />
 
                     {/* Auth */}
@@ -93,6 +122,7 @@ export default function App() {
                       <Route path="/player/:moduleId?"       element={<VideoPlayer />} />
                       <Route path="/lesson/:lessonId?"       element={<LessonPage />} />
                       <Route path="/student/module/:moduleNumber" element={<ModuleOnePage />} />
+                      <Route path="/student/practice"         element={<Practice />} />
                     </Route>
 
                     {/* Parent */}
@@ -105,8 +135,9 @@ export default function App() {
                     {/* Admin */}
                     <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
                       <Route path="/dashboard/admin" element={<AdminDashboard />} />
-                      <Route path="/admin-control"   element={<AdminControlPanel />} />
-                      <Route path="/admin/content"   element={<AdminContentEditor />} />
+                      <Route path="/admin-control"   element={<AdminLayout><AdminControlPanel /></AdminLayout>} />
+                      <Route path="/admin/content"   element={<AdminLayout><AdminContentEditor /></AdminLayout>} />
+                      <Route path="/admin/ui"        element={<AdminLayout><AdminUIConfigurator /></AdminLayout>} />
                     </Route>
 
                     {/* Creator */}
@@ -119,6 +150,7 @@ export default function App() {
                   </Routes>
                 </Suspense>
               </BrowserRouter>
+              </EditModeProvider>
             </ToastProvider>
           </RobProvider>
         </StudentProgressProvider>

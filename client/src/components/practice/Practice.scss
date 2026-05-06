@@ -1,0 +1,415 @@
+@use '../../design-system/styles/variables' as *;
+@use '../../design-system/styles/mixins' as *;
+
+// ── Layout ────────────────────────────────────────────────────
+.practice {
+  @include container($max-width-narrow);
+  padding-block: $space-10;
+  display: grid;
+  gap: $space-5;
+
+  &--loading {
+    pointer-events: none;
+
+    .practice__question,
+    .practice__answer {
+      opacity: 0.4;
+    }
+  }
+
+  &--submitting {
+    .practice__textarea {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .practice__btn {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+
+  &--disabled {
+    .practice__textarea {
+      opacity: 0.55;
+      cursor: default;
+      resize: none;
+    }
+  }
+}
+
+.practice__loading,
+.practice__error {
+  @include container($max-width-narrow);
+  @include flex-center;
+  padding-block: $space-16;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  gap: $space-4;
+  flex-direction: column;
+}
+
+// ── Question card ─────────────────────────────────────────────
+.practice__question {
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $space-6;
+  box-shadow: $shadow-sm;
+}
+
+.practice__question-label {
+  display: block;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $color-text-muted;
+  margin-bottom: $space-3;
+}
+
+.practice__question-text {
+  margin: 0;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-snug;
+  color: $color-text-primary;
+}
+
+// ── Answer input ──────────────────────────────────────────────
+.practice__answer {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.practice__answer-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $color-text-muted;
+}
+
+.practice__textarea {
+  width: 100%;
+  resize: vertical;
+  padding: $space-4;
+  border-radius: $radius-md;
+  border: 1px solid $color-border;
+  background: $color-surface;
+  color: $color-text-primary;
+  font: inherit;
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+  min-height: 120px;
+
+  @include focus-ring($color-accent);
+
+  &::placeholder {
+    color: $color-text-muted;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-accent;
+    box-shadow: 0 0 0 3px rgba($color-accent, 0.12);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+    resize: none;
+  }
+}
+
+// ── Feedback ──────────────────────────────────────────────────
+.practice__feedback {
+  border-radius: $radius-md;
+  padding: $space-4 $space-5;
+  border: 1px solid transparent;
+  animation: practice-rise 0.2s ease;
+
+  &--correct {
+    background: rgba($color-success, 0.08);
+    border-color: rgba($color-success, 0.3);
+  }
+
+  &--wrong {
+    background: rgba($color-warning, 0.08);
+    border-color: rgba($color-warning, 0.3);
+  }
+}
+
+.practice__feedback-title {
+  margin: 0 0 $space-1;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.practice__feedback-body {
+  margin: 0;
+  font-size: $font-size-sm;
+  line-height: $line-height-normal;
+  color: $color-text-secondary;
+}
+
+// ── Actions ───────────────────────────────────────────────────
+.practice__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.practice__btn {
+  padding: $space-3 $space-6;
+  border-radius: $radius-full;
+  border: none;
+  font: inherit;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: background $transition-fast, opacity $transition-fast, transform $transition-fast;
+  background: $color-primary;
+  color: $color-text-inverse;
+
+  &:hover:not(:disabled) {
+    background: $color-primary-light;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+@keyframes practice-rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Mode toggle ───────────────────────────────────────────────
+.practice__mode-toggle {
+  display: flex;
+  gap: $space-2;
+}
+
+.practice__mode-btn {
+  padding: $space-2 $space-4;
+  border-radius: $radius-full;
+  border: 1px solid $color-border-strong;
+  background: transparent;
+  color: $color-text-secondary;
+  font: inherit;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    border-color: $color-accent;
+    color: $color-text-primary;
+  }
+
+  &--active {
+    background: $color-primary;
+    border-color: $color-primary;
+    color: $color-text-inverse;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+// ── Upload zone ───────────────────────────────────────────────
+.practice__upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-8 $space-6;
+  width: 100%;
+  border-radius: $radius-lg;
+  border: 2px dashed $color-border-strong;
+  background: $color-surface-subtle;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color $transition-fast, background $transition-fast;
+
+  &:hover:not(:disabled) {
+    border-color: $color-accent;
+    background: rgba($color-accent, 0.04);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.practice__upload-zone-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.practice__upload-zone-text {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.practice__upload-zone-sub {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+}
+
+// ── Preview ───────────────────────────────────────────────────
+.practice__upload-preview {
+  border-radius: $radius-md;
+  overflow: hidden;
+  border: 1px solid $color-border;
+  background: $color-surface-subtle;
+}
+
+.practice__upload-preview-img {
+  display: block;
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+
+  &--thumb {
+    max-height: 100px;
+    border-radius: $radius-md;
+    border: 1px solid $color-border;
+    margin-bottom: $space-2;
+  }
+}
+
+.practice__upload-actions {
+  display: flex;
+  gap: $space-3;
+  justify-content: flex-end;
+}
+
+.practice__btn--ghost {
+  background: transparent;
+  border: 1px solid $color-border-strong;
+  color: $color-text-secondary;
+
+  &:hover:not(:disabled) {
+    background: $color-surface-subtle;
+    color: $color-text-primary;
+  }
+}
+
+// ── Extracting ────────────────────────────────────────────────
+.practice__upload-extracting {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-6;
+  border-radius: $radius-lg;
+  border: 1px solid $color-border;
+  background: $color-surface-subtle;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.practice__upload-spinner {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 2px solid $color-border-strong;
+  border-top-color: $color-accent;
+  border-radius: $radius-full;
+  animation: practice-spin 0.8s linear infinite;
+}
+
+@keyframes practice-spin {
+  to { transform: rotate(360deg); }
+}
+
+.practice__upload-error {
+  margin: 0;
+  font-size: $font-size-sm;
+  color: $color-error;
+}
+
+.practice__upload-retake-link {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-text-secondary;
+  }
+}
+
+// ── Rich feedback ─────────────────────────────────────────────
+.practice__feedback-score {
+  display: flex;
+  align-items: baseline;
+  gap: $space-1;
+  margin-bottom: $space-3;
+}
+
+.practice__feedback-score-value {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.practice__feedback-score-label {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.practice__feedback-section {
+  margin-top: $space-4;
+  padding: $space-3 $space-4;
+  border-radius: $radius-md;
+
+  &--good {
+    background: rgba($color-success, 0.06);
+    border-left: 3px solid $color-success;
+  }
+
+  &--tip {
+    background: rgba($color-accent, 0.06);
+    border-left: 3px solid $color-accent;
+  }
+}
+
+.practice__feedback-section-label {
+  margin: 0 0 $space-2;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.practice__feedback-list {
+  margin: 0;
+  padding-left: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+
+  li {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    line-height: $line-height-normal;
+  }
+}

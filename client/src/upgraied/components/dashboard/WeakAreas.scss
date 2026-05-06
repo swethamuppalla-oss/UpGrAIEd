@@ -1,0 +1,65 @@
+@use '../../../design-system/styles/variables' as *;
+
+.wa {
+  background: #0D1E35;
+  border: 1px solid rgba(248, 246, 242, 0.07);
+  border-radius: $radius-xl;
+  padding: $space-6;
+
+  &__title {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: rgba(248, 246, 242, 0.40);
+    margin-bottom: $space-5;
+  }
+
+  &__list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-3 $space-4;
+    border-radius: $radius-md;
+    background: rgba(248, 246, 242, 0.03);
+    border: 1px solid rgba(248, 246, 242, 0.05);
+    transition: background $transition-fast;
+
+    &:hover {
+      background: rgba(248, 246, 242, 0.06);
+    }
+  }
+
+  &__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px currentColor;
+  }
+
+  &__topic {
+    flex: 1;
+    font-size: $font-size-sm;
+    color: rgba(248, 246, 242, 0.80);
+    font-weight: $font-weight-medium;
+  }
+
+  &__badge {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: $radius-full;
+    border: 1px solid;
+    background: transparent;
+    white-space: nowrap;
+  }
+}
