@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import { RobProvider } from './context/RobContext'
 import { ToastProvider } from './components/ui/Toast'
 import { ConfigProvider } from './context/ConfigContext'
@@ -63,6 +63,85 @@ function PageSpinner() {
   )
 }
 
+function AppRoutes() {
+  const { isAuthenticated, isLoading } = useAuth()
+
+  if (isLoading) return <PageSpinner />
+
+  return (
+    <StudentProgressProvider>
+      <RobProvider>
+        <ToastProvider>
+          <EditModeProvider>
+            <Suspense fallback={<PageSpinner />}>
+              <Routes>
+                {/* Product selector */}
+                <Route path="/home" element={<Home />} />
+
+                {/* UpGrAIEd — AI tutor (auth-gated) */}
+                <Route path="/upgraied/*" element={
+                  isAuthenticated
+                    ? <ProductLayout><DashboardV2 /></ProductLayout>
+                    : <Navigate to="/login" replace />
+                } />
+
+                {/* UpGrEd — coming soon */}
+                <Route path="/upgred/*" element={<ProductLayout><UpgrEdLanding /></ProductLayout>} />
+
+                {/* Public marketing */}
+                <Route path="/"            element={<UpgraiedLanding />} />
+                <Route path="/v2"          element={<LandingPageV2 />} />
+                <Route path="/why"         element={<WhyUpgraied />} />
+                <Route path="/pricing"     element={<PricingPage />} />
+                <Route path="/why-v2"      element={<WhyV2 />} />
+                <Route path="/pricing-v2"  element={<PricingV2 />} />
+                <Route path="/book-demo"   element={<BookDemoPage />} />
+
+                {/* Auth */}
+                <Route path="/login"   element={<Login />} />
+                <Route path="/reserve" element={<ReservePage />} />
+
+                {/* Student */}
+                <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+                  <Route path="/dashboard/student"       element={<StudentDashboard />} />
+                  <Route path="/dashboard/student/bloom" element={<BloomDashboard />} />
+                  <Route path="/player/:moduleId?"       element={<VideoPlayer />} />
+                  <Route path="/lesson/:lessonId?"       element={<LessonPage />} />
+                  <Route path="/student/module/:moduleNumber" element={<ModuleOnePage />} />
+                  <Route path="/student/practice"        element={<Practice />} />
+                </Route>
+
+                {/* Parent */}
+                <Route element={<ProtectedRoute allowedRoles={['parent']} />}>
+                  <Route path="/dashboard/parent" element={<ParentDashboard />} />
+                  <Route path="/payment"          element={<PaymentPage />} />
+                  <Route path="/dashboard/parent/weekplan/:planId" element={<WeekPlanView />} />
+                </Route>
+
+                {/* Admin */}
+                <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                  <Route path="/dashboard/admin" element={<AdminDashboard />} />
+                  <Route path="/admin-control"   element={<AdminLayout><AdminControlPanel /></AdminLayout>} />
+                  <Route path="/admin/content"   element={<AdminLayout><AdminContentEditor /></AdminLayout>} />
+                  <Route path="/admin/ui"        element={<AdminLayout><AdminUIConfigurator /></AdminLayout>} />
+                </Route>
+
+                {/* Creator */}
+                <Route element={<ProtectedRoute allowedRoles={['creator']} />}>
+                  <Route path="/dashboard/creator" element={<CreatorDashboard />} />
+                </Route>
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
+          </EditModeProvider>
+        </ToastProvider>
+      </RobProvider>
+    </StudentProgressProvider>
+  )
+}
+
 export default function App() {
   useEffect(() => {
     let configTheme = null;
@@ -84,77 +163,12 @@ export default function App() {
   }, []);
 
   return (
-    <ConfigProvider>
-      <AuthProvider>
-        <StudentProgressProvider>
-          <RobProvider>
-            <ToastProvider>
-              <EditModeProvider>
-              <BrowserRouter>
-                <Suspense fallback={<PageSpinner />}>
-                  <Routes>
-                    {/* Product selector */}
-                    <Route path="/home" element={<Home />} />
-
-                    {/* UpGrAIEd — AI tutor */}
-                    <Route path="/upgraied/*" element={<ProductLayout><DashboardV2 /></ProductLayout>} />
-
-                    {/* UpGrEd — coming soon */}
-                    <Route path="/upgred/*" element={<ProductLayout><UpgrEdLanding /></ProductLayout>} />
-
-                    {/* Public marketing */}
-                    <Route path="/"            element={<UpgraiedLanding />} />
-                    <Route path="/v2"          element={<LandingPageV2 />} />
-                    <Route path="/why"         element={<WhyUpgraied />} />
-                    <Route path="/pricing"     element={<PricingPage />} />
-                    <Route path="/why-v2"      element={<WhyV2 />} />
-                    <Route path="/pricing-v2"  element={<PricingV2 />} />
-                    <Route path="/book-demo" element={<BookDemoPage />} />
-
-                    {/* Auth */}
-                    <Route path="/login"   element={<Login />} />
-                    <Route path="/reserve" element={<ReservePage />} />
-
-                    {/* Student */}
-                    <Route element={<ProtectedRoute allowedRoles={['student']} />}>
-                      <Route path="/dashboard/student"       element={<StudentDashboard />} />
-                      <Route path="/dashboard/student/bloom" element={<BloomDashboard />} />
-                      <Route path="/player/:moduleId?"       element={<VideoPlayer />} />
-                      <Route path="/lesson/:lessonId?"       element={<LessonPage />} />
-                      <Route path="/student/module/:moduleNumber" element={<ModuleOnePage />} />
-                      <Route path="/student/practice"         element={<Practice />} />
-                    </Route>
-
-                    {/* Parent */}
-                    <Route element={<ProtectedRoute allowedRoles={['parent']} />}>
-                      <Route path="/dashboard/parent" element={<ParentDashboard />} />
-                      <Route path="/payment"          element={<PaymentPage />} />
-                      <Route path="/dashboard/parent/weekplan/:planId" element={<WeekPlanView />} />
-                    </Route>
-
-                    {/* Admin */}
-                    <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-                      <Route path="/dashboard/admin" element={<AdminDashboard />} />
-                      <Route path="/admin-control"   element={<AdminLayout><AdminControlPanel /></AdminLayout>} />
-                      <Route path="/admin/content"   element={<AdminLayout><AdminContentEditor /></AdminLayout>} />
-                      <Route path="/admin/ui"        element={<AdminLayout><AdminUIConfigurator /></AdminLayout>} />
-                    </Route>
-
-                    {/* Creator */}
-                    <Route element={<ProtectedRoute allowedRoles={['creator']} />}>
-                      <Route path="/dashboard/creator" element={<CreatorDashboard />} />
-                    </Route>
-
-                    {/* Fallback */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </Suspense>
-              </BrowserRouter>
-              </EditModeProvider>
-            </ToastProvider>
-          </RobProvider>
-        </StudentProgressProvider>
-      </AuthProvider>
-    </ConfigProvider>
+    <BrowserRouter>
+      <ConfigProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ConfigProvider>
+    </BrowserRouter>
   )
 }

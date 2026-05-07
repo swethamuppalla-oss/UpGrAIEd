@@ -38,11 +38,11 @@ export default function DashboardV2() {
         {/* Logo */}
         <div style={{ padding: '22px 20px 20px', borderBottom: '1px solid rgba(110,220,95,0.12)' }}>
           <div style={{ fontWeight: 800, fontSize: 16, color: '#0A1F12', cursor: 'pointer' }}
-            onClick={() => nav('/upgr-ed')}>
+            onClick={() => nav('/upgraied')}>
             UpgrAIed
           </div>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#6EDC5F', marginTop: 2, letterSpacing: '0.06em' }}>
-            UPGR-ED
+            UPGRAIED
           </div>
         </div>
 
@@ -70,7 +70,7 @@ export default function DashboardV2() {
         {/* Back link */}
         <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(110,220,95,0.1)' }}>
           <button
-            onClick={() => nav('/upgr-ed')}
+            onClick={() => nav('/upgraied')}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               fontSize: 13, color: '#4B6B57', padding: 0,

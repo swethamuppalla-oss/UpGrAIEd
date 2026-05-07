@@ -3,7 +3,7 @@ import PracticeQuestion from '../models/PracticeQuestion.js'
 import StudentConceptRecord from '../models/StudentConceptRecord.js'
 import { getTemplatesByConcept } from './templateService.js'
 import { generateFromTemplate } from './questionGenerator.js'
-import { getStudentWeakAreas } from './weakAreaAggregator.js'
+import { getStudentWeakAreas } from './studentWeakAreaService.js'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 

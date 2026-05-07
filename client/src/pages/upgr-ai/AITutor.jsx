@@ -46,7 +46,7 @@ export default function AITutor() {
         position: 'sticky', top: 0, zIndex: 10, flexShrink: 0,
       }}>
         <button
-          onClick={() => nav('/upgr-ai')}
+          onClick={() => nav('/upgraied')}
           style={{
             background: 'none', border: 'none', cursor: 'pointer',
             color: '#4B6B57', fontSize: 13, fontWeight: 500,

@@ -10,6 +10,7 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(null)
+  const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -21,19 +22,23 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = async () => {
-    const newToken = await demoLoginService()
-    setToken(newToken)
+    const { token, user } = await demoLoginService()
+    setToken(token)
+    setUser(user)
   }
 
   const logout = async () => {
     await logoutService()
     setToken(null)
+    setUser(null)
   }
 
   const isAuthenticated = !!token
 
+  console.log("AUTH TOKEN:", token)
+
   return (
-    <AuthContext.Provider value={{ user: null, token, isAuthenticated, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

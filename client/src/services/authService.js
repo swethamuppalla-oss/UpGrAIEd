@@ -12,11 +12,12 @@ export const login = async (email, password) => {
 export const demoLogin = async () => {
   const res = await API.post("/auth/demo-login");
 
-  const token = res.data.token;
+  const { token, user } = res.data;
 
   localStorage.setItem("token", token);
+  localStorage.setItem("user", JSON.stringify(user));
 
-  return token;
+  return { token, user };
 };
 
 // 🚪 LOGOUT

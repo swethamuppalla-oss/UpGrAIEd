@@ -143,7 +143,7 @@ export default function Login() {
       login(data.user, data.token)
       trackEvent(EVENTS.LOGIN_SUCCESS, { method: 'email', role: data.user.role })
       identifyUser(data.user?._id || data.user?.id)
-      navigate(ROLE_ROUTES[data.user.role] || '/login', { replace: true })
+      window.location.href = '/upgraied'
     } catch (err) {
       setFormError(err.message)
     } finally {

@@ -4,8 +4,8 @@ export default function TopBar() {
   const nav = useNavigate();
   const loc = useLocation();
 
-  const isAI = loc.pathname.includes("upgr-ai");
-  const isED = loc.pathname.includes("upgr-ed");
+  const isAI = loc.pathname.includes("upgraied");
+  const isED = loc.pathname.includes("upgred");
 
   return (
     <div className="topbar">

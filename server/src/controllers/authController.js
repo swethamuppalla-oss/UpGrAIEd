@@ -2,16 +2,26 @@ import jwt from "jsonwebtoken";
 
 export const demoLogin = async (req, res) => {
   try {
+    const user = {
+      id: "demo-user",
+      role: "student",
+      name: "Demo User"
+    };
+
     const token = jwt.sign(
-      { id: "demo-user", role: "student" },
+      user,
       process.env.JWT_SECRET || "dev_secret",
       { expiresIn: "7d" }
     );
 
-    res.status(200).json({ token });
+    return res.status(200).json({
+      success: true,
+      token,
+      user
+    });
   } catch (err) {
     console.error("🔥 DEMO LOGIN ERROR:", err);
-    res.status(500).json({ error: "Login failed" });
+    return res.status(500).json({ error: "Login failed" });
   }
 };
 
