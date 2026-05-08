@@ -1,25 +1,14 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/ui/Toast'
-import Sidebar from '../components/layout/Sidebar'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import {
   getAdminStats, getReservations, approveReservation,
   getAdminPayments, getAdminUsers, blockUser, unblockUser,
   createUser, getUsers
 } from '../services'
-
-const NAV_ITEMS = [
-  { id: 'overview',     icon: '📊', label: 'Overview' },
-  { id: 'reservations', icon: '📝', label: 'Reservations' },
-  { id: 'payments',     icon: '💳', label: 'Payments' },
-  { id: 'users',        icon: '👥', label: 'Users' },
-  { id: 'divider-website', divider: true, label: 'Website' },
-  { id: 'content',      icon: '📝', label: 'Content Editor',  path: '/admin/content' },
-  { id: 'video-cms',    icon: '🎬', label: 'Video Library',   path: '/admin/videos' },
-  { id: 'ui-config',    icon: '🎨', label: 'UI Configurator', path: '/admin/ui' },
-]
 
 function getInitials(name = '') {
   return name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('') || 'A'
@@ -41,7 +30,9 @@ function normalizeUser(u) {
 export default function AdminDashboard() {
   const { user, logout } = useAuth()
   const { showToast }    = useToast()
-  const [activeTab, setActiveTab] = useState('overview')
+  
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeTab = searchParams.get('tab') || 'overview'
 
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState(null)
@@ -281,27 +272,16 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
-      <Sidebar
-        items={NAV_ITEMS}
-        activeItem={activeTab}
-        onItemClick={setActiveTab}
-        userName={user?.name || 'Admin'}
-        userRole="admin"
-        userInitials={getInitials(user?.name)}
-        onSignOut={() => logout()}
-      />
-      <main className="main-content">
-        <div className="page-header">
-          <h1 className="page-title">Admin Dashboard</h1>
-        </div>
-        
-        {activeTab === 'overview' && renderStats()}
-        {activeTab === 'reservations' && renderReservations()}
-        {activeTab === 'payments' && renderPayments()}
-        {activeTab === 'users' && renderUsers()}
-      </main>
-    </div>
+    <>
+      <div className="page-header">
+        <h1 className="page-title">Admin Dashboard</h1>
+      </div>
+      
+      {activeTab === 'overview' && renderStats()}
+      {activeTab === 'reservations' && renderReservations()}
+      {activeTab === 'payments' && renderPayments()}
+      {activeTab === 'users' && renderUsers()}
+    </>
   )
 }
 

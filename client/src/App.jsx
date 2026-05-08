@@ -119,7 +119,7 @@ function AppRoutes() {
 
                 {/* Admin */}
                 <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-                  <Route path="/dashboard/admin" element={<AdminDashboard />} />
+                  <Route path="/dashboard/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
                   <Route path="/admin-control"   element={<AdminLayout><AdminControlPanel /></AdminLayout>} />
                   <Route path="/admin/content"   element={<AdminLayout><AdminContentEditor /></AdminLayout>} />
                   <Route path="/admin/videos"    element={<AdminLayout><AdminVideoCMS /></AdminLayout>} />

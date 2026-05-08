@@ -6,10 +6,16 @@ function getInitials(name = '') {
 }
 
 const NAV_ITEMS = [
-  { icon: '📊', label: 'Dashboard',     path: '/dashboard/admin' },
-  { icon: '⚙️', label: 'Control Panel', path: '/admin-control' },
-  { icon: '📝', label: 'Content',       path: '/admin/content' },
-  { icon: '🎨', label: 'UI Config',     path: '/admin/ui' },
+  { id: 'divider-mgmt', divider: true, label: 'Analytics & Management' },
+  { icon: '📊', label: 'Platform Overview', path: '/dashboard/admin?tab=overview' },
+  { icon: '📝', label: 'User Reservations', path: '/dashboard/admin?tab=reservations' },
+  { icon: '💳', label: 'Payments & Revenue', path: '/dashboard/admin?tab=payments' },
+  { icon: '👥', label: 'User Directory', path: '/dashboard/admin?tab=users' },
+
+  { id: 'divider-cms', divider: true, label: 'Platform Config (CMS)' },
+  { icon: '🎬', label: 'Video Library (Lessons)', path: '/admin/videos' },
+  { icon: '✍️', label: 'Website Content (Text)', path: '/admin/content' },
+  { icon: '🎨', label: 'Theme & Mascot (UI Config)', path: '/admin/ui' },
 ]
 
 export default function AdminSidebar() {
@@ -64,7 +70,24 @@ export default function AdminSidebar() {
         overflowY: 'auto',
       }}>
         {NAV_ITEMS.map((item) => {
-          const isActive = location.pathname === item.path
+          if (item.divider) {
+            return (
+              <div key={item.id} style={{
+                padding: '12px 12px 4px',
+                fontSize: 10,
+                fontWeight: 700,
+                color: 'var(--text-muted)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                borderTop: '1px solid var(--border-color)',
+                marginTop: 8,
+              }}>
+                {item.label}
+              </div>
+            )
+          }
+
+          const isActive = location.pathname + location.search === item.path || (location.pathname === item.path && !location.search && !item.path.includes('?'))
           return (
             <Link
               key={item.path}
