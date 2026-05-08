@@ -98,14 +98,16 @@ export function ConfigProvider({ children }) {
 
   /**
    * Optimistically update a top-level config key in memory + cache,
-   * then persist to the server.  Used by AdminControlPanel after save.
+   * then persist to the server. Throws on server error so callers can show feedback.
    */
   const updateConfig = useCallback(async (key, value) => {
+    // Optimistic local update
     setConfig(prev => {
       const next = { ...prev, [key]: value }
       writeCache(next)
       return next
     })
+    // Persist — let errors propagate so admin UI can show them
     await updateUIConfig({ [key]: value })
   }, [])
 

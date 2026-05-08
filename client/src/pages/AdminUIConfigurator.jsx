@@ -165,15 +165,24 @@ export default function AdminUIConfigurator() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      await Promise.all([
-        updateConfig('ui', uiConfig),
-        updateConfig('theme', themeConfig),
-        updateConfig('pages', pagesConfig),
-      ])
+      // Send everything as one merged document — matches the server's deepMerge
+      // which stores the entire config under the 'ui' key in SiteConfig.
+      const payload = {
+        ...uiConfig,
+        theme: { ...themeConfig, palette: activePalette },
+        pages: pagesConfig,
+      }
+      const { updateUIConfig } = await import('../services/uiConfigService')
+      await updateUIConfig(payload)
+
+      // Also update the local config cache so the rest of the app sees the changes
+      await updateConfig('ui', payload)
+
       trackEvent('admin_update', { tab: activeTab })
-      showToast('Configuration saved', 'success')
-    } catch {
-      showToast('Save failed — try again', 'error')
+      showToast('✅ Saved to database!', 'success')
+    } catch (err) {
+      console.error('[AdminUIConfigurator] Save failed:', err)
+      showToast(`Save failed — ${err?.response?.data?.message || err?.message || 'try again'}`, 'error')
     } finally {
       setSaving(false)
     }
