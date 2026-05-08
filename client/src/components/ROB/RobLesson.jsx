@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import RobCharacter from './RobCharacter'
+import BloomCharacter from '../Bloom/BloomCharacter'
 
 const stages = ['hook', 'problem', 'activation', 'challenge', 'feedback', 'concept', 'reward']
 
@@ -17,15 +17,15 @@ export default function RobLesson({ lesson, onComplete }) {
         emotion: 'happy',
         speech: lesson.hook,
         title: lesson.title,
-        body: 'ROB is warming up for a quick lesson. Tap continue when you are ready to teach.',
+        body: 'Bloom is warming up for a quick lesson. Tap continue when you are ready to teach.',
       }
     }
     if (stage === 'problem') {
       return {
-        emotion: 'wrong',
+        emotion: 'error',
         speech: lesson.problem,
-        title: 'ROB Needs Help',
-        body: 'Something is off. Let us fix ROBs understanding before he teaches anyone the wrong thing.',
+        title: 'Bloom Needs Help',
+        body: 'Something is off. Let us fix Bloom\'s understanding before he teaches anyone the wrong thing.',
       }
     }
     if (stage === 'activation') {
@@ -33,13 +33,13 @@ export default function RobLesson({ lesson, onComplete }) {
         emotion: 'thinking',
         speech: lesson.activation,
         title: 'Your Turn',
-        body: 'Pick the answer that would make ROB a little smarter.',
+        body: 'Pick the answer that would make Bloom a little smarter.',
       }
     }
     if (stage === 'feedback') {
       return {
         emotion: isCorrect ? 'excited' : 'error',
-        speech: isCorrect ? 'Correct! ROB is leveling up.' : 'Almost. Let me show you the idea.',
+        speech: isCorrect ? 'Correct! Bloom is leveling up.' : 'Almost. Let me show you the idea.',
         title: isCorrect ? 'Nice Work' : 'Good Catch',
         body: lesson.explanation,
       }
@@ -57,7 +57,7 @@ export default function RobLesson({ lesson, onComplete }) {
         emotion: 'excited',
         speech: `+${lesson.xpReward} XP unlocked!`,
         title: 'Mission Complete',
-        body: `ROB learned ${lesson.title} and earned the ${lesson.badgeEmoji} badge.`,
+        body: `Bloom learned ${lesson.title} and earned the ${lesson.badgeEmoji} badge.`,
       }
     }
     return null
@@ -83,7 +83,7 @@ export default function RobLesson({ lesson, onComplete }) {
       >
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 12, letterSpacing: 1.2, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 10 }}>
-            ROB Lesson
+            Bloom Lesson
           </div>
           <div style={{ height: 10, background: 'rgba(255,255,255,0.08)', borderRadius: 999, overflow: 'hidden' }}>
             <div
@@ -203,11 +203,11 @@ export default function RobLesson({ lesson, onComplete }) {
           background: 'radial-gradient(circle at top, rgba(123,63,228,0.2), transparent 38%), rgba(255,255,255,0.02)',
         }}
       >
-        <RobCharacter
+        <BloomCharacter
           size="large"
           emotion={stageContent.emotion}
           speech={stageContent.speech}
-          chestProgress={progress}
+          level={1}
         />
         <div style={{ marginTop: 22, textAlign: 'center', color: 'var(--text-secondary)', maxWidth: 260 }}>
           Stage {stageIndex + 1} of {stages.length}

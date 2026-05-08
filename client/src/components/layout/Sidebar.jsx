@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useState } from 'react'
 
 export default function Sidebar({
   items,
@@ -10,6 +11,7 @@ export default function Sidebar({
   onSignOut
 }) {
   const location = useLocation()
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   return (
     <div className="dark-surface" style={{
@@ -29,16 +31,95 @@ export default function Sidebar({
         borderBottom: '1px solid var(--border-color)',
         paddingTop: '24px' // Adding little padding for logo
       }}>
-        <span style={{
-          fontFamily: "'Clash Display', 'Inter', sans-serif",
-          fontSize: '20px',
-          fontWeight: 700,
-          background: 'linear-gradient(135deg, #9B6FF4, #3B82F6)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-        }}>
-          UpgrAIed
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #9B6FF4, #3B82F6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+            🌿
+          </div>
+          <span style={{
+            fontFamily: "'Clash Display', 'Inter', sans-serif",
+            fontSize: '20px',
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, #9B6FF4, #3B82F6)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}>
+            UpGrAIEd
+          </span>
+        </div>
+      </div>
+
+      {/* Product Selector Dropdown */}
+      <div style={{ padding: '0 12px 12px', borderBottom: '1px solid var(--border-color)', position: 'relative' }}>
+        <button
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          style={{
+            width: '100%',
+            padding: '10px 14px',
+            borderRadius: 10,
+            background: 'var(--bg-soft)',
+            border: '1px solid var(--border-color)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            color: 'var(--text-inverse)',
+            fontFamily: "'Satoshi', 'Inter', sans-serif",
+            fontSize: 14,
+            fontWeight: 600,
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(123,63,228,0.4)'}
+          onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-color)'}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 16 }}>🧠</span>
+            UpGrAIEd
+          </div>
+          <span style={{ fontSize: 10, color: 'var(--text-secondary)', transform: dropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+            ▼
+          </span>
+        </button>
+
+        {dropdownOpen && (
+          <div style={{
+            position: 'absolute',
+            top: 'calc(100% - 8px)',
+            left: 12,
+            right: 12,
+            background: '#1a1b26',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 10,
+            padding: 4,
+            zIndex: 100,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+          }}>
+            <button style={{
+              width: '100%', padding: '8px 10px', borderRadius: 6,
+              background: 'rgba(123,63,228,0.15)', border: 'none',
+              display: 'flex', alignItems: 'center', gap: 8,
+              color: '#9B67F0', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            }}>
+              <span style={{ fontSize: 16 }}>🧠</span> UpGrAIEd
+            </button>
+            <button style={{
+              width: '100%', padding: '8px 10px', borderRadius: 6,
+              background: 'transparent', border: 'none',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              color: 'var(--text-muted)', fontSize: 13, fontWeight: 500, cursor: 'not-allowed',
+              opacity: 0.7,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 16 }}>📚</span> UpGrEd
+              </div>
+              <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: 4, color: '#fff' }}>
+                Soon
+              </span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Nav Items */}

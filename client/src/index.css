@@ -5,15 +5,15 @@
 
 :root {
   /* Backgrounds */
-  --bg-main: #FFFFFF;
-  --bg-card: #F7FFF8;
-  --bg-soft: #F0FFF4;
+  --bg-main: #0A0F16;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-soft: rgba(255, 255, 255, 0.06);
 
   /* Text */
-  --text-primary: #0A1F12;
-  --text-secondary: #4B6B57;
-  --text-inverse: #ffffff;   /* for elements on dark/colored backgrounds */
-  --text-muted: #4B6B57;
+  --text-primary: #F0FFF4;
+  --text-secondary: rgba(240, 255, 244, 0.6);
+  --text-inverse: #ffffff;
+  --text-muted: rgba(240, 255, 244, 0.4);
 
   /* Accent palette */
   --accent-purple:       #7B3FE4;
@@ -64,6 +64,8 @@
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   color: var(--text-primary);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
 }
 
 .lesson-container {
@@ -276,10 +278,12 @@ a:hover {
    GLASS CARD
    ============================================================ */
 .glass-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
   color: var(--text-primary);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
 }
 
 /* ============================================================

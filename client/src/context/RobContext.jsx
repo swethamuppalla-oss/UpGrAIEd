@@ -41,8 +41,8 @@ export function RobProvider({ children }) {
   const [xpToday, setXpToday] = useState(saved.xpToday || 0)
 
   // Companion / naming state
-  const [robName, setRobNameState] = useState(saved.robName || '')
-  const [robColor, setRobColorState] = useState(saved.robColor || 'cyan')
+  const [robName, setRobNameState] = useState(saved.robName || 'Bloom')
+  const [robColor, setRobColorState] = useState(saved.robColor || 'purple')
   const [companionData, setCompanionData] = useState(null)
 
   const persistState = (nextState) => {
@@ -76,8 +76,8 @@ export function RobProvider({ children }) {
           questionsAnswered: remote.questionsAnswered || 0,
           correctAnswers: remote.correctAnswers || 0,
           xpToday: remote.xpToday || 0,
-          robName: remote.robName || '',
-          robColor: remote.robColor || 'cyan',
+          robName: remote.robName || 'Bloom',
+          robColor: remote.robColor || 'purple',
         })
       })
       .catch(() => {})
@@ -162,7 +162,7 @@ export function RobProvider({ children }) {
   const levelProgress = nextLevelXP === currentLevelXP
     ? 100
     : Math.max(0, Math.min(100, ((robXP - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100))
-  const levelTitle = ROB_LEVEL_TITLES[robLevel] || 'AI Master'
+  const levelTitle = ROB_LEVEL_TITLES[robLevel] || 'Bloom Master'
   const accuracy = questionsAnswered > 0
     ? Math.round((correctAnswers / questionsAnswered) * 100)
     : 0

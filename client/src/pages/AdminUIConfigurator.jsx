@@ -225,9 +225,19 @@ export default function AdminUIConfigurator() {
           <div>
             <LogoSection
               logo={uiConfig.logo}
+              mascot={uiConfig.mascot}
               brandName={uiConfig.brandName}
               uploading={logoUploading}
               onUpload={handleLogoUpload}
+              onUploadMascot={async (file) => {
+                try {
+                  const res = await uploadMedia(file)
+                  handleUiField('mascot', res.url)
+                  showToast('Mascot image uploaded', 'success')
+                } catch {
+                  showToast('Mascot upload failed', 'error')
+                }
+              }}
               onBrandNameChange={v => setUiConfig(prev => ({ ...prev, brandName: v }))}
             />
             <HeroTextSection
@@ -283,8 +293,9 @@ export default function AdminUIConfigurator() {
 }
 
 // ── Logo & Brand section ──────────────────────────────────────────────────────
-function LogoSection({ logo, brandName, uploading, onUpload, onBrandNameChange }) {
+function LogoSection({ logo, mascot, brandName, uploading, onUpload, onUploadMascot, onBrandNameChange }) {
   const fileRef = useRef(null)
+  const mascotRef = useRef(null)
 
   return (
     <div style={panel}>
@@ -345,6 +356,35 @@ function LogoSection({ logo, brandName, uploading, onUpload, onBrandNameChange }
               />
             </div>
           )}
+          
+          <div style={{ marginTop: 24, padding: '16px', background: 'rgba(110,220,95,0.05)', borderRadius: 12, border: '1px solid rgba(110,220,95,0.1)' }}>
+            <label style={fieldLabel}>Bloom Mascot URL (Global)</label>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              {mascot && <img src={mascot} alt="Mascot" style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover' }} />}
+              <input
+                value={mascot || ''}
+                onChange={e => onBrandNameChange(e.target.value)} // Wait, need a custom handler if typed, but upload is better. We'll just make it readonly and require upload for now, or pass a handler. Let's make it readOnly for simplicity and rely on upload button below.
+                readOnly
+                placeholder="Upload to set mascot ->"
+                style={{ ...inputBase, flex: 1 }}
+              />
+              <label style={{
+                padding: '8px 12px', borderRadius: 8, cursor: 'pointer',
+                background: '#6EDC5F', color: '#0A1F12', fontSize: 12, fontWeight: 700,
+                whiteSpace: 'nowrap'
+              }}>
+                Upload
+                <input
+                  ref={mascotRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={e => e.target.files?.[0] && onUploadMascot(e.target.files[0])}
+                  style={{ display: 'none' }}
+                />
+              </label>
+            </div>
+            <p style={{ ...hint, marginTop: 8 }}>This replaces the Bloom placeholder across dashboards and modules.</p>
+          </div>
         </div>
       </div>
     </div>

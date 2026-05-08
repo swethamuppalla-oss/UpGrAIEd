@@ -4,9 +4,9 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../components/ui/Toast'
 import Sidebar from '../components/layout/Sidebar'
 import LoadingSkeleton from '../components/ui/LoadingSkeleton'
-import RobCharacter from '../components/ROB/RobCharacter'
+import BloomCharacter from '../components/Bloom/BloomCharacter'
 import ChapterUpload from '../components/chapter/ChapterUpload'
-import { getChildInfo, getChildActivity, getParentBilling } from '../services'
+import { getChildInfo, getChildActivity, getParentBilling, createPaymentOrder, verifyPayment } from '../services'
 import { useConfig } from '../context/ConfigContext'
 
 const NAV_ITEMS = [
@@ -119,13 +119,13 @@ function OverviewTab({ child, activity, loading }) {
         display: 'flex', gap: 32, alignItems: 'center'
       }}>
         <div style={{ padding: 10, background: 'rgba(0,0,0,0.2)', borderRadius: '50%' }}>
-          <RobCharacter size="medium" emotion="happy" />
+          <BloomCharacter size="medium" emotion="happy" />
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <span style={{ fontSize: 24 }}>🤖</span>
+            <span style={{ fontSize: 24 }}>🌿</span>
             <span style={{ fontWeight: 700, color: '#00D4FF', textTransform: 'uppercase', letterSpacing: 1, fontSize: 13 }}>
-              {config?.ui?.text?.parent_weekly_update || 'ROB Weekly Update'}
+              {config?.ui?.text?.parent_weekly_update || 'Bloom Weekly Update'}
             </span>
           </div>
           <p style={{ color: 'var(--text-inverse)', fontSize: 18, lineHeight: 1.5, marginBottom: 24, maxWidth: 600 }}>
@@ -196,6 +196,63 @@ function BillingTab({ billing, navigate, showToast, loading }) {
     )
   }
 
+  const handlePayment = async () => {
+    try {
+      showToast('Initializing payment...', 'info')
+      const order = await createPaymentOrder({ amount: billing.amount || 50000 })
+      
+      if (!order || !order.id) {
+        throw new Error('Failed to create order')
+      }
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_dummykey123',
+        amount: order.amount,
+        currency: order.currency,
+        name: 'UpGrAIEd',
+        description: 'Lifetime Access Payment',
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            showToast('Verifying payment...', 'info')
+            const verification = await verifyPayment({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature
+            })
+            
+            if (verification.success) {
+              showToast('Payment successful! Lifetime access unlocked.', 'success')
+              // Optionally refresh billing state or navigate
+              navigate(0) // Refresh the page to get new state
+            } else {
+              showToast('Payment verification failed.', 'error')
+            }
+          } catch (err) {
+            showToast('An error occurred during verification.', 'error')
+          }
+        },
+        prefill: {
+          name: 'Parent User',
+          email: 'parent@upgraied.com',
+          contact: '9999999999'
+        },
+        theme: {
+          color: '#7B3FE4'
+        }
+      }
+
+      const rzp = new window.Razorpay(options)
+      rzp.on('payment.failed', function (response) {
+        showToast('Payment failed: ' + response.error.description, 'error')
+      })
+      rzp.open()
+    } catch (error) {
+      showToast('Error initializing payment. Please try again later.', 'error')
+      console.error(error)
+    }
+  }
+
   if (billing.status === 'approved') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -206,7 +263,7 @@ function BillingTab({ billing, navigate, showToast, loading }) {
           <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 24 }}>
             Click below to complete your payment and unlock lifetime access to the programme.
           </div>
-          <button className="btn-primary" onClick={() => navigate('/payment')}>Pay Now →</button>
+          <button className="btn-primary" onClick={handlePayment}>Pay Now →</button>
         </div>
       </div>
     )

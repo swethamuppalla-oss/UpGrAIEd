@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import './Hero.scss';
 import { EditableText, EditableImage, cmsKey } from '../../cms';
+import { useConfig } from '../../../context/ConfigContext';
 
 const LESSONS = [
   { name: 'The Water Cycle',       progress: 62,  badge: 'Day 4', active: true  },
@@ -88,28 +90,21 @@ export default function Hero({ data, onUpdate, onCtaClick }) {
               className="u-hero__hero-img"
             />
           ) : (
-            <div className="u-hero__screen">
-              <div className="u-hero__screen-bar">
-                <span /><span /><span />
-              </div>
-
-              <p className="u-hero__screen-title">Your Lessons</p>
-
-              {LESSONS.map(({ name, progress, badge, active }) => (
-                <div key={name} className={`u-hero__lesson-card${active ? ' u-hero__lesson-card--active' : ''}`}>
-                  <div className="u-hero__lesson-top">
-                    <span className="u-hero__lesson-name">{name}</span>
-                    <span className="u-hero__lesson-badge">{badge}</span>
-                  </div>
-                  <div className="u-hero__progress-bar">
-                    <span style={{ width: `${progress}%` }} />
+            <div className="u-hero__slideshow">
+              <div className="u-hero__slideshow-inner">
+                {/* We can cycle through images or UI components here */}
+                <div className="u-hero__slide u-hero__slide--active">
+                  <div className="u-hero__glass-panel">
+                    <img 
+                      src={useConfig()?.ui?.mascot || "https://images.unsplash.com/photo-1633355444132-636f6d8da204?q=80&w=600&auto=format&fit=crop"} 
+                      alt="Bloom Mascot" 
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 10px 30px rgba(123,63,228,0.4))' }}
+                    />
+                    <div className="u-hero__glass-badge">
+                      <span className="u-hero__glass-dot" /> Bloom AI
+                    </div>
                   </div>
                 </div>
-              ))}
-
-              <div className="u-hero__screen-footer">
-                <span className="u-hero__xp">⚡ 840 XP earned</span>
-                <span className="u-hero__streak">🔥 5-day streak</span>
               </div>
             </div>
           )}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import RobBuddyPanel from './RobBuddyPanel'
-import RobCharacter from './RobCharacter'
+import BloomCharacter from '../Bloom/BloomCharacter'
 
 const messages = [
   'Hey! Did you know AI can recognize faces? 🤖',
@@ -213,11 +213,12 @@ export default function RobFloating({ currentModuleId }) {
             userSelect: 'none',
           }}
         >
-          <RobCharacter
+          <BloomCharacter
             size={isMobile ? 'small' : 'medium'}
             emotion={emotion}
             speech={speech}
-            chestProgress={72}
+            chestText=""
+            level={1}
             style={{ width: isMobile ? 60 : undefined }}
           />
         </div>

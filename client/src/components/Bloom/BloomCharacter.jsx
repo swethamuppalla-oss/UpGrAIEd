@@ -99,7 +99,7 @@ export default function BloomCharacter({
   const blinkTimer = useRef(null)
   
   const config = useConfig()
-  const customImg = config?.mascot?.bloom?.expressions?.[emotion] || config?.mascot?.bloom?.avatar
+  const customImg = config?.ui?.mascot || config?.mascot?.bloom?.expressions?.[emotion] || config?.mascot?.bloom?.avatar
 
   // Random blink every 3–6 s
   useEffect(() => {
