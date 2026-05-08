@@ -71,21 +71,16 @@ function AppRoutes() {
           <EditModeProvider>
             <Suspense fallback={<PageSpinner />}>
               <Routes>
-                {/* Product selector */}
-                <Route path="/home" element={<Home />} />
+                {/* Root: product gateway */}
+                <Route path="/" element={<Home />} />
 
-                {/* UpGrAIEd — AI tutor (auth-gated) */}
-                <Route path="/upgraied/*" element={
-                  isAuthenticated
-                    ? <ProductLayout><DashboardV2 /></ProductLayout>
-                    : <Navigate to="/login" replace />
-                } />
+                {/* UpGrAIEd landing */}
+                <Route path="/upgraied" element={<UpgraiedLanding />} />
 
-                {/* UpGrEd — coming soon */}
-                <Route path="/upgred/*" element={<ProductLayout><UpgrEdLanding /></ProductLayout>} />
+                {/* UpGrEd landing */}
+                <Route path="/upgred" element={<UpgrEdLanding />} />
 
                 {/* Public marketing */}
-                <Route path="/"            element={<UpgraiedLanding />} />
                 <Route path="/why"         element={<WhyUpgraied />} />
                 <Route path="/pricing"     element={<PricingPage />} />
                 <Route path="/book-demo"   element={<BookDemoPage />} />

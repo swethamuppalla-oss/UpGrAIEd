@@ -34,9 +34,9 @@ export default function GrowthNavbar() {
 
   const navLinks = [
     { label: 'Home',      path: '/' },
-    { label: 'Why',       path: '/why-v2' },
-    { label: 'Pricing',   path: '/pricing-v2' },
-    { label: 'Book Demo', path: '/book-demo' },
+    { label: 'UpGrAIEd', path: '/upgraied' },
+    { label: 'UpGrEd',   path: '/upgred' },
+    { label: 'Pricing',  path: '/pricing' },
   ];
 
   return (
@@ -70,7 +70,7 @@ export default function GrowthNavbar() {
           fontSize: '22px', fontWeight: 800, letterSpacing: '-0.02em',
           background: 'linear-gradient(135deg, #2A7A20, #6EDC5F)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-        }}>UpgrAIed</span>
+        }}>UpGrAIEd</span>
       </div>
 
       {/* Desktop Nav */}
