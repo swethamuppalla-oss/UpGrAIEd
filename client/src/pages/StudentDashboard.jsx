@@ -29,9 +29,11 @@ import Dashboard from '../components/dashboard/Dashboard'
 import '../styles/student-dashboard.scss'
 
 const NAV_ITEMS = [
+  { id: 'div-learning', divider: true, label: 'Learning Portal' },
   { id: 'today', icon: '🎯', label: "Today's Lesson" },
   { id: 'home', icon: '🏠', label: 'Home' },
   { id: 'courses', icon: '📚', label: 'My Learning' },
+  { id: 'div-account', divider: true, label: 'Account & Progress' },
   { id: 'progress', icon: '📈', label: 'Progress' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
 ]
@@ -469,7 +471,7 @@ export default function StudentDashboard() {
   )
 
   return (
-    <div className="dark-surface" style={{ minHeight: '100vh' }}>
+    <div style={{ background: 'var(--bg-main)', minHeight: '100vh' }}>
       <style>{`
         @keyframes barShimmer {
           0% { background-position: -200% center; }

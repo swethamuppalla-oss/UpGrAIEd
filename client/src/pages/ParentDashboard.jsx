@@ -10,9 +10,11 @@ import { getChildInfo, getChildActivity, getParentBilling, createPaymentOrder, v
 import { useConfig } from '../context/ConfigContext'
 
 const NAV_ITEMS = [
+  { id: 'div-learning', divider: true, label: 'Learning & Progress' },
   { id: 'overview',  icon: '🏠', label: 'Overview'        },
   { id: 'progress',  icon: '📊', label: "Child's Progress" },
   { id: 'chapters',  icon: '📷', label: 'Upload Chapter'   },
+  { id: 'div-account', divider: true, label: 'Account Management' },
   { id: 'billing',   icon: '💳', label: 'Billing'          },
   { id: 'support',   icon: '📞', label: 'Support'          },
 ]
@@ -357,7 +359,7 @@ export default function ParentDashboard() {
   }
 
   return (
-    <div className="dark-surface" style={{ minHeight: '100vh' }}>
+    <div style={{ background: 'var(--bg-main)', minHeight: '100vh' }}>
       <Sidebar
         items={NAV_ITEMS}
         activeItem={activeTab}
