@@ -5,6 +5,8 @@ import { useToast } from '../components/ui/Toast'
 import { DEFAULT_THEME } from '../config/defaults'
 import { trackEvent } from '../utils/analytics'
 import { PAGES_DEFAULT } from '../utils/uiValidation'
+import { PALETTE_META, themeConfig } from '../theme/themeConfig'
+import { setPalette } from '../theme/themeUtils'
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 const HEX_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/
@@ -76,6 +78,9 @@ export default function AdminUIConfigurator() {
   const [uiConfig, setUiConfig] = useState({ hero: {}, brandName: 'UpGrAIEd', logo: '' })
   const [themeConfig, setThemeConfig] = useState({ ...DEFAULT_THEME })
   const [pagesConfig, setPagesConfig] = useState({ ...PAGES_DEFAULT })
+  const [activePalette, setActivePalette] = useState(
+    () => localStorage.getItem('upgraied_palette') || 'sage'
+  )
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [logoUploading, setLogoUploading] = useState(false)
@@ -148,6 +153,13 @@ export default function AdminUIConfigurator() {
     } finally {
       setHeroImgUploading(false)
     }
+  }
+
+  const handlePaletteApply = (paletteId) => {
+    setActivePalette(paletteId)
+    setPalette(paletteId)  // applies immediately to the live page
+    // Also fold into themeConfig so it's persisted on Save
+    setThemeConfig(prev => ({ ...prev, palette: paletteId }))
   }
 
   const handleSave = async () => {
@@ -223,6 +235,7 @@ export default function AdminUIConfigurator() {
       {activeTab === 'ui' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 32, alignItems: 'start' }}>
           <div>
+            <ThemePaletteSection activePalette={activePalette} onApply={handlePaletteApply} />
             <LogoSection
               logo={uiConfig.logo}
               mascot={uiConfig.mascot}
@@ -233,9 +246,9 @@ export default function AdminUIConfigurator() {
                 try {
                   const res = await uploadMedia(file)
                   handleUiField('mascot', res.url)
-                  showToast('Mascot image uploaded', 'success')
+                  showToast('Bloom image uploaded ✅', 'success')
                 } catch {
-                  showToast('Mascot upload failed', 'error')
+                  showToast('Upload failed', 'error')
                 }
               }}
               onBrandNameChange={v => setUiConfig(prev => ({ ...prev, brandName: v }))}
@@ -292,88 +305,102 @@ export default function AdminUIConfigurator() {
   )
 }
 
-// ── Logo & Brand section ──────────────────────────────────────────────────────
+// ── Logo & Brand section ────────────────────────────────────────────────
 function LogoSection({ logo, mascot, brandName, uploading, onUpload, onUploadMascot, onBrandNameChange }) {
-  const fileRef = useRef(null)
+  const fileRef   = useRef(null)
   const mascotRef = useRef(null)
 
   return (
-    <div style={panel}>
-      <div style={sectionTitle}>🖼️ Logo &amp; Brand Identity</div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 20, alignItems: 'start' }}>
-
-        {/* Logo preview + upload trigger */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 88, height: 88, borderRadius: 12,
-            background: 'rgba(110,220,95,0.06)',
-            border: '2px dashed rgba(110,220,95,0.25)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            overflow: 'hidden',
-          }}>
-            {logo
-              ? <img src={logo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-              : <span style={{ fontSize: 28 }}>🌿</span>
-            }
-          </div>
-          <label style={{
-            padding: '6px 14px', borderRadius: 50, cursor: uploading ? 'not-allowed' : 'pointer',
-            background: 'rgba(110,220,95,0.10)', border: '1px solid rgba(110,220,95,0.22)',
-            color: '#A8F5A2', fontSize: 11, fontWeight: 700, opacity: uploading ? 0.6 : 1,
-            whiteSpace: 'nowrap',
-          }}>
-            {uploading ? 'Uploading…' : 'Upload Logo'}
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              disabled={uploading}
-              onChange={e => e.target.files?.[0] && onUpload(e.target.files[0])}
-              style={{ display: 'none' }}
-            />
-          </label>
-        </div>
-
-        {/* Brand name field */}
-        <div>
-          <label style={fieldLabel}>Brand Name</label>
-          <input
-            value={brandName || ''}
-            onChange={e => onBrandNameChange(e.target.value)}
-            placeholder="UpGrAIEd"
-            style={inputBase}
-            onFocus={e => (e.target.style.borderColor = 'rgba(110,220,95,0.5)')}
-            onBlur={e => (e.target.style.borderColor = 'rgba(110,220,95,0.18)')}
-          />
-          <p style={hint}>Used in nav, browser tab, and footers</p>
-          {logo && (
-            <div style={{ marginTop: 12 }}>
-              <label style={fieldLabel}>Current Logo URL</label>
+    <>
+      {/* Brand panel */}
+      <div style={panel}>
+        <div style={sectionTitle}>🖌️ Logo & Brand Identity</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 20, alignItems: 'start' }}>
+          {/* Logo upload */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+            <div style={{
+              width: 88, height: 88, borderRadius: 12,
+              background: 'rgba(110,220,95,0.06)',
+              border: '2px dashed rgba(110,220,95,0.25)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden',
+            }}>
+              {logo
+                ? <img src={logo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                : <span style={{ fontSize: 28 }}>🌿</span>
+              }
+            </div>
+            <label style={{
+              padding: '6px 14px', borderRadius: 50, cursor: uploading ? 'not-allowed' : 'pointer',
+              background: 'rgba(110,220,95,0.10)', border: '1px solid rgba(110,220,95,0.22)',
+              color: '#A8F5A2', fontSize: 11, fontWeight: 700, opacity: uploading ? 0.6 : 1,
+              whiteSpace: 'nowrap',
+            }}>
+              {uploading ? 'Uploading…' : 'Upload Logo'}
               <input
-                value={logo}
-                readOnly
-                style={{ ...inputBase, color: 'rgba(168,245,162,0.45)', fontSize: 11 }}
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={e => e.target.files?.[0] && onUpload(e.target.files[0])}
+                style={{ display: 'none' }}
+              />
+            </label>
+          </div>
+
+          {/* Brand name */}
+          <div>
+            <label style={fieldLabel}>Brand Name</label>
+            <input
+              value={brandName || ''}
+              onChange={e => onBrandNameChange(e.target.value)}
+              placeholder="UpGrAIEd"
+              style={inputBase}
+              onFocus={e => (e.target.style.borderColor = 'rgba(110,220,95,0.5)')}
+              onBlur={e => (e.target.style.borderColor = 'rgba(110,220,95,0.18)')}
+            />
+            <p style={hint}>Used in nav, browser tab, and footers</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 🌸 Bloom Mascot panel — most prominent section */}
+      <div style={{ ...panel, border: '1.5px solid rgba(110,220,95,0.35)', background: 'rgba(110,220,95,0.04)' }}>
+        <div style={sectionTitle}>🌸 Bloom Mascot Image</div>
+        <p style={{ ...hint, fontSize: 12, marginBottom: 16, color: 'rgba(168,245,162,0.7)' }}>
+          Upload your <strong style={{ color: '#A8F5A2' }}>actual Bloom photo</strong>. It will be placed
+          exactly as-is across the landing page, hero, and all dashboards —
+          <em> no AI recreation, no alteration</em>.
+        </p>
+
+        {mascot ? (
+          /* Preview of uploaded image */
+          <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+            <div style={{
+              width: 120, height: 120, borderRadius: 16, overflow: 'hidden', flexShrink: 0,
+              border: '2px solid rgba(110,220,95,0.4)',
+              background: 'rgba(110,220,95,0.06)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <img
+                src={mascot}
+                alt="Bloom"
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
             </div>
-          )}
-          
-          <div style={{ marginTop: 24, padding: '16px', background: 'rgba(110,220,95,0.05)', borderRadius: 12, border: '1px solid rgba(110,220,95,0.1)' }}>
-            <label style={fieldLabel}>Bloom Mascot URL (Global)</label>
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-              {mascot && <img src={mascot} alt="Mascot" style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover' }} />}
-              <input
-                value={mascot || ''}
-                onChange={e => onBrandNameChange(e.target.value)} // Wait, need a custom handler if typed, but upload is better. We'll just make it readonly and require upload for now, or pass a handler. Let's make it readOnly for simplicity and rely on upload button below.
-                readOnly
-                placeholder="Upload to set mascot ->"
-                style={{ ...inputBase, flex: 1 }}
-              />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#A8F5A2', marginBottom: 4 }}>
+                ✅ Bloom image uploaded
+              </div>
+              <div style={{ fontSize: 11, color: 'rgba(168,245,162,0.5)', marginBottom: 14, lineHeight: 1.5 }}>
+                Your image is being used as-is across the platform.
+              </div>
               <label style={{
-                padding: '8px 12px', borderRadius: 8, cursor: 'pointer',
-                background: '#6EDC5F', color: '#0A1F12', fontSize: 12, fontWeight: 700,
-                whiteSpace: 'nowrap'
+                display: 'inline-block', padding: '8px 18px', borderRadius: 50,
+                background: '#6EDC5F', color: '#0A1F12',
+                fontSize: 12, fontWeight: 700, cursor: 'pointer',
               }}>
-                Upload
+                Replace Image
                 <input
                   ref={mascotRef}
                   type="file"
@@ -383,13 +410,42 @@ function LogoSection({ logo, mascot, brandName, uploading, onUpload, onUploadMas
                 />
               </label>
             </div>
-            <p style={{ ...hint, marginTop: 8 }}>This replaces the Bloom placeholder across dashboards and modules.</p>
           </div>
-        </div>
+        ) : (
+          /* Upload zone */
+          <label style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: 12, padding: '36px 20px', borderRadius: 16,
+            border: '2px dashed rgba(110,220,95,0.3)',
+            background: 'rgba(110,220,95,0.03)',
+            cursor: 'pointer', transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(110,220,95,0.6)'}
+          onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(110,220,95,0.3)'}
+          >
+            <div style={{ fontSize: 48 }}>🌸</div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#A8F5A2', marginBottom: 6 }}>
+                Click to upload your Bloom photo
+              </div>
+              <div style={{ fontSize: 12, color: 'rgba(168,245,162,0.45)', lineHeight: 1.6 }}>
+                PNG, JPG, WebP · up to 10 MB<br />
+                Your image will appear exactly as uploaded — no changes made.
+              </div>
+            </div>
+            <input
+              ref={mascotRef}
+              type="file"
+              accept="image/*"
+              onChange={e => e.target.files?.[0] && onUploadMascot(e.target.files[0])}
+              style={{ display: 'none' }}
+            />
+          </label>
       </div>
-    </div>
+    </>
   )
 }
+
 
 // ── Hero text section ─────────────────────────────────────────────────────────
 function HeroTextSection({ hero, onChange }) {
@@ -532,6 +588,61 @@ function HeroImageSection({ image, uploading, onUpload, onClear }) {
   )
 }
 
+// ── Theme Palette Picker ──────────────────────────────────────────────────────
+function ThemePaletteSection({ activePalette, onApply }) {
+  return (
+    <div style={{ ...panel, border: '1px solid rgba(110,220,95,0.25)' }}>
+      <div style={sectionTitle}>🎨 Brand Theme Palette</div>
+      <p style={{ ...hint, marginBottom: 18 }}>
+        Pick a one-click preset palette. This updates all colours across every screen instantly.
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+        {PALETTE_META.map(p => {
+          const isActive = activePalette === p.id;
+          return (
+            <button
+              key={p.id}
+              onClick={() => onApply(p.id)}
+              style={{
+                padding: '14px 12px',
+                borderRadius: 14,
+                background: p.bg,
+                border: isActive ? `2px solid ${p.swatch}` : '2px solid transparent',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.2s',
+                boxShadow: isActive ? `0 4px 16px ${p.swatch}44` : '0 2px 8px rgba(0,0,0,0.2)',
+                outline: 'none',
+                fontFamily: 'inherit',
+              }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.transform = 'translateY(-2px)'; }}
+              onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <div style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  background: p.swatch,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 16,
+                }}>{p.emoji}</div>
+                {isActive && (
+                  <div style={{
+                    width: 18, height: 18, borderRadius: '50%',
+                    background: p.swatch, display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', fontSize: 10, color: '#fff',
+                  }}>✓</div>
+                )}
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1A1A', marginBottom: 2 }}>{p.label}</div>
+              <div style={{ fontSize: 10, color: '#666', lineHeight: 1.4 }}>{p.desc}</div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Theme colors section ──────────────────────────────────────────────────────
 const COLOR_FIELDS = [
   { key: 'primaryColor',   label: 'Primary',   hint: 'Buttons, highlights, glow effects' },
@@ -544,7 +655,8 @@ function ThemeColorsSection({ theme, onChange }) {
 
   return (
     <div style={panel}>
-      <div style={sectionTitle}>🎨 Brand Colors</div>
+      <div style={sectionTitle}>🖌️ Fine-Tune Colors</div>
+      <p style={{ ...hint, marginBottom: 16 }}>Manually override individual brand colours after picking a palette.</p>
       {COLOR_FIELDS.map(({ key, label, hint: h }) => (
         <ColorField
           key={key}

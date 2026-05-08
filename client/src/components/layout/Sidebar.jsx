@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 export default function Sidebar({
@@ -10,42 +10,54 @@ export default function Sidebar({
   userInitials,
   onSignOut
 }) {
-  const location = useLocation()
+  const location  = useLocation()
+  const navigate  = useNavigate()
   const [dropdownOpen, setDropdownOpen] = useState(false)
 
   return (
-    <div className="dark-surface" style={{
+    <div style={{
       width: '240px',
       height: '100vh',
       position: 'fixed',
       top: 0,
       left: 0,
-      borderRight: '1px solid var(--bg-soft)',
+      background: 'var(--bg-card)',
+      borderRight: '1px solid var(--border-color)',
       display: 'flex',
       flexDirection: 'column',
-      zIndex: 50
+      zIndex: 50,
     }}>
-      {/* Top Section */}
-      <div style={{
-        padding: '0 24px 24px',
-        borderBottom: '1px solid var(--border-color)',
-        paddingTop: '24px' // Adding little padding for logo
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, #9B6FF4, #3B82F6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-            🌿
-          </div>
-          <span style={{
-            fontFamily: "'Clash Display', 'Inter', sans-serif",
-            fontSize: '20px',
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #9B6FF4, #3B82F6)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}>
-            UpGrAIEd
-          </span>
+      {/* Logo — click to go home */}
+      <div
+        onClick={() => navigate('/')}
+        style={{
+          padding: '20px 24px',
+          borderBottom: '1px solid var(--border-color)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          transition: 'opacity 0.2s',
+        }}
+        title="Back to Home"
+        onMouseEnter={e => e.currentTarget.style.opacity = '0.75'}
+        onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+      >
+        <div style={{
+          width: 32, height: 32, borderRadius: 8,
+          background: 'linear-gradient(135deg, #6EDC5F, #3DAA3A)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 16, boxShadow: '0 2px 8px rgba(110,220,95,0.3)',
+        }}>
+          🌿
         </div>
+        <span style={{
+          fontSize: '18px', fontWeight: 800, letterSpacing: '-0.02em',
+          background: 'linear-gradient(135deg, #2A7A20, #6EDC5F)',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+        }}>
+          UpGrAIEd
+        </span>
       </div>
 
       {/* Product Selector Dropdown */}

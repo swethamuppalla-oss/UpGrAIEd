@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import GrowthNavbar from '../components/growth/GrowthNavbar';
 
 export default function Home() {
   const nav = useNavigate();
@@ -6,47 +7,14 @@ export default function Home() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#F5F4F1',
+      background: 'var(--bg-main)',
       fontFamily: "'Inter', -apple-system, sans-serif",
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Top bar */}
-      <header style={{
-        padding: '20px 32px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        background: '#F5F4F1',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: 'linear-gradient(135deg, #6EDC5F, #3DAA3A)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 18, boxShadow: '0 2px 10px rgba(110,220,95,0.3)',
-          }}>🌿</div>
-          <span style={{
-            fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em',
-            background: 'linear-gradient(135deg, #2A7A20, #6EDC5F)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>UpGrAIEd</span>
-        </div>
-        <button
-          onClick={() => nav('/login')}
-          style={{
-            padding: '9px 22px', borderRadius: 22,
-            background: '#0A1F12', color: '#fff',
-            border: 'none', fontSize: 13, fontWeight: 600,
-            cursor: 'pointer', letterSpacing: '0.01em',
-          }}
-        >
-          Login
-        </button>
-      </header>
+      <GrowthNavbar />
 
-      {/* Hero */}
-      <main style={{ flex: 1, padding: '60px 24px 80px', maxWidth: 700, margin: '0 auto', width: '100%' }}>
+      <main style={{ flex: 1, padding: 'clamp(80px, 10vw, 120px) 24px 80px', maxWidth: 700, margin: '0 auto', width: '100%' }}>
         <p style={{
           fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
           color: '#8A8A8A', marginBottom: 12,

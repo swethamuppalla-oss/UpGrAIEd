@@ -8,7 +8,7 @@ import { EditModeProvider } from './context/EditModeContext'
 import { StudentProgressProvider } from './context/StudentProgressContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import AdminLayout from './layouts/AdminLayout'
-import { applyTheme, getAutoTheme } from "./theme/themeUtils";
+import { applyTheme, getAutoTheme, getSavedPalette, setPalette } from "./theme/themeUtils";
 import { trackEvent } from './utils/analytics';
 
 // ── Eagerly loaded (small / critical path) ────────────────────────────────────
@@ -128,6 +128,7 @@ function AppRoutes() {
 
 export default function App() {
   useEffect(() => {
+    // 1. Apply structural theme (light/dark/night)
     let configTheme = null;
     try {
       const raw = localStorage.getItem('upgraied_config_v2');
@@ -135,12 +136,19 @@ export default function App() {
     } catch (e) {}
 
     const savedTheme = configTheme || localStorage.getItem("theme");
-
     if (savedTheme && savedTheme !== "auto") {
       applyTheme(savedTheme);
     } else {
-      const autoTheme = getAutoTheme();
-      applyTheme(autoTheme);
+      applyTheme(getAutoTheme());
+    }
+
+    // 2. Apply saved brand palette on top (sage/lavender/sky/rose/amber)
+    const savedPalette = getSavedPalette();
+    if (savedPalette) {
+      applyTheme(savedPalette);
+    } else {
+      // Default: sage green
+      applyTheme('sage');
     }
 
     trackEvent('page_view', { page: window.location.pathname });
