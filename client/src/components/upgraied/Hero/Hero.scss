@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  background: linear-gradient(155deg, #07152A 0%, #0B1F3A 45%, #0D2040 100%);
+  background: linear-gradient(155deg, #F0F8F0 0%, #E2F2E2 45%, #D4ECD4 100%);
   padding-block: $space-32;
 
   @include respond-to(md) {
@@ -119,19 +119,19 @@
   font-weight: $font-weight-bold;
   line-height: $line-height-tight;
   letter-spacing: -0.03em;
-  color: $color-text-inverse;
+  color: var(--text-primary);
   margin: 0 0 $space-6;
 
   em {
     font-style: normal;
-    color: $color-accent;
+    color: var(--brand-primary);
   }
 }
 
 .u-hero__subtext {
   font-size: $font-size-lg;
   line-height: $line-height-normal;
-  color: rgba(248, 246, 242, 0.55);
+  color: var(--text-secondary);
   max-width: 420px;
   margin: 0 0 $space-10;
 }
@@ -158,26 +158,26 @@
 
   &--primary {
     border: none;
-    background: $color-accent;
-    color: $color-primary;
-    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.32);
+    background: var(--brand-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 20px rgba(129, 214, 123, 0.32);
 
     &:hover {
-      background: $color-accent-light;
-      box-shadow: 0 8px 30px rgba(245, 158, 11, 0.48);
+      background: var(--brand-accent);
+      box-shadow: 0 8px 30px rgba(129, 214, 123, 0.48);
       transform: translateY(-2px);
     }
   }
 
   &--ghost {
-    border: 1px solid rgba(248, 246, 242, 0.16);
+    border: 1px solid var(--border-color);
     background: transparent;
-    color: rgba(248, 246, 242, 0.70);
+    color: var(--text-primary);
 
     &:hover {
-      border-color: rgba(248, 246, 242, 0.36);
-      color: $color-text-inverse;
-      background: rgba(248, 246, 242, 0.05);
+      border-color: var(--brand-primary);
+      color: var(--text-primary);
+      background: var(--bg-soft);
     }
   }
 }
@@ -196,13 +196,13 @@
   strong {
     font-size: $font-size-xl;
     font-weight: $font-weight-bold;
-    color: $color-text-inverse;
+    color: var(--text-primary);
     letter-spacing: -0.03em;
   }
 
   span {
     font-size: $font-size-xs;
-    color: rgba(248, 246, 242, 0.40);
+    color: var(--text-secondary);
     letter-spacing: 0.02em;
   }
 }

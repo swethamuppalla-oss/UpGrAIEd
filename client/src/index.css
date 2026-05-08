@@ -5,31 +5,31 @@
 
 :root {
   /* Backgrounds */
-  --bg-main: #0A0F16;
-  --bg-card: rgba(255, 255, 255, 0.03);
-  --bg-soft: rgba(255, 255, 255, 0.06);
+  --bg-main: #FFFFFF;
+  --bg-card: #F9FCF9;
+  --bg-soft: #EEF8ED;
 
   /* Text */
-  --text-primary: #F0FFF4;
-  --text-secondary: rgba(240, 255, 244, 0.6);
-  --text-inverse: #ffffff;
-  --text-muted: rgba(240, 255, 244, 0.4);
+  --text-primary: #1A3020;
+  --text-secondary: rgba(26, 48, 32, 0.7);
+  --text-inverse: #FFFFFF;
+  --text-muted: rgba(26, 48, 32, 0.5);
 
   /* Accent palette */
   --accent-purple:       #7B3FE4;
   --accent-purple-light: #9B6FF4;
   --accent-orange:       #FF7A2F;
-  --accent-green:        #22C55E;
+  --accent-green:        #4ADE80;
   --accent-pink:         #EC4899;
   --accent-blue:         #3B82F6;
 
-  /* Accent references — now Bloom-green led */
+  /* Accent references */
   --accent-primary: var(--brand-primary);
   --accent-secondary: var(--brand-accent);
 
   /* UI */
-  --border-color: rgba(110,220,95,0.2);
-  --border-soft:  rgba(110,220,95,0.2);
+  --border-color: #E2EFE2;
+  --border-soft:  #F0F6F0;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
@@ -37,12 +37,12 @@
   --spacing-md: 16px;
 
   /* Shadows */
-  --shadow-card: 0 4px 24px rgba(10,31,18,0.08);
+  --shadow-card: 0 4px 24px rgba(10,31,18,0.04);
 
-  /* Brand colors — overridden at runtime by admin theme config */
-  --brand-primary:   #6EDC5F;
+  /* Brand colors */
+  --brand-primary:   #81D67B;
   --brand-accent:    #63C7FF;
-  --brand-highlight: #FFD95A;
+  --brand-highlight: #DFF5DB;
 }
 
 /* ============================================================
@@ -64,8 +64,7 @@
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   color: var(--text-primary);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-card);
 }
 
 .lesson-container {
@@ -278,12 +277,12 @@ a:hover {
    GLASS CARD
    ============================================================ */
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-lg);
   color: var(--text-primary);
   backdrop-filter: blur(16px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-card);
 }
 
 /* ============================================================

@@ -19,10 +19,7 @@ import ReservePage from './pages/ReservePage'
 import LandingPage from './pages/LandingPage'
 import WhyUpgraied from './pages/WhyUpgraied'
 import PricingPage from './pages/PricingPage'
-import WhyV2 from './v2/pages/WhyV2'
-import PricingV2 from './v2/pages/PricingV2'
 import BookDemoPage from './pages/BookDemoPage'
-import LandingPageV2 from './pages/LandingPageV2'
 
 // ── Lazily loaded (heavy / role-gated) ────────────────────────────────────────
 const StudentDashboard   = lazy(() => import('./pages/StudentDashboard'))
@@ -89,11 +86,8 @@ function AppRoutes() {
 
                 {/* Public marketing */}
                 <Route path="/"            element={<UpgraiedLanding />} />
-                <Route path="/v2"          element={<LandingPageV2 />} />
                 <Route path="/why"         element={<WhyUpgraied />} />
                 <Route path="/pricing"     element={<PricingPage />} />
-                <Route path="/why-v2"      element={<WhyV2 />} />
-                <Route path="/pricing-v2"  element={<PricingV2 />} />
                 <Route path="/book-demo"   element={<BookDemoPage />} />
 
                 {/* Auth */}

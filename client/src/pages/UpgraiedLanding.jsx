@@ -37,6 +37,37 @@ export default function UpgraiedLanding() {
         onUpdate={(key, value) => update('hero', key, value)}
         onCtaClick={handleCta}
       />
+      
+      <section className="u-products" style={{ padding: '80px 20px', background: 'var(--bg-main)', textAlign: 'center' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <h2 className="clash-display" style={{ fontSize: 36, color: 'var(--text-primary)', marginBottom: 16 }}>Our Learning Ecosystem</h2>
+          <p style={{ fontSize: 18, color: 'var(--text-secondary)', marginBottom: 48, maxWidth: 600, margin: '0 auto 48px' }}>
+            Choose the perfect path for your child's educational journey.
+          </p>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32 }}>
+            <div className="ui-card" style={{ padding: 40, borderTop: '4px solid var(--brand-primary)' }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>🤖</div>
+              <h3 className="clash-display" style={{ fontSize: 24, marginBottom: 12 }}>UpGrAIEd</h3>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: 24 }}>
+                The AI-powered learning buddy. Upload chapters and let Bloom create a structured week of lessons, quizzes, and checkpoints.
+              </p>
+              <button className="btn-primary" onClick={handleCta}>Explore UpGrAIEd</button>
+            </div>
+            
+            <div className="ui-card" style={{ padding: 40, borderTop: '4px solid var(--accent-orange)', position: 'relative' }}>
+              <span className="badge-orange" style={{ position: 'absolute', top: 16, right: 16 }}>Coming Soon</span>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>📚</div>
+              <h3 className="clash-display" style={{ fontSize: 24, marginBottom: 12 }}>UpGrEd</h3>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: 24 }}>
+                A structured, traditional academic curriculum designed to master core subjects with expert-led video lessons and assignments.
+              </p>
+              <button className="btn-ghost" disabled>Learn More</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <LearningFlow onCtaClick={handleCta} />
       <BloomJourney />
       <DashboardPreview />
