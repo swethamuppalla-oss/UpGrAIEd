@@ -9,8 +9,8 @@ export const login = async (email, password) => {
 };
 
 // 🔐 DEMO LOGIN
-export const demoLogin = async () => {
-  const res = await API.post("/auth/demo-login");
+export const demoLogin = async (role = "student") => {
+  const res = await API.post("/auth/demo-login", { role });
 
   const { token, user } = res.data;
 

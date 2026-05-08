@@ -12,6 +12,14 @@ export const requireAuth = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const userId = decoded.userId || decoded.sub || decoded.id
+    
+    // Bypass database lookup for demo tokens
+    if (String(userId).startsWith('demo-')) {
+      req.auth = { userId: String(userId), role: decoded.role }
+      req.user = decoded
+      return next()
+    }
+
     const user = await User.findById(userId)
 
     if (!user) {

@@ -2,10 +2,11 @@ import jwt from "jsonwebtoken";
 
 export const demoLogin = async (req, res) => {
   try {
+    const role = req.body.role || "student";
     const user = {
-      id: "demo-user",
-      role: "student",
-      name: "Demo User"
+      id: `demo-${role}`,
+      role: role,
+      name: `Demo ${role.charAt(0).toUpperCase() + role.slice(1)}`
     };
 
     const token = jwt.sign(
