@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { requireRole } from '../middleware/auth.js'
 import { StudentProgress } from '../models/StudentProgress.js'
+import { Video } from '../models/Video.js'
 
 const router = Router()
 router.use(requireRole('student'))
@@ -154,6 +155,24 @@ router.get('/curriculum', async (req, res, next) => {
         ],
       },
     ]
+
+    const dbVideos = await Video.find().sort({ order: 1 })
+    if (dbVideos.length > 0) {
+      curriculum.push({
+        _id: 'lvl3_dynamic',
+        name: 'New Lessons (CMS)',
+        status: 'active',
+        modules: dbVideos.map((v, i) => ({
+          _id: v._id.toString(),
+          title: v.title,
+          thumbnail: v.thumbnail,
+          url: v.url,
+          isMustDo: false,
+          taskDescription: v.description,
+          isDynamic: true,
+        }))
+      })
+    }
 
     const mapped = curriculum.map((level) => {
       const modules = level.modules.map((mod) => {

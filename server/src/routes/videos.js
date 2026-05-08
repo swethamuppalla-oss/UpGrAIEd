@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { StudentProgress, NEXT_MODULE_MAP } from '../models/StudentProgress.js'
+import { Video } from '../models/Video.js'
 
 const router = Router()
 
@@ -18,6 +19,12 @@ async function getOrCreateProgress(userId) {
 // GET /api/videos/:id/stream-url
 router.get('/:id/stream-url', async (req, res, next) => {
   try {
+    const video = await Video.findById(req.params.id)
+    if (video) {
+      return res.json({ streamUrl: video.url })
+    }
+    
+    // Fallback for old hardcoded modules
     const videoId = '943c03d8-674c-4c08-bc61-f31a7aad75a0'
     const libraryId = process.env.BUNNY_LIBRARY_ID || '651349'
     const streamUrl = `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=true`

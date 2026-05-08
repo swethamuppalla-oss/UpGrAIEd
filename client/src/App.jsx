@@ -37,9 +37,8 @@ const PaymentPage        = lazy(() => import('./pages/PaymentPage'))
 const AdminDashboard        = lazy(() => import('./pages/AdminDashboard'))
 const AdminControlPanel     = lazy(() => import('./pages/AdminControlPanel'))
 const AdminContentEditor    = lazy(() => import('./pages/AdminContentEditor'))
+const AdminVideoCMS         = lazy(() => import('./pages/AdminVideoCMS'))
 const AdminUIConfigurator   = lazy(() => import('./pages/AdminUIConfigurator'))
-const CreatorDashboard      = lazy(() => import('./pages/CreatorDashboard'))
-
 // ── Public landing ────────────────────────────────────────────────────────────
 const UpgraiedLanding  = lazy(() => import('./pages/UpgraiedLanding'))
 
@@ -123,12 +122,8 @@ function AppRoutes() {
                   <Route path="/dashboard/admin" element={<AdminDashboard />} />
                   <Route path="/admin-control"   element={<AdminLayout><AdminControlPanel /></AdminLayout>} />
                   <Route path="/admin/content"   element={<AdminLayout><AdminContentEditor /></AdminLayout>} />
+                  <Route path="/admin/videos"    element={<AdminLayout><AdminVideoCMS /></AdminLayout>} />
                   <Route path="/admin/ui"        element={<AdminLayout><AdminUIConfigurator /></AdminLayout>} />
-                </Route>
-
-                {/* Creator */}
-                <Route element={<ProtectedRoute allowedRoles={['creator']} />}>
-                  <Route path="/dashboard/creator" element={<CreatorDashboard />} />
                 </Route>
 
                 {/* Fallback */}

@@ -247,6 +247,44 @@ export const upsertConfig = async (key, value) => {
   }
 };
 
+// ── ADMIN VIDEO CMS ────────────────────────────────────────────────────────────
+
+export const getAdminVideos = async () => {
+  try {
+    const res = await API.get("/admin/videos");
+    return res.data;
+  } catch {
+    return [];
+  }
+};
+
+export const createAdminVideo = async (data) => {
+  try {
+    const res = await API.post("/admin/videos", data);
+    return res.data;
+  } catch {
+    return { success: false };
+  }
+};
+
+export const updateAdminVideo = async (id, data) => {
+  try {
+    const res = await API.put(`/admin/videos/${id}`, data);
+    return res.data;
+  } catch {
+    return { success: false };
+  }
+};
+
+export const deleteAdminVideo = async (id) => {
+  try {
+    const res = await API.delete(`/admin/videos/${id}`);
+    return res.data;
+  } catch {
+    return { success: false };
+  }
+};
+
 // ── CREATOR ───────────────────────────────────────────────────────────────────
 
 export const getCreatorStats = async () => {
@@ -423,7 +461,7 @@ export const createReservation = async (data) => {
 
 export const getStreamUrl = async (moduleId) => {
   try {
-    const res = await API.get(`/content/stream/${moduleId}`);
+    const res = await API.get(`/videos/${moduleId}/stream-url`);
     return res.data;
   } catch {
     return null;

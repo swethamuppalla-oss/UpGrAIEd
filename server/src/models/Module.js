@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const moduleSchema = new mongoose.Schema(
   {
@@ -18,4 +18,5 @@ const moduleSchema = new mongoose.Schema(
 
 moduleSchema.index({ level: 1, order: 1 });
 
-module.exports = mongoose.model('Module', moduleSchema);
+export const Module = mongoose.model('Module', moduleSchema);
+export default Module;

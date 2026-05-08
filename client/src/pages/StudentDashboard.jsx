@@ -263,38 +263,41 @@ export default function StudentDashboard() {
           </span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10 }}>
-          {[
-            { key: 'L1M1', icon: '🤖', title: 'AI Saves Your Day',     xp: 50, route: '/student/module/1' },
-            { key: 'L1M2', icon: '💬', title: 'Better Questions',       xp: 60, route: '/student/module/2' },
-            { key: 'L1M3', icon: '📚', title: 'AI Becomes Your Tutor',  xp: 75, route: '/student/module/3' },
-            { key: 'L1M4', icon: '🔍', title: 'Catch AI Being Wrong',   xp: 80, route: '/student/module/4' },
-            { key: 'L2M1', icon: 'ðŸš€', title: 'Applied Prompting Kickoff', xp: 100, route: '/student/module/5' },
-          ].map((mod, idx) => {
-            const done   = isCompleted(mod.key)
-            const active = isUnlocked(mod.key) && !done
-            const locked = !isUnlocked(mod.key) && !done
+          {curriculum.flatMap(level => level.modules || []).map((mod, idx) => {
+            const done   = mod.status === 'completed' || isCompleted(mod._id) || isCompleted(mod.key)
+            const active = mod.status === 'active' || isUnlocked(mod._id) || isUnlocked(mod.key)
+            const locked = !done && !active
+            
+            const route = mod.isDynamic ? `/player/${mod._id}` : (mod.route || `/student/module/${idx + 1}`)
+            
             return (
-              <button key={mod.key} disabled={locked} onClick={() => !locked && navigate(mod.route)}
+              <button key={mod._id || mod.key} disabled={locked} onClick={() => !locked && navigate(route)}
                 style={{
                   textAlign: 'left', cursor: locked ? 'not-allowed' : 'pointer',
                   background: done ? 'rgba(34,197,94,0.1)' : active ? 'var(--accent-secondary)' : 'var(--bg-card)',
                   border: `1px solid ${done ? 'rgba(34,197,94,0.3)' : active ? 'var(--accent-primary)' : 'var(--border-color)'}`,
                   borderRadius: 12, padding: 14, opacity: locked ? 0.6 : 1,
                   transition: 'all 0.25s', fontFamily: 'inherit',
+                  display: 'flex', flexDirection: 'column'
                 }}
                 onMouseEnter={e => { if (!locked) e.currentTarget.style.transform = 'translateY(-2px)' }}
                 onMouseLeave={e => { e.currentTarget.style.transform = '' }}
               >
+                {mod.thumbnail && (
+                  <div style={{ width: '100%', height: 80, marginBottom: 10, borderRadius: 8, overflow: 'hidden', background: '#000' }}>
+                    <img src={mod.thumbnail} alt={mod.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                  <span style={{ fontSize: 18 }}>{done ? '✅' : locked ? '🔒' : mod.icon}</span>
+                  <span style={{ fontSize: 18 }}>{done ? '✅' : locked ? '🔒' : (mod.icon || '🎬')}</span>
                   <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase', color: done ? 'var(--accent-green)' : active ? 'var(--accent-purple-light)' : 'var(--text-muted)' }}>
                     {done ? 'Done' : active ? 'Active' : 'Locked'}
                   </span>
                 </div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: done ? 'var(--accent-green)' : active ? 'var(--text-inverse)' : 'var(--text-primary)', marginBottom: 4, textDecoration: done ? 'line-through' : 'none' }}>
-                  M{idx + 1}. {config?.curriculum?.modules?.[idx]?.title || mod.title}
+                  {mod.title}
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#FFD700' }}>+{mod.xp} XP</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#FFD700' }}>+{mod.xp || 50} XP</div>
               </button>
             )
           })}

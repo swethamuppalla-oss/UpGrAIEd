@@ -2,6 +2,8 @@ import { Router } from 'express'
 import { requireRole } from '../middleware/auth.js'
 import { Reservation } from '../models/Reservation.js'
 import { User } from '../models/User.js'
+import { Video } from '../models/Video.js'
+import { Module } from '../models/Module.js'
 
 const router = Router()
 
@@ -79,6 +81,63 @@ router.post('/users/:id/unblock', async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(req.params.id, { isActive: true })
     res.json({ message: 'User unblocked' })
+  } catch (err) { next(err) }
+})
+
+// --- VIDEO CMS ---
+
+// GET /api/admin/videos
+router.get('/videos', async (req, res, next) => {
+  try {
+    const videos = await Video.find().populate('module').sort({ createdAt: -1 })
+    res.json(videos)
+  } catch (err) { next(err) }
+})
+
+// POST /api/admin/videos
+router.post('/videos', async (req, res, next) => {
+  try {
+    const { title, description, url, thumbnail, module, durationSeconds, order } = req.body
+    
+    // Auto-extract Bunny.net thumbnail if available
+    let generatedThumbnail = thumbnail
+    if (!generatedThumbnail && url && url.includes('iframe.mediadelivery.net')) {
+      // Example url: https://iframe.mediadelivery.net/embed/651349/943c03d8-674c-4c08-bc61-f31a7aad75a0
+      const parts = url.split('/')
+      const videoId = parts[parts.length - 1].split('?')[0]
+      if (videoId) {
+        generatedThumbnail = `https://vz-a8b2c5c9-xxx.b-cdn.net/${videoId}/thumbnail.jpg` // generic fallback for now, real implementation would require pullzone id
+      }
+    }
+
+    // Default module fallback if not provided
+    let modId = module;
+    if (!modId) {
+      let mod = await Module.findOne();
+      if (!mod) mod = await Module.create({ level: '65f01234abcd567890abcdef', title: 'Default Module' }); // dummy level ref
+      modId = mod._id;
+    }
+
+    const video = await Video.create({
+      title, description, url, thumbnail: generatedThumbnail, module: modId, durationSeconds, order
+    })
+    res.json(video)
+  } catch (err) { next(err) }
+})
+
+// PUT /api/admin/videos/:id
+router.put('/videos/:id', async (req, res, next) => {
+  try {
+    const video = await Video.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    res.json(video)
+  } catch (err) { next(err) }
+})
+
+// DELETE /api/admin/videos/:id
+router.delete('/videos/:id', async (req, res, next) => {
+  try {
+    await Video.findByIdAndDelete(req.params.id)
+    res.json({ message: 'Video deleted' })
   } catch (err) { next(err) }
 })
 

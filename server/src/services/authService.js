@@ -159,7 +159,6 @@ export const loginUser = async (email, password) => {
 const DEMO_IDS = {
   student: 'demo_student_id',
   parent:  'demo_parent_id',
-  creator: 'demo_creator_id',
   admin:   'demo_admin_id',
 };
 
@@ -176,7 +175,7 @@ const makeSyntheticSession = (role) => {
 };
 
 export const demoLogin = async (role) => {
-  const allowedRoles = ['student', 'parent', 'creator', 'admin'];
+  const allowedRoles = ['student', 'parent', 'admin'];
   if (!allowedRoles.includes(role)) {
     throw Object.assign(new Error('Invalid demo role'), { statusCode: 400 });
   }

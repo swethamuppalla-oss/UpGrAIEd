@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { id: 'users',        icon: '👥', label: 'Users' },
   { id: 'divider-website', divider: true, label: 'Website' },
   { id: 'content',      icon: '📝', label: 'Content Editor',  path: '/admin/content' },
+  { id: 'video-cms',    icon: '🎬', label: 'Video Library',   path: '/admin/videos' },
   { id: 'ui-config',    icon: '🎨', label: 'UI Configurator', path: '/admin/ui' },
 ]
 
@@ -239,7 +240,6 @@ export default function AdminDashboard() {
             <option value="all">All Roles</option>
             <option value="student">Student</option>
             <option value="parent">Parent</option>
-            <option value="creator">Creator</option>
             <option value="admin">Admin</option>
           </select>
         </div>
@@ -362,7 +362,6 @@ function CreateUserForm({ onCreate }) {
       <select className="input-field" value={form.role} onChange={(e) => update('role', e.target.value)}>
         <option value="student">Student</option>
         <option value="parent">Parent</option>
-        <option value="creator">Creator</option>
         <option value="admin">Admin</option>
       </select>
 
