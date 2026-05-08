@@ -21,10 +21,9 @@ export function AuthProvider({ children }) {
     setIsLoading(false)
   }, [])
 
-  const login = async () => {
-    const { token, user } = await demoLoginService()
-    setToken(token)
-    setUser(user)
+  const login = (userData, authToken) => {
+    setToken(authToken)
+    setUser(userData)
   }
 
   const logout = async () => {
