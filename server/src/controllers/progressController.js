@@ -1,5 +1,5 @@
 import { StudentProgress, NEXT_MODULE_MAP } from '../models/StudentProgress.js'
-import { getStudentWeakAreas } from '../services/weakAreaAggregator.js'
+import { getStudentWeakAreas } from '../services/studentWeakAreaService.js'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
