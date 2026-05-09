@@ -16,7 +16,7 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import ProductLayout from './layouts/ProductLayout'
 import ReservePage from './pages/ReservePage'
-import LandingPage from './pages/LandingPage'
+
 import WhyUpgraied from './pages/WhyUpgraied'
 import PricingPage from './pages/PricingPage'
 import BookDemoPage from './pages/BookDemoPage'
@@ -40,7 +40,6 @@ const AdminUIConfigurator   = lazy(() => import('./pages/AdminUIConfigurator'))
 const UpgraiedLanding  = lazy(() => import('./pages/UpgraiedLanding'))
 
 // ── Product routing ───────────────────────────────────────────────────────────
-const DashboardV2    = lazy(() => import('./pages/upgr-ed/dashboard/DashboardV2'))
 const UpgrEdLanding  = lazy(() => import('./pages/upgr-ed/UpgrEdLanding'))
 
 function PageSpinner() {

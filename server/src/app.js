@@ -11,7 +11,7 @@ import reservationRouter from './routes/reservations.js'
 import studentRouter   from './routes/student.js'
 import parentRouter    from './routes/parent.js'
 import adminRouter     from './routes/admin.js'
-import creatorRouter   from './routes/creator.js'
+
 import videoRouter     from './routes/videos.js'
 import paymentRouter   from './routes/payments.js'
 import robRouter       from './routes/rob.js'
@@ -26,6 +26,7 @@ import uiConfigRouter  from './routes/uiConfig.js'
 import usersRouter     from './routes/users.js'
 import practiceRouter    from './routes/practice.js'
 import submissionsRouter from './routes/submissions.js'
+import grippingPointsRouter from './routes/grippingPoints.js'
 
 /**
  * Creates and returns a fully-configured Express app.
@@ -103,15 +104,16 @@ export function createApp() {
   app.use('/api/parent',   requireAuth, parentRouter)
   app.use('/api/users',    requireAuth, usersRouter)
   app.use('/api/admin',    requireAuth, adminRouter)
-  app.use('/api/creator',  requireAuth, creatorRouter)
+  // creator role removed — video management is admin-only
   app.use('/api/videos',   requireAuth, videoRouter)
   app.use('/api/payments', requireAuth, paymentRouter)
   app.use('/api/progress', requireAuth, progressRouter)
   app.use('/api/upload',   requireAuth, uploadRouter)
   app.use('/api/media',    requireAuth, uploadRouter)
-  app.use('/api/chapters', chapterRouter)   // auth checked per-route inside
-  app.use('/api/rob',      robRouter)        // auth checked per-route inside
-  app.use('/api/bloom',    bloomRouter)
+  app.use('/api/chapters',        chapterRouter)   // auth checked per-route inside
+  app.use('/api/rob',             robRouter)        // auth checked per-route inside
+  app.use('/api/bloom',           bloomRouter)
+  app.use('/api/gripping-points', grippingPointsRouter)
 
   // Static uploads (local dev; on Vercel, uploads should use cloud storage)
   app.use('/uploads', express.static('uploads'))
