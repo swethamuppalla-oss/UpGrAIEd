@@ -17,6 +17,7 @@ export function AuthProvider({ children }) {
     const session = getStoredSession()
     if (session) {
       setToken(session.token)
+      if (session.user) setUser(session.user)
     }
     setIsLoading(false)
   }, [])

@@ -3,8 +3,9 @@ import API from "./api";
 // 🔐 FULL LOGIN
 export const login = async (email, password) => {
   const res = await API.post("/auth/login", { email, password });
-  const token = res.data.token;
+  const { token, user } = res.data;
   localStorage.setItem("token", token);
+  if (user) localStorage.setItem("user", JSON.stringify(user));
   return res.data;
 };
 
@@ -29,11 +30,13 @@ export const logout = async () => {
   }
 
   localStorage.removeItem("token");
+  localStorage.removeItem("user");
 };
 
 // 🧹 CLEAR SESSION
 export const clearSession = () => {
   localStorage.removeItem("token");
+  localStorage.removeItem("user");
 };
 
 // 🔑 GET TOKEN
@@ -52,14 +55,18 @@ export const isTokenExpired = (token) => {
   }
 };
 
-// 📦 GET FULL SESSION (THIS WAS MISSING)
+// 📦 GET FULL SESSION
 export const getStoredSession = () => {
   const token = localStorage.getItem("token");
-
   if (!token) return null;
 
-  return {
-    token,
-    isAuthenticated: true,
-  };
+  let user = null;
+  try {
+    const raw = localStorage.getItem("user");
+    if (raw) user = JSON.parse(raw);
+  } catch {
+    user = null;
+  }
+
+  return { token, user };
 };
