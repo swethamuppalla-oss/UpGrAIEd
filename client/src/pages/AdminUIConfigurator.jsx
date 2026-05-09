@@ -450,6 +450,7 @@ function LogoSection({ logo, mascot, brandName, uploading, onUpload, onUploadMas
               style={{ display: 'none' }}
             />
           </label>
+        )}
       </div>
     </>
   )

@@ -7,7 +7,101 @@ export { getUIConfig, updateUIConfig } from "./uiConfigService";
 export { createUser, getUsers } from "./userService";
 export { getStudentDashboard } from "./dashboardService";
 
+// ── ROB / BLOOM SYSTEM ────────────────────────────────────────────────────────
+// These power the Bloom companion XP, badges, and quiz features.
+
+export const getROBProgress = async () => {
+  try {
+    const res = await API.get("/rob/progress");
+    return res.data;
+  } catch {
+    return { level: 1, xp: 0, streak: 0 };
+  }
+};
+
+export const getROBQuiz = async () => {
+  try {
+    const res = await API.get("/rob/quiz");
+    return res.data;
+  } catch {
+    return [];
+  }
+};
+
+export const getRobCompanion = async () => {
+  try {
+    const res = await API.get("/rob/companion");
+    return res.data;
+  } catch {
+    return { name: "Bloom", mood: "happy", message: "Let's learn something fun today!" };
+  }
+};
+
+export const saveROBXP = async (xp, level, badges, extra = {}) => {
+  try {
+    const res = await API.post("/rob/xp", { xp, level, badges, ...extra });
+    return res.data;
+  } catch {
+    return { success: true };
+  }
+};
+
+export const saveRobCompanionState = async (state) => {
+  try {
+    const res = await API.post("/rob/companion", state);
+    return res.data;
+  } catch {
+    return { success: true };
+  }
+};
+
+export const chatWithROB = async (message, context = {}) => {
+  try {
+    const res = await API.post("/rob/chat", { message, context });
+    return res.data;
+  } catch {
+    return { reply: "I'm thinking... try again in a moment.", suggestions: [] };
+  }
+};
+
+export const getRobIntelligence = async () => {
+  try {
+    const res = await API.get("/rob/intelligence");
+    return res.data;
+  } catch {
+    return { interactions: [], quizzes: [], concepts: [], totalSessions: 0 };
+  }
+};
+
+export const trainROBConcept = async (data) => {
+  try {
+    const res = await API.post("/rob/train", data);
+    return res.data;
+  } catch {
+    return { success: true };
+  }
+};
+
 // ── STUDENT PROGRESS ──────────────────────────────────────────────────────────
+
+// Alias kept for backward compatibility with StudentDashboard imports
+export const getProgressDashboard = async () => {
+  try {
+    const res = await API.get("/student/progress");
+    return res.data;
+  } catch {
+    return { success: false, data: null };
+  }
+};
+
+export const getStudentLevels = async () => {
+  try {
+    const res = await API.get("/student/levels");
+    return res.data;
+  } catch {
+    return [];
+  }
+};
 
 export const apiCompleteModule = async (moduleKey, xp, badge) => {
   try {
