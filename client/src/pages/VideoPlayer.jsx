@@ -5,7 +5,7 @@ import LoadingSkeleton from '../components/ui/LoadingSkeleton'
 import GrippingPointOverlay from '../components/learning/GrippingPointOverlay'
 import { getCurriculum, getStreamUrl, postProgress } from '../services'
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5001'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 async function fetchGrippingPoints(videoId) {
   const token = localStorage.getItem('token')

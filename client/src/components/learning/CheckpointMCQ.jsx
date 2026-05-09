@@ -1,41 +1,6 @@
 import { useState } from 'react';
 
-/* ─── MCQ Option Button ──────────────────────────────────────── */
-function MCQOption({ label, selected, correct, revealed, onClick }) {
-  let bg = 'rgba(255,255,255,0.05)';
-  let border = '1px solid rgba(255,255,255,0.12)';
-  let color = 'rgba(255,255,255,0.8)';
 
-  if (revealed) {
-    if (correct) { bg = 'rgba(110,220,95,0.15)'; border = '1px solid rgba(110,220,95,0.5)'; color = '#6EDC5F'; }
-    else if (selected) { bg = 'rgba(239,68,68,0.12)'; border = '1px solid rgba(239,68,68,0.4)'; color = '#F87171'; }
-  } else if (selected) {
-    bg = 'rgba(110,220,95,0.12)'; border = '1px solid rgba(110,220,95,0.4)'; color = '#A8F5A2';
-  }
-
-  return (
-    <button
-      onClick={onClick}
-      disabled={revealed}
-      style={{
-        width: '100%', padding: '12px 16px', borderRadius: 12,
-        background: bg, border, color,
-        fontSize: 14, fontWeight: 500, cursor: revealed ? 'default' : 'pointer',
-        textAlign: 'left', transition: 'all 0.15s',
-        display: 'flex', alignItems: 'center', gap: 10,
-      }}
-      onMouseEnter={e => { if (!revealed && !selected) e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; }}
-      onMouseLeave={e => { if (!revealed && !selected) e.currentTarget.style.background = bg; }}
-    >
-      {revealed && correct && <span style={{ fontSize: 16 }}>✅</span>}
-      {revealed && selected && !correct && <span style={{ fontSize: 16 }}>❌</span>}
-      {!revealed && <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'rgba(255,255,255,0.4)', flexShrink: 0 }}>{label}</span>}
-      <span style={{ flex: 1 }}>{label === 'A' || label === 'B' || label === 'C' || label === 'D' ? null : label}</span>
-    </button>
-  );
-}
-
-/* ─── Main MCQ Panel ─────────────────────────────────────────── */
 export default function CheckpointMCQ({ point, onSubmit, loading }) {
   const [selected, setSelected] = useState(null);
   const LABELS = ['A', 'B', 'C', 'D', 'E'];

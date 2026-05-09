@@ -3,7 +3,7 @@ import { useROB } from '../../context/RobContext';
 import CheckpointMCQ from './CheckpointMCQ';
 import CheckpointTyped from './CheckpointTyped';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 async function submitAnswer(grippingPointId, answer) {
   const token = localStorage.getItem('token');

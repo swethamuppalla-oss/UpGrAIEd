@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import BrandTopBar from '../../components/brand/BrandTopBar';
+import GrowthNavbar from '../../components/growth/GrowthNavbar';
 
 /* ─── static data ─────────────────────────────────────────────── */
 const PROCESS_STEPS = [

@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import { requireAuth } from '../middleware/auth.js';
-import { requireRole } from '../middleware/auth.js';
+import { requireAuth, requireRole } from '../middleware/auth.js';
 import { GrippingPoint } from '../models/GrippingPoint.js';
 import { StudentProgress } from '../models/StudentProgress.js';
 
