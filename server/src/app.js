@@ -27,6 +27,7 @@ import usersRouter     from './routes/users.js'
 import practiceRouter    from './routes/practice.js'
 import submissionsRouter from './routes/submissions.js'
 import grippingPointsRouter from './routes/grippingPoints.js'
+import cmsRouter            from './domains/cms/cms.routes.js'
 
 /**
  * Creates and returns a fully-configured Express app.
@@ -96,6 +97,7 @@ export function createApp() {
   app.use('/api/content', contentRouter)   // dynamic content for growth pages
   app.use('/api/ask',    askRouter)        // public quick-ask (rate limited)
   app.use('/api/ui-config', uiConfigRouter) // UI section config (GET public, PUT admin)
+  app.use('/api/cms',      cmsRouter)      // CMS sections (GET public, write admin)
 
   // ── Protected routes ─────────────────────────────────────────────────────────
   app.use('/api/practice',     requireAuth, practiceRouter)

@@ -42,6 +42,12 @@ const UpgraiedLanding  = lazy(() => import('./pages/UpgraiedLanding'))
 // ── Product routing ───────────────────────────────────────────────────────────
 const UpgrEdLanding  = lazy(() => import('./pages/upgr-ed/UpgrEdLanding'))
 
+// ── Brand home ────────────────────────────────────────────────────────────────
+const BrandHomePage = lazy(() => import('./brand/pages/HomePage'))
+
+// ── Admin website editor ──────────────────────────────────────────────────────
+const AdminWebsiteEditorPage = lazy(() => import('./learning/admin/pages/AdminWebsiteEditorPage'))
+
 function PageSpinner() {
   return (
     <div style={{
@@ -84,6 +90,9 @@ function AppRoutes() {
                 <Route path="/pricing"     element={<PricingPage />} />
                 <Route path="/book-demo"   element={<BookDemoPage />} />
 
+                {/* Brand home */}
+                <Route path="/brand" element={<BrandHomePage />} />
+
                 {/* Auth */}
                 <Route path="/login"   element={<Login />} />
                 <Route path="/reserve" element={<ReservePage />} />
@@ -112,6 +121,7 @@ function AppRoutes() {
                   <Route path="/admin/content"   element={<AdminLayout><AdminContentEditor /></AdminLayout>} />
                   <Route path="/admin/videos"    element={<AdminLayout><AdminVideoCMS /></AdminLayout>} />
                   <Route path="/admin/ui"        element={<AdminLayout><AdminUIConfigurator /></AdminLayout>} />
+                  <Route path="/admin/website"   element={<AdminWebsiteEditorPage />} />
                 </Route>
 
                 {/* Fallback */}

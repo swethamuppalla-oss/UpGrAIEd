@@ -2,6 +2,52 @@ import API from "./api";
 
 // ── Re-exports from sub-services ──────────────────────────────────────────────
 export { getContent, updateContent } from "./contentService";
+
+// ── CMS ───────────────────────────────────────────────────────────────────────
+export const getCmsSections = async (page) => {
+  try {
+    const res = await API.get(`/cms/${page}`)
+    return res.data.sections || []
+  } catch {
+    return []
+  }
+}
+
+export const getCmsAllSections = async (page) => {
+  try {
+    const res = await API.get(`/cms/${page}/all`)
+    return res.data.sections || []
+  } catch {
+    return []
+  }
+}
+
+export const updateCmsSection = async (page, section, data) => {
+  try {
+    const res = await API.put(`/cms/${page}/${section}`, data)
+    return res.data
+  } catch (err) {
+    throw err
+  }
+}
+
+export const toggleCmsSection = async (page, section, enabled) => {
+  try {
+    const res = await API.patch(`/cms/${page}/${section}/toggle`, { enabled })
+    return res.data
+  } catch (err) {
+    throw err
+  }
+}
+
+export const reorderCmsSections = async (page, sections) => {
+  try {
+    const res = await API.post(`/cms/${page}/reorder`, { sections })
+    return res.data
+  } catch (err) {
+    throw err
+  }
+}
 export { uploadMedia, getMediaLibrary, getMedia } from "./mediaService";
 export { getUIConfig, updateUIConfig } from "./uiConfigService";
 export { createUser, getUsers } from "./userService";
