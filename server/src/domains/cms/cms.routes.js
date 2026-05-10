@@ -24,8 +24,8 @@ router.put(
   updateSectionGeneric
 )
 
-// POST /api/cms/media/upload — alias for the upload router
-router.use('/media', requireAuth, uploadRouter)
+// POST /api/cms/media/upload — alias for the upload router (auth is handled inside uploadRouter)
+router.use('/media', uploadRouter)
 
 // ── Existing routes ───────────────────────────────────────────────────────────
 

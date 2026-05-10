@@ -19,6 +19,19 @@ export function validateSectionPayload(data) {
   if (enabled !== undefined && typeof enabled !== 'boolean')
     errors.push('enabled must be a boolean')
 
+  if (data.metadata !== undefined) {
+    if (typeof data.metadata !== 'object' || Array.isArray(data.metadata)) {
+      errors.push('metadata must be a plain object')
+    } else {
+      try {
+        if (JSON.stringify(data.metadata).length > 50_000)
+          errors.push('metadata exceeds maximum allowed size (50 KB)')
+      } catch {
+        errors.push('metadata contains non-serialisable values')
+      }
+    }
+  }
+
   return errors
 }
 

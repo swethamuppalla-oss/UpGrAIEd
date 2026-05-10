@@ -77,8 +77,8 @@ function AppRoutes() {
         <ToastProvider>
           <EditModeProvider>
             <CMSProvider>
-            <Suspense fallback={<PageSpinner />}>
-              <Routes>
+              <Suspense fallback={<PageSpinner />}>
+                <Routes>
                 {/* Root: product gateway */}
                 <Route path="/" element={<Home />} />
 
@@ -129,9 +129,9 @@ function AppRoutes() {
 
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-            <EditToolbar />
+                </Routes>
+              </Suspense>
+              <EditToolbar />
             </CMSProvider>
           </EditModeProvider>
         </ToastProvider>
