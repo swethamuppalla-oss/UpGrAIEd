@@ -48,6 +48,26 @@ export const reorderCmsSections = async (page, sections) => {
     throw err
   }
 }
+
+// Single-field partial update (used by EditableText / EditableButton)
+export const saveCmsField = async (page, section, field, value) => {
+  try {
+    const res = await API.put('/cms/update', { page, section, [field]: value })
+    return res.data
+  } catch (err) {
+    throw err
+  }
+}
+
+// Admin: page-level section summary (section names, enabled state, order, timestamps)
+export const getCmsPageConfig = async (page) => {
+  try {
+    const res = await API.get(`/cms/${page}/config`)
+    return res.data.config || null
+  } catch {
+    return null
+  }
+}
 export { uploadMedia, getMediaLibrary, getMedia } from "./mediaService";
 export { getUIConfig, updateUIConfig } from "./uiConfigService";
 export { createUser, getUsers } from "./userService";

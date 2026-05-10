@@ -14,6 +14,7 @@ const cmsSectionSchema = new mongoose.Schema(
     enabled:          { type: Boolean, default: true },
     order:            { type: Number, default: 0 },
     metadata:         { type: mongoose.Schema.Types.Mixed, default: {} },
+    updatedBy:        { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true }
 )

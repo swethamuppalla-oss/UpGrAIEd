@@ -10,6 +10,8 @@ import ProtectedRoute from './components/layout/ProtectedRoute'
 import AdminLayout from './layouts/AdminLayout'
 import { applyTheme, getAutoTheme, getSavedPalette, setPalette } from "./theme/themeUtils";
 import { trackEvent } from './utils/analytics';
+import { CMSProvider } from './cms/context/CMSContext'
+import EditToolbar from './cms/components/EditToolbar'
 
 // ── Eagerly loaded (small / critical path) ────────────────────────────────────
 import Home from './pages/Home'
@@ -74,6 +76,7 @@ function AppRoutes() {
       <RobProvider>
         <ToastProvider>
           <EditModeProvider>
+            <CMSProvider>
             <Suspense fallback={<PageSpinner />}>
               <Routes>
                 {/* Root: product gateway */}
@@ -128,6 +131,8 @@ function AppRoutes() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
+            <EditToolbar />
+            </CMSProvider>
           </EditModeProvider>
         </ToastProvider>
       </RobProvider>
